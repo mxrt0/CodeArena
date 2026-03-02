@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/Data/">
+    <Project Path="CodeArena.Data/CodeArena.Data.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="CodeArena.Services/CodeArena.Services.csproj" />
+  </Folder>
+  <Folder Name="/Web/">
+    <Project Path="CodeArena.Web/CodeArena.Web.csproj" />
+  </Folder>
+</Solution>
