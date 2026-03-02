@@ -1,8 +1,12 @@
-using CodeArena.Data.Models;
 using CodeArena.Data;
+using CodeArena.Data.Models;
+using CodeArena.Data.Repositories;
+using CodeArena.Data.Repositories.Contracts;
+using CodeArena.Data.Seeding;
+using CodeArena.Services.Core;
+using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using CodeArena.Data.Seeding;
 
 namespace CodeArena.Web
 {
@@ -32,6 +36,9 @@ namespace CodeArena.Web
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredLength = 6;
             });
+
+            builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
+            builder.Services.AddScoped<IChallengeService, ChallengeService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
