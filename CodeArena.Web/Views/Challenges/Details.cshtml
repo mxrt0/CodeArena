@@ -1,17 +1,13 @@
 ﻿@model ChallengeDetailsViewModel
-
 @{
     ViewData["Title"] = "Challenge Details";
 }
 
 <div class="container mt-4">
-
     <div class="card shadow-sm">
         <div class="card-body">
 
-            <h2 class="card-title mb-3">
-                @Model.Challenge.Title
-            </h2>
+            <h2 class="card-title mb-3">@Model.Challenge.Title</h2>
 
             <div class="mb-3">
                 <span class="badge bg-primary fs-6">
@@ -21,29 +17,58 @@
 
             @if (Model.Challenge.Tags != null && Model.Challenge.Tags.Any())
             {
-                <div class="mb-4">
+                <div class="mb-3">
                     @foreach (var tag in Model.Challenge.Tags)
                     {
-                        <span class="badge bg-secondary me-1">
-                            @tag
-                        </span>
+                        <span class="badge bg-secondary me-1">@tag</span>
                     }
                 </div>
             }
 
             <hr />
 
-            <p class="card-text">
-                @Model.Challenge.Description
-            </p>
+            <p class="card-text">@Model.Challenge.Description</p>
+
+            @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                <hr />
+                <h5 class="mt-4">Submit Your Solution</h5>
+
+                <form asp-controller="Submissions" asp-action="Create" method="post">
+                    <input type="hidden" name="ChallengeId" value="@Model.Challenge.Id" />
+
+                    <div class="mb-3">
+                        <label asp-for="SolutionCode" class="form-label">Paste your code here:</label>
+                        <textarea class="form-control" asp-for="SolutionCode" rows="5" required></textarea>
+                        <span asp-validation-for="SolutionCode" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Language" class="form-label">Language</label>
+                        <select class="form-select" asp-for="Language" required>
+                            <option value="">--Select--</option>
+                            <option value="CSharp">C#</option>
+                            <option value="JavaScript">JavaScript</option>
+                            <option value="Python">Python</option>
+                            <option value="Java">Java</option>
+                        </select>
+                        <span asp-validation-for="Language" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-success">Submit Solution</button>
+                </form>
+            }
+            else
+            {
+                <div class="alert alert-info mt-4">
+                    Please <a asp-area="Identity" asp-page="Account/Login">login</a> to submit your solution.
+                </div>
+            }
 
             <div class="mt-4">
-                <a asp-action="Index" class="btn btn-outline-secondary">
-                    Back to Challenges
-                </a>
+                <a asp-action="Index" class="btn btn-outline-secondary">Back to Challenges</a>
             </div>
 
         </div>
     </div>
-
 </div>
