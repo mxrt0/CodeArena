@@ -1,0 +1,9 @@
+﻿using CodeArena.Services.DTOs.Challenge;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CodeArena.Web.Models.Challenge;
+
+public class ChallengeIndexViewModel
+{
+    public IEnumerable<ChallengeDisplayDto> Challenges { get; set; } = new List<ChallengeDisplayDto>();
+}
