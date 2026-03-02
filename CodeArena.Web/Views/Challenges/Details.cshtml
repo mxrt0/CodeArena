@@ -1,0 +1,49 @@
+﻿@model ChallengeDetailsViewModel
+
+@{
+    ViewData["Title"] = "Challenge Details";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h2 class="card-title mb-3">
+                @Model.Challenge.Title
+            </h2>
+
+            <div class="mb-3">
+                <span class="badge bg-primary fs-6">
+                    @Model.Challenge.Difficulty
+                </span>
+            </div>
+
+            @if (Model.Challenge.Tags != null && Model.Challenge.Tags.Any())
+            {
+                <div class="mb-4">
+                    @foreach (var tag in Model.Challenge.Tags)
+                    {
+                        <span class="badge bg-secondary me-1">
+                            @tag
+                        </span>
+                    }
+                </div>
+            }
+
+            <hr />
+
+            <p class="card-text">
+                @Model.Challenge.Description
+            </p>
+
+            <div class="mt-4">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Back to Challenges
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</div>
