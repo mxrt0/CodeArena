@@ -1,4 +1,6 @@
+using CodeArena.Services.Core.Contracts;
 using CodeArena.Web.Models;
+using CodeArena.Web.Models.Home;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -6,16 +8,19 @@ namespace CodeArena.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly IChallengeService _challengeService;
+        public HomeController(IChallengeService challengeService)
         {
-            _logger = logger;
+            _challengeService = challengeService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var challenges = await _challengeService.GetChallengesAsync();
+            var vm = new HomeIndexViewModel
+            {
+            };
+            return View(vm);
         }
 
         public IActionResult Privacy()
