@@ -38,7 +38,10 @@ namespace CodeArena.Web
             });
 
             builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
+            builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+
             builder.Services.AddScoped<IChallengeService, ChallengeService>();
+            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
