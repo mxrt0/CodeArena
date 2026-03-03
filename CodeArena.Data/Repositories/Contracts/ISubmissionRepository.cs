@@ -12,4 +12,5 @@ public interface ISubmissionRepository
     Task AddAsync(Submission submission);
     Task RemoveAsync(Submission submission);
     bool Any(Func<Submission, bool> predicate);
+    Task<Submission?> FirstOrDefaultAsync(Func<Submission, bool> predicate);
 }

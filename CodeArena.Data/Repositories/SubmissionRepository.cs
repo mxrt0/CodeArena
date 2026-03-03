@@ -24,9 +24,19 @@ public class SubmissionRepository : ISubmissionRepository
         await _context.SaveChangesAsync();
     }
 
+    public bool Any(Func<Submission, bool> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool AnyAsync(Func<Submission, bool> predicate)
     {
         return _context.Submissions.Any(predicate);
+    }
+
+    public async Task<Submission?> FirstOrDefaultAsync(Func<Submission, bool> predicate)
+    {
+        return await _context.Submissions.FirstOrDefaultAsync(s => predicate(s));
     }
 
     public async Task RemoveAsync(Submission submission)
