@@ -4,6 +4,8 @@ using CodeArena.Data.Repositories;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Data.Seeding;
 using CodeArena.Services.Core;
+using CodeArena.Services.Core.Admin;
+using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +44,7 @@ namespace CodeArena.Web
 
             builder.Services.AddScoped<IChallengeService, ChallengeService>();
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+            builder.Services.AddScoped<IAdminSubmissionService, AdminSubmissionService>();
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
