@@ -1,0 +1,40 @@
+﻿@model AdminDashboardViewModel
+
+<h2>Admin Dashboard</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Total Users</h6>
+            <h3>@Model.DashboardData.TotalUsers</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Total Challenges</h6>
+            <h3>@Model.DashboardData.TotalChallenges</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Pending</h6>
+            <h3>@Model.DashboardData.PendingSubmissions</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card p-3">
+            <h6>Approved</h6>
+            <h3>@Model.DashboardData.ApprovedSubmissions</h3>
+        </div>
+    </div>
+
+    <div class="col-md-3 mt-3">
+        <div class="card p-3">
+            <h6>Rejected</h6>
+            <h3>@Model.DashboardData.RejectedSubmissions</h3>
+        </div>
+    </div>
+</div>
