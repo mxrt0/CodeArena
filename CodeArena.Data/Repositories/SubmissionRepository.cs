@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,19 +25,14 @@ public class SubmissionRepository : ISubmissionRepository
         await _context.SaveChangesAsync();
     }
 
-    public bool Any(Func<Submission, bool> predicate)
+    public async Task<bool> AnyAsync(Expression<Func<Submission, bool>> predicate)
     {
-        throw new NotImplementedException();
+        return await _context.Submissions.AnyAsync(predicate);
     }
 
-    public bool AnyAsync(Func<Submission, bool> predicate)
+    public async Task<Submission?> FirstOrDefaultAsync(Expression<Func<Submission, bool>> predicate)
     {
-        return _context.Submissions.Any(predicate);
-    }
-
-    public async Task<Submission?> FirstOrDefaultAsync(Func<Submission, bool> predicate)
-    {
-        return await _context.Submissions.FirstOrDefaultAsync(s => predicate(s));
+        return await _context.Submissions.FirstOrDefaultAsync(predicate);
     }
 
     public async Task RemoveAsync(Submission submission)

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,6 +12,6 @@ public interface ISubmissionRepository
 {
     Task AddAsync(Submission submission);
     Task RemoveAsync(Submission submission);
-    bool Any(Func<Submission, bool> predicate);
-    Task<Submission?> FirstOrDefaultAsync(Func<Submission, bool> predicate);
+    Task<bool> AnyAsync(Expression<Func<Submission, bool>> predicate);
+    Task<Submission?> FirstOrDefaultAsync(Expression<Func<Submission, bool>> predicate);
 }
