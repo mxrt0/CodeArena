@@ -30,6 +30,13 @@ public class SubmissionRepository : ISubmissionRepository
         return await _context.Submissions.AnyAsync(predicate);
     }
 
+    public Task<int> CountAsync(Expression<Func<Submission, bool>>? predicate = null)
+    {
+        return predicate is null 
+            ? _context.Submissions.CountAsync() 
+            : _context.Submissions.CountAsync(predicate);
+    }
+
     public async Task<Submission?> FirstOrDefaultAsync(Expression<Func<Submission, bool>> predicate)
     {
         return await _context.Submissions.FirstOrDefaultAsync(predicate);

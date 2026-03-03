@@ -15,4 +15,5 @@ public interface ISubmissionRepository
     Task RemoveAsync(Submission submission);
     Task<bool> AnyAsync(Expression<Func<Submission, bool>> predicate);
     Task<Submission?> FirstOrDefaultAsync(Expression<Func<Submission, bool>> predicate);
+    Task<int> CountAsync(Expression<Func<Submission, bool>>? predicate = null);
 }
