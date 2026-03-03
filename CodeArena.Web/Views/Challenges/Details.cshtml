@@ -1,6 +1,6 @@
 ﻿@model ChallengeDetailsViewModel
 @{
-    ViewData["Title"] = "Challenge Details";
+    ViewData["Title"] = Model.Challenge.Title;
 }
 
 <div class="container mt-4">
@@ -78,7 +78,7 @@
             else
             {
                 <div class="alert alert-info mt-4">
-                    Please <a asp-area="Identity" asp-page="Account/Login">login</a> to submit your solution.
+                    Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="/Challenges/Details/@Model.Challenge.Id">login</a> to submit your solution.
                 </div>
             }
 
