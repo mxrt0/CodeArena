@@ -12,4 +12,5 @@ public interface ISubmissionService
 {
     Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user);
     bool HasPendingSubmission(int challengeId, ClaimsPrincipal user);
+    Task CancelPendingAsync(int challengeId, ClaimsPrincipal user);
 }

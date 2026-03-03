@@ -26,6 +26,7 @@ public class SubmissionService : ISubmissionService
         _repository = repository;
         _userManager = userManager;
     }
+
     public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
