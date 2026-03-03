@@ -20,6 +20,7 @@ public class DashboardController : BaseAdminController
         {
             DashboardData = dashboardData
         };
+        ViewData["ActivePage"] = "Dashboard";
         return View(vm);
     }
 }
