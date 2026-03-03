@@ -27,13 +27,36 @@ public class SubmissionService : ISubmissionService
         _userManager = userManager;
     }
 
+    public async Task CancelPendingAsync(int challengeId, ClaimsPrincipal user)
+    {
+        var userId = _userManager.GetUserId(user);
+
+        var submission = await _repository.FirstOrDefaultAsync(s =>
+            s.ChallengeId == challengeId &&
+            s.UserId == userId &&
+            s.Status == SubmissionStatus.Pending);
+
+        if (submission is null)
+        {
+            return;
+        }
+
+        await _repository.RemoveAsync(submission);
+    }
+
     public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
+
         if (userId is null)
         {
             throw new InvalidOperationException("User must be authenticated to create a submission.");
         }
+        if (HasPendingSubmission(createDto.ChallengeId, user))
+        {
+            throw new InvalidOperationException("User already has a pending submission for this challenge.");
+        }
+
         var submission = new Submission
         {
             ChallengeId = createDto.ChallengeId,
