@@ -46,6 +46,7 @@ namespace CodeArena.Web
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
             builder.Services.AddScoped<IAdminSubmissionService, AdminSubmissionService>();
 
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
