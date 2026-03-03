@@ -80,7 +80,7 @@ namespace CodeArena.Web
 
             app.MapControllerRoute(
                 name: "areas",
-                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",
