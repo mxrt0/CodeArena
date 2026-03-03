@@ -11,5 +11,5 @@ namespace CodeArena.Services.Core.Contracts;
 public interface ISubmissionService
 {
     Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user);
-    bool HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user);
+    bool HasPendingSubmission(int challengeId, ClaimsPrincipal user);
 }

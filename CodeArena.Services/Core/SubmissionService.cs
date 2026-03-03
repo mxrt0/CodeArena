@@ -44,7 +44,7 @@ public class SubmissionService : ISubmissionService
         await _repository.AddAsync(submission);
     }
 
-    public bool HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    public bool HasPendingSubmission(int challengeId, ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
         return _repository.Any(s => 
