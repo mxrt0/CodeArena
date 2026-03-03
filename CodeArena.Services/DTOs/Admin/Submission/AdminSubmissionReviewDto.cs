@@ -11,9 +11,9 @@ public sealed record AdminSubmissionReviewDto(
     int SubmissionId,
     string ChallengeTitle,
     string UserDisplayName,
-    SubmissionLanguage Language,
-    Difficulty Difficulty,
+    string Language,
+    string Difficulty,
     string SolutionCode,
-    DateTime SubmittedAt
+    string SubmittedAt
 );
 
