@@ -5,5 +5,5 @@ namespace CodeArena.Web.Areas.Admin.Models;
 
 public class AdminDashboardViewModel
 {
-    AdminDashboardDto DashboardData { get; set; } = null!;
+    public AdminDashboardDto DashboardData { get; set; } = null!;
 } 
