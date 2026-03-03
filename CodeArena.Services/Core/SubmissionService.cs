@@ -52,7 +52,7 @@ public class SubmissionService : ISubmissionService
         {
             throw new InvalidOperationException("User must be authenticated to create a submission.");
         }
-        if (HasPendingSubmission(createDto.ChallengeId, user))
+        if (await HasPendingSubmissionAsync(createDto.ChallengeId, user))
         {
             throw new InvalidOperationException("User already has a pending submission for this challenge.");
         }
@@ -68,10 +68,10 @@ public class SubmissionService : ISubmissionService
         await _repository.AddAsync(submission);
     }
 
-    public bool HasPendingSubmission(int challengeId, ClaimsPrincipal user)
+    public async Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
-        return _repository.Any(s => 
+        return await _repository.AnyAsync(s => 
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
             s.Status == SubmissionStatus.Pending);
