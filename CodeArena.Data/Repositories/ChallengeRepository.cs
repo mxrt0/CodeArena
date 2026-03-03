@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,14 +19,26 @@ public class ChallengeRepository : IChallengeRepository
         _context = context;
     }
 
-    public Task AddAsync(Challenge challenge)
+    public async Task AddAsync(Challenge challenge)
     {
-        throw new NotImplementedException();
+        await _context.AddAsync(challenge);
+        await _context.SaveChangesAsync();
     }
 
-    public Task DeleteAsync(int id)
+    public Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null)
     {
-        throw new NotImplementedException();
+        return predicate is null 
+            ? _context.Challenges.CountAsync()
+            : _context.Challenges.CountAsync(predicate);
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var challenge = await _context.Challenges.FindAsync(id);
+        if (challenge is null) return;
+
+        _context.Remove(challenge);
+        await _context.SaveChangesAsync();
     }
 
     public async Task<Challenge?> GetByIdAsync(int id)
