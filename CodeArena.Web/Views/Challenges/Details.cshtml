@@ -32,31 +32,48 @@
             @if (User?.Identity?.IsAuthenticated ?? false)
             {
                 <hr />
-                <h5 class="mt-4">Submit Your Solution</h5>
-
-                <form asp-controller="Submissions" asp-action="Create" method="post">
-                    <input type="hidden" name="ChallengeId" value="@Model.Challenge.Id" />
-
-                    <div class="mb-3">
-                        <label asp-for="SolutionCode" class="form-label">Paste your code here:</label>
-                        <textarea class="form-control" asp-for="SolutionCode" rows="5" required></textarea>
-                        <span asp-validation-for="SolutionCode" class="text-danger"></span>
+                @if (Model.HasPendingSubmission)
+                {
+                    <div class="alert alert-warning">
+                        You already have a submission pending review.
                     </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Language" class="form-label">Language</label>
-                        <select class="form-select" asp-for="Language" required>
-                            <option value="">--Select--</option>
-                            <option value="CSharp">C#</option>
-                            <option value="JavaScript">JavaScript</option>
-                            <option value="Python">Python</option>
-                            <option value="Java">Java</option>
-                        </select>
-                        <span asp-validation-for="Language" class="text-danger"></span>
-                    </div>
+                    <form asp-controller="Submissions" asp-action="Cancel" method="post">
+                        <input type="hidden" name="challengeId" value="@Model.Challenge.Id" />
+                        <button type="submit" class="btn btn-danger">
+                            Cancel Submission
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <h5 class="mt-4">Submit Your Solution</h5>
 
-                    <button type="submit" class="btn btn-success">Submit Solution</button>
-                </form>
+                    <form asp-controller="Submissions" asp-action="Create" method="post">
+                        <input type="hidden" name="ChallengeId" value="@Model.Challenge.Id" />
+
+                        <div class="mb-3">
+                            <label asp-for="SolutionCode" class="form-label">Paste your code here:</label>
+                            <textarea class="form-control" asp-for="SolutionCode" rows="5" required></textarea>
+                            <span asp-validation-for="SolutionCode" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Language" class="form-label">Language</label>
+                            <select class="form-select" asp-for="Language" required>
+                                <option value="">--Select--</option>
+                                <option value="CSharp">C#</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="Python">Python</option>
+                                <option value="Java">Java</option>
+                            </select>
+                            <span asp-validation-for="Language" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-success">Submit Solution</button>
+                    </form>
+                }
+                
             }
             else
             {
