@@ -1,5 +1,6 @@
 ﻿using CodeArena.Data.Models;
 using CodeArena.Data.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,11 @@ public class SubmissionRepository : ISubmissionRepository
     {
         _context.Submissions.Add(submission);
         await _context.SaveChangesAsync();
+    }
+
+    public bool AnyAsync(Func<Submission, bool> predicate)
+    {
+        return _context.Submissions.Any(predicate);
     }
 
     public async Task RemoveAsync(Submission submission)
