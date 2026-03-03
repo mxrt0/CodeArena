@@ -41,7 +41,7 @@ public class ChallengesController : BaseController
         };
         if (User?.Identity?.IsAuthenticated ?? false)
         {
-            vm.HasPendingSubmission = _submissionService.HasPendingSubmission(id, User);
+            vm.HasPendingSubmission = await _submissionService.HasPendingSubmissionAsync(id, User);
         }
         return View(vm);
     }
