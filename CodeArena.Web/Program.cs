@@ -41,6 +41,7 @@ namespace CodeArena.Web
 
             builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddScoped<IChallengeService, ChallengeService>();
             builder.Services.AddScoped<ISubmissionService, SubmissionService>();
