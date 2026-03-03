@@ -43,4 +43,13 @@ public class SubmissionService : ISubmissionService
         };
         await _repository.AddAsync(submission);
     }
+
+    public bool HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    {
+        var userId = _userManager.GetUserId(user);
+        return _repository.Any(s => 
+            s.ChallengeId == challengeId &&
+            s.UserId == userId &&
+            s.Status == SubmissionStatus.Pending);
+    }
 }
