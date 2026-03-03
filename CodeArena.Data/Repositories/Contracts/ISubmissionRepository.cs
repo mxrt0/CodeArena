@@ -10,6 +10,7 @@ namespace CodeArena.Data.Repositories.Contracts;
 
 public interface ISubmissionRepository
 {
+    IQueryable<Submission> GetAll();
     Task AddAsync(Submission submission);
     Task RemoveAsync(Submission submission);
     Task<bool> AnyAsync(Expression<Func<Submission, bool>> predicate);

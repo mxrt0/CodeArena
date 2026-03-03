@@ -35,6 +35,8 @@ public class SubmissionRepository : ISubmissionRepository
         return await _context.Submissions.FirstOrDefaultAsync(predicate);
     }
 
+    public IQueryable<Submission> GetAll() => _context.Submissions.AsNoTracking();
+
     public async Task RemoveAsync(Submission submission)
     {
         _context.Submissions.Remove(submission);
