@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeArena.Common\CodeArena.Common.csproj" />
     <ProjectReference Include="..\CodeArena.Data\CodeArena.Data.csproj" />
   </ItemGroup>
 
