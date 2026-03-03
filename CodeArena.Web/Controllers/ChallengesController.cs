@@ -8,10 +8,12 @@ namespace CodeArena.Web.Controllers;
 public class ChallengesController : BaseController
 {
     private readonly IChallengeService _service;
+    private readonly ISubmissionService _submissionService;
 
-    public ChallengesController(IChallengeService service)
+    public ChallengesController(IChallengeService service, ISubmissionService submissionService)
     {
         _service = service;
+        _submissionService = submissionService;
     }
 
     [AllowAnonymous]
@@ -37,6 +39,10 @@ public class ChallengesController : BaseController
         {
             Challenge = challenge
         };
+        if (User?.Identity?.IsAuthenticated ?? false)
+        {
+            vm.HasPendingSubmission = _submissionService.HasPendingSubmission(id, User);
+        }
         return View(vm);
     }
 }
