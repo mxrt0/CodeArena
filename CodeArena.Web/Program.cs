@@ -52,6 +52,10 @@ namespace CodeArena.Web
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             await RoleSeeder.SeedAsync(roleManager);
 
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            await AdminSeeder.EnsureAdminUserExistsAsync(userManager, configuration);
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

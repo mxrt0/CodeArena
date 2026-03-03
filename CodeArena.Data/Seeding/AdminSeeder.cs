@@ -1,5 +1,6 @@
 ﻿using CodeArena.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,13 @@ namespace CodeArena.Data.Seeding;
 
 public static class AdminSeeder
 {
-    public static async Task EnsureAdminUserExistsAsync(UserManager<ApplicationUser> userManager)
+    public static async Task EnsureAdminUserExistsAsync(UserManager<ApplicationUser> userManager, IConfiguration config)
     {
-        const string AdminEmail = "admin@codearena.com";
-        const string AdminPassword = "as468@Aq4nv6EKy";
+        string? AdminEmail = config["AdminUser:Email"];
+        string? AdminPassword = config["AdminUser:Password"];
+
+        if (string.IsNullOrWhiteSpace(AdminEmail) || string.IsNullOrWhiteSpace(AdminPassword))
+            throw new InvalidOperationException("Admin email or password not set in configuration.");
 
         var user = await userManager.FindByEmailAsync(AdminEmail);
 
