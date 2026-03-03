@@ -22,4 +22,10 @@ public class SubmissionRepository : ISubmissionRepository
         _context.Submissions.Add(submission);
         await _context.SaveChangesAsync();
     }
+
+    public async Task RemoveAsync(Submission submission)
+    {
+        _context.Submissions.Remove(submission);
+        await _context.SaveChangesAsync();
+    }
 }
