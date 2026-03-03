@@ -5,47 +5,53 @@ using CodeArena.Web.Models.Challenge;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CodeArena.Web.Controllers
+namespace CodeArena.Web.Controllers;
+
+public class SubmissionsController : BaseController
 {
-    public class SubmissionsController : BaseController
+    private readonly ISubmissionService _submissionService;
+    private readonly IChallengeService _challengeService;
+
+    public SubmissionsController(
+        ISubmissionService submissionService,
+        IChallengeService challengeService)
     {
-        private readonly ISubmissionService _submissionService;
-        private readonly IChallengeService _challengeService;
+        _submissionService = submissionService;
+        _challengeService = challengeService;
+    }
 
-        public SubmissionsController(
-            ISubmissionService submissionService,
-            IChallengeService challengeService)
-        {
-            _submissionService = submissionService;
-            _challengeService = challengeService;
-        }
+    public IActionResult Index()
+    {
+        return View();
+    }
 
-        public IActionResult Index()
+    public async Task<IActionResult> Create(SubmissionCreateDto createDto)
+    {
+        if (!ModelState.IsValid)
         {
-            return View();
-        }
-
-        public async Task<IActionResult> Create(SubmissionCreateDto createDto)
-        {
-            if (!ModelState.IsValid)
+            var challenge = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId);
+            if (challenge is null)
             {
-                var challenge = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId);
-                if (challenge is null)
-                {
-                    return NotFound();
-                }
-
-                var vm = new ChallengeDetailsViewModel
-                {
-                    Challenge = challenge,
-                    SolutionCode = createDto.SolutionCode,
-                    Language = createDto.Language
-                };
-
-                return View("~/Views/Challenges/Details.cshtml", vm);
+                return NotFound();
             }
-            await _submissionService.CreateSubmissionAsync(createDto, User);
-            return RedirectToAction("Details", "Challenges", new {id = createDto.ChallengeId});
+
+            var vm = new ChallengeDetailsViewModel
+            {
+                Challenge = challenge,
+                SolutionCode = createDto.SolutionCode,
+                Language = createDto.Language
+            };
+
+            return View("~/Views/Challenges/Details.cshtml", vm);
         }
+        await _submissionService.CreateSubmissionAsync(createDto, User);
+        return RedirectToAction("Details", "Challenges", new {id = createDto.ChallengeId});
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Cancel(int challengeId)
+    {
+        await _submissionService.CancelPendingAsync(challengeId, User);
+        return RedirectToAction("Details", "Challenges", new { id = challengeId });
     }
 }
