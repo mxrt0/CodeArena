@@ -8,4 +8,5 @@
   <Folder Name="/Web/">
     <Project Path="CodeArena.Web/CodeArena.Web.csproj" />
   </Folder>
+  <Project Path="CodeArena.Common/CodeArena.Common.csproj" Id="49b3ea95-0e41-4113-90dd-8081e2bd36eb" />
 </Solution>
