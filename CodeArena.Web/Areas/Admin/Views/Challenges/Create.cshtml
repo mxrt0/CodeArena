@@ -1,5 +1,7 @@
 ﻿@model CreateChallengeViewModel
-
+@{
+    ViewData["Title"] = "Create challenge";
+}
 <h2>Create Challenge</h2>
 
 <form asp-action="Create" method="post">
@@ -27,5 +29,13 @@
         <span asp-validation-for="Challenge.Difficulty" class="text-danger"></span>
     </div>
 
-    <button class="btn btn-success">Create</button>
+    <div class="mb-3">
+        <label asp-for="Challenge.Tags" class="form-label"></label>
+        <input asp-for="Challenge.Tags" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Create</button>
 </form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
