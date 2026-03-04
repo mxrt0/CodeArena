@@ -22,17 +22,20 @@ public class ChallengesController : BaseAdminController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateChallengeDto dto)
+    public async Task<IActionResult> Create(CreateChallengeViewModel vm)
     {
         if (!ModelState.IsValid)
         {
-            var vm = new CreateChallengeViewModel
+            foreach (var entry in ModelState)
             {
-                Challenge = dto
-            };
+                foreach (var error in entry.Value.Errors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
             return View(vm);
         }
-        await _challengeService.CreateChallengeAsync(dto);
+        await _challengeService.CreateChallengeAsync(vm.Challenge);
         return RedirectToAction(nameof(Index));
     }
     public async Task<IActionResult> Index()
