@@ -41,22 +41,14 @@ public class ChallengeRepository : IChallengeRepository
         await _context.SaveChangesAsync();
     }
 
+    public IQueryable<Challenge> GetAll() => _context.Challenges.AsNoTracking();
+
     public async Task<Challenge?> GetByIdAsync(int id)
     {
         return await _context.Challenges
             .AsNoTracking()
             .Include(c => c.Submissions)
             .FirstOrDefaultAsync(c => c.Id == id);
-    }
-
-    public async Task<IEnumerable<Challenge>> GetChallengesAsync()
-    {
-        var query = _context.Challenges
-            .AsNoTracking()
-            .Include(c => c.Submissions)
-            .OrderBy(c => c.Difficulty);
-
-        return await query.ToListAsync();
     }
 
     public Task UpdateAsync(Challenge challenge)

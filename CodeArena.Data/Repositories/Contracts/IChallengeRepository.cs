@@ -10,7 +10,7 @@ namespace CodeArena.Data.Repositories.Contracts;
 
 public interface IChallengeRepository
 {
-    Task<IEnumerable<Challenge>> GetChallengesAsync();
+    IQueryable<Challenge> GetAll();
     Task<Challenge?> GetByIdAsync(int id);
     Task AddAsync(Challenge challenge);
     Task UpdateAsync(Challenge challenge);

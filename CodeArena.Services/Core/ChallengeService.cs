@@ -1,6 +1,7 @@
 ﻿using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Challenge;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,15 +39,15 @@ public class ChallengeService : IChallengeService
 
     public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
     {
-        var challenges = await _repository.GetChallengesAsync();
+        var challenges = _repository.GetAll();
 
-        return challenges.Select(c => new ChallengeDisplayDto(
+        return await challenges.Select(c => new ChallengeDisplayDto(
                 c.Id,
                 c.Title,
                 c.Description,
                 c.Difficulty.ToString(),
                 c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
                 c.Submissions.Count
-        )).ToList();
+        )).ToListAsync();
     }
 }
