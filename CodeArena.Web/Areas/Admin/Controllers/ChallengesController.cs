@@ -35,8 +35,12 @@ public class ChallengesController : BaseAdminController
         await _challengeService.CreateChallengeAsync(dto);
         return RedirectToAction(nameof(Index));
     }
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var vm = new ChallengesIndexViewModel
+        {
+            Challenges = await _challengeService.GetChallengesAsync()
+        };
+        return View(vm);
     }
 }
