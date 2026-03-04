@@ -2,6 +2,8 @@
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
+using CodeArena.Services.DTOs.Challenge;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,5 +31,20 @@ public class AdminChallengeService : IAdminChallengeService
         };
 
         await _repository.AddAsync(challenge);
+    }
+
+    public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
+    {
+        
+        var challenges = _repository.GetAll();
+
+        return await challenges.Select(c => new ChallengeDisplayDto(
+                c.Id,
+                c.Title,
+                c.Description,
+                c.Difficulty.ToString(),
+                c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
+                c.Submissions.Count
+        )).ToListAsync();
     }
 }
