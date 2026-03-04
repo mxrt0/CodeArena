@@ -1,5 +1,23 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model ChallengesIndexViewModel
+
+<h2>Manage Challenges</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Create New</a>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Difficulty</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model.Challenges)
+        {
+            <tr>
+                <td>@c.Title</td>
+                <td>@c.Difficulty</td>
+            </tr>
+        }
+    </tbody>
+</table>
