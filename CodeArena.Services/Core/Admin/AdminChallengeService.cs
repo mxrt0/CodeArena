@@ -67,4 +67,20 @@ public class AdminChallengeService : IAdminChallengeService
                 c.Submissions.Count
         )).ToListAsync();
     }
+
+    public async Task UpdateChallengeAsync(EditChallengeDto editDto)
+    {
+        var challenge = await _repository.GetByIdAsync(editDto.Id);
+        if (challenge is null)
+        {
+            return;
+        }
+
+        challenge.Title = editDto.Title;
+        challenge.Description = editDto.Description;
+        challenge.Difficulty = editDto.Difficulty;
+        challenge.Tags = editDto.Tags;
+
+        await _repository.UpdateAsync(challenge);
+    }
 }
