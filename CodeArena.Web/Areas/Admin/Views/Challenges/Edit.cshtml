@@ -1,0 +1,44 @@
+﻿@model CreateChallengeViewModel
+@{
+    ViewData["Title"] = "Edit challenge";
+}
+<h2>Edit Challenge</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="id" value="@TempData["ChallengeId"]" />
+
+    <div class="mb-3">
+        <label asp-for="Challenge.Title" class="form-label"></label>
+        <input asp-for="Challenge.Title" class="form-control" />
+        <span asp-validation-for="Challenge.Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Challenge.Description" class="form-label"></label>
+        <textarea asp-for="Challenge.Description" rows="5" class="form-control"></textarea>
+        <span asp-validation-for="Challenge.Description" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Challenge.Difficulty" class="form-label"></label>
+        <select asp-for="Challenge.Difficulty" class="form-select">
+            <option value="">--Select Difficulty--</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
+        <span asp-validation-for="Challenge.Difficulty" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Challenge.Tags" class="form-label"></label>
+        <input asp-for="Challenge.Tags" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-info">Edit</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
