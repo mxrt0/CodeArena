@@ -11,5 +11,7 @@ namespace CodeArena.Services.Core.Admin.Contracts;
 public interface IAdminChallengeService
 {
     Task CreateChallengeAsync(CreateChallengeDto dto);
-    Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync();  
+    Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync();
+    Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id);
+    
 }

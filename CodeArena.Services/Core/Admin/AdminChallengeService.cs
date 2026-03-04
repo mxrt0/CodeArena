@@ -34,6 +34,25 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.AddAsync(challenge);
     }
 
+    public async Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id)
+    {
+        var challenge = await _repository.GetByIdAsync(id);
+        if (challenge is null)
+        {
+            return null;
+        }
+
+        return new ChallengeDisplayDto(
+            challenge.Id,
+            challenge.Title,
+            challenge.Description,
+            challenge.Difficulty.ToString(),
+            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
+            challenge.Submissions.Count
+        );
+    }
+
+
     public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
     {
         
