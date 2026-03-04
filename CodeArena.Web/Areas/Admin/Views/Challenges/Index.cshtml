@@ -2,22 +2,19 @@
 
 <h2>Manage Challenges</h2>
 
-<a asp-action="Create" class="btn btn-primary mb-3">Create New</a>
+<a asp-action="Create" class="btn btn-primary mb-3 text-center w-25">Create New</a>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Difficulty</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var c in Model.Challenges)
-        {
-            <tr>
-                <td>@c.Title</td>
-                <td>@c.Difficulty</td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+    @foreach (var c in Model.Challenges)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">@c.Title</h5>
+                    <p class="card-text">Difficulty: @c.Difficulty</p>
+                    <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-warning btn-sm">Edit</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
