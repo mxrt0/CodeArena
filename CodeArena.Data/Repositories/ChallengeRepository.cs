@@ -46,13 +46,13 @@ public class ChallengeRepository : IChallengeRepository
     public async Task<Challenge?> GetByIdAsync(int id)
     {
         return await _context.Challenges
-            .AsNoTracking()
             .Include(c => c.Submissions)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public Task UpdateAsync(Challenge challenge)
+    public async Task UpdateAsync(Challenge challenge)
     {
-        throw new NotImplementedException();
+        _context.Challenges.Update(challenge);
+        await _context.SaveChangesAsync();
     }
 }
