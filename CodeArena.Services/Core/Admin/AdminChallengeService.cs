@@ -28,6 +28,7 @@ public class AdminChallengeService : IAdminChallengeService
             Title = dto.Title,
             Description = dto.Description,
             Difficulty = dto.Difficulty,
+            Tags = dto.Tags ?? string.Empty
         };
 
         await _repository.AddAsync(challenge);
