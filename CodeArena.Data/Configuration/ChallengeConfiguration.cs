@@ -38,6 +38,8 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
                .HasConversion<string>();
 
         builder.HasData(data);
+
+        builder.HasQueryFilter(c => !c.IsDeleted);
     }
 }
 
