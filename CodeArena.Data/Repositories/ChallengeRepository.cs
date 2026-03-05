@@ -32,11 +32,8 @@ public class ChallengeRepository : IChallengeRepository
             : _context.Challenges.CountAsync(predicate);
     }
 
-    public async Task DeleteAsync(int id)
-    {
-        var challenge = await _context.Challenges.FindAsync(id);
-        if (challenge is null) return;
-
+    public async Task DeleteAsync(Challenge challenge)
+    { 
         challenge.IsDeleted = true;
         await _context.SaveChangesAsync();
     }
