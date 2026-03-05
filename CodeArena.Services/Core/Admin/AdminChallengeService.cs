@@ -34,6 +34,14 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.AddAsync(challenge);
     }
 
+    public async Task DeleteChallengeAsync(int id)
+    {
+        var challenge = await _repository.GetByIdAsync(id);
+        if (challenge is null) return;
+
+        await _repository.DeleteAsync(challenge);
+    }
+
     public async Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id)
     {
         var challenge = await _repository.GetByIdAsync(id, includeDeleted: true);
