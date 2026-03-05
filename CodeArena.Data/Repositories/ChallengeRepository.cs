@@ -37,7 +37,7 @@ public class ChallengeRepository : IChallengeRepository
         var challenge = await _context.Challenges.FindAsync(id);
         if (challenge is null) return;
 
-        _context.Remove(challenge);
+        challenge.IsDeleted = true;
         await _context.SaveChangesAsync();
     }
 
