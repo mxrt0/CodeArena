@@ -56,14 +56,14 @@ public class AdminChallengeService : IAdminChallengeService
             challenge.Description,
             challenge.Difficulty.ToString(),
             challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
-            challenge.Submissions.Count
+            challenge.Submissions.Count,
+            challenge.IsDeleted
         );
     }
 
 
     public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
     {
-        
         var challenges = _repository.GetAll(includeDeleted: true);
 
         return await challenges.Select(c => new ChallengeDisplayDto(
@@ -72,7 +72,8 @@ public class AdminChallengeService : IAdminChallengeService
                 c.Description,
                 c.Difficulty.ToString(),
                 c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray(),
-                c.Submissions.Count
+                c.Submissions.Count,
+                c.IsDeleted
         )).ToListAsync();
     }
 

@@ -33,7 +33,8 @@ public class ChallengeService : IChallengeService
             challenge.Description,
             challenge.Difficulty.ToString(),
             challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
-            challenge.Submissions.Count
+            challenge.Submissions.Count,
+            IsDeleted: false
         );
     }
 
@@ -47,7 +48,8 @@ public class ChallengeService : IChallengeService
                 c.Description,
                 c.Difficulty.ToString(),
                 c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray(),
-                c.Submissions.Count
+                c.Submissions.Count,
+                false
         )).ToListAsync();
     }
 }
