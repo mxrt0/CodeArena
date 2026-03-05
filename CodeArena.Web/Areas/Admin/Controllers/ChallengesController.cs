@@ -61,7 +61,6 @@ public class ChallengesController : BaseAdminController
 
         var challengeDto = new CreateChallengeDto
         {
-            Id = challenge.Id,
             Title = challenge.Title,
             Description = challenge.Description,
             Difficulty = Enum.Parse<Difficulty>(challenge.Difficulty),
