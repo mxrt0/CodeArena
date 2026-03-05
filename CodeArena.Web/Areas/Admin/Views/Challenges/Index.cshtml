@@ -12,9 +12,22 @@
                 <div class="card-body">
                     <h5 class="card-title">@c.Title</h5>
                     <p class="card-text">Difficulty: @c.Difficulty</p>
+                    <p class="card-text">
+                        Status: <span class="badge @(c.IsDeleted ? "bg-danger" : "bg-success")">
+                            @(c.IsDeleted ? "Deleted" : "Active")</span>
+                    </p>
                     <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-warning btn-sm">Edit</a>
+                    @if (!c.IsDeleted)
+                    {
+                        <button type="button" class="btn btn-danger btn-sm"
+                                data-bs-toggle="modal" data-bs-target="#deleteModal-@c.Id">
+                            Delete
+                        </button>
+                        <partial name="_ConfirmDeletePartial" model="c" />
+                    }                   
                 </div>
             </div>
         </div>
+        
     }
 </div>
