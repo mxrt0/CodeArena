@@ -41,11 +41,17 @@ public class ChallengeRepository : IChallengeRepository
         await _context.SaveChangesAsync();
     }
 
-    public IQueryable<Challenge> GetAll() => _context.Challenges.AsNoTracking();
+    public IQueryable<Challenge> GetAll(bool includeDeleted = false) => includeDeleted
+        ? _context.Challenges.IgnoreQueryFilters().AsNoTracking()
+        : _context.Challenges.AsNoTracking();
 
-    public async Task<Challenge?> GetByIdAsync(int id)
+    public async Task<Challenge?> GetByIdAsync(int id, bool includeDeleted = false)
     {
-        return await _context.Challenges
+        var query = includeDeleted
+        ? _context.Challenges.IgnoreQueryFilters()
+        : _context.Challenges;
+
+        return await query
             .Include(c => c.Submissions)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
