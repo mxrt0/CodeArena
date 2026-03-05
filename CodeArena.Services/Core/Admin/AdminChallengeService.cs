@@ -36,7 +36,7 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id)
     {
-        var challenge = await _repository.GetByIdAsync(id);
+        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true);
         if (challenge is null)
         {
             return null;
@@ -56,7 +56,7 @@ public class AdminChallengeService : IAdminChallengeService
     public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
     {
         
-        var challenges = _repository.GetAll();
+        var challenges = _repository.GetAll(includeDeleted: true);
 
         return await challenges.Select(c => new ChallengeDisplayDto(
                 c.Id,
@@ -70,7 +70,7 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task UpdateChallengeAsync(EditChallengeDto editDto)
     {
-        var challenge = await _repository.GetByIdAsync(editDto.Id);
+        var challenge = await _repository.GetByIdAsync(editDto.Id, includeDeleted: true);
         if (challenge is null)
         {
             return;
