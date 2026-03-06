@@ -21,4 +21,19 @@ public class SubmissionsController : BaseAdminController
         };
         return View(vm);
     }
+
+    public async Task<IActionResult> Review(int id)
+    {
+        var submission = await _submissionService.GetSubmissionForReviewAsync(id);
+        if (submission is null)
+        {
+            return NotFound();
+        }
+
+        var vm = new SubmissionReviewViewModel
+        {
+            Submission = submission
+        };
+        return View(vm);
+    }
 }
