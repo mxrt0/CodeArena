@@ -53,6 +53,12 @@ public class ChallengeRepository : IChallengeRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task RestoreAsync(Challenge challenge)
+    {
+        challenge.IsDeleted = false;
+        await _context.SaveChangesAsync();
+    }
+
     public async Task UpdateAsync(Challenge challenge)
     {
         _context.Challenges.Update(challenge);

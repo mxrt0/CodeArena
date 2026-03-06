@@ -15,5 +15,6 @@ public interface IChallengeRepository
     Task AddAsync(Challenge challenge);
     Task UpdateAsync(Challenge challenge);
     Task DeleteAsync(Challenge challenge);
+    Task RestoreAsync(Challenge challenge); 
     Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null);
 }
