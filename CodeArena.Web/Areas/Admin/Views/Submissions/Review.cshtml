@@ -1,0 +1,43 @@
+﻿@model SubmissionReviewViewModel
+
+@{
+    ViewData["Title"] = "Review Submission";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Review Submission</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h4 class="card-title">@Model.Submission.ChallengeTitle</h4>
+            <p class="card-text"><strong>Submitted by:</strong> @Model.Submission.UserDisplayName</p>
+            <p class="card-text"><strong>Language:</strong> @Model.Submission.Language</p>
+            <p class="card-text"><strong>Difficulty:</strong> @Model.Submission.Difficulty</p>
+            <p class="card-text">
+                <strong>Submitted At:</strong>
+                @Model.Submission.SubmittedAt.ToString(ApplicationConstants.DefaultDateFormat, System.Globalization.CultureInfo.InvariantCulture)
+            </p>
+
+            <hr />
+
+            <h5>Solution Code:</h5>
+            <pre class="border p-3 bg-light" style="white-space: pre-wrap;">
+ @Model.Submission.SolutionCode
+            </pre>
+
+            <hr />
+
+            <form asp-action="Approve" method="post" class="d-inline">
+                <input type="hidden" asp-for="Submission.SubmissionId" />
+                <button type="submit" class="btn btn-success me-2">Approve</button>
+            </form>
+
+            <form asp-action="Reject" method="post" class="d-inline">
+                <input type="hidden" asp-for="Submission.SubmissionId" />
+                <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+
+            <a asp-action="Index" class="btn btn-secondary ms-3">Back to Pending Submissions</a>
+        </div>
+    </div>
+</div>
