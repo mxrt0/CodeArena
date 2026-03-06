@@ -9,5 +9,5 @@ namespace CodeArena.Services.Core.Admin.Contracts;
 
 public interface IAdminSubmissionService
 {
-    Task<IEnumerable<AdminSubmissionReviewDto>> GetPendingSubmissionsAsync();
+    Task<IEnumerable<SubmissionDisplayDto>> GetPendingSubmissionsAsync();
 }

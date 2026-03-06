@@ -21,22 +21,18 @@ public class AdminSubmissionService : IAdminSubmissionService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<AdminSubmissionReviewDto>> GetPendingSubmissionsAsync()
+    public async Task<IEnumerable<SubmissionDisplayDto>> GetPendingSubmissionsAsync()
     {
         var submissions = _repository.GetAll()
-            .Where(s => s.Status == SubmissionStatus.Pending)
-            .Include(s => s.Challenge)
-            .Include(s => s.User);
+            .Where(s => s.Status == SubmissionStatus.Pending);
 
-        return await submissions.Select(s => new AdminSubmissionReviewDto
+        return await submissions.Select(s => new SubmissionDisplayDto
         (
-            s.Id,
-            s.Challenge.Title,
+            s.Id,            
             s.User.DisplayName,
+            s.Challenge.Title,
             s.Language.ToString(),
-            s.Challenge.Difficulty.ToString(),
-            s.SolutionCode,
-            s.SubmittedAt.ToString(DefaultDateFormat)
+            s.SubmittedAt
         )).ToListAsync();
     }
 }
