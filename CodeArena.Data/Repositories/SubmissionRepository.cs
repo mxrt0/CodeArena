@@ -44,6 +44,14 @@ public class SubmissionRepository : ISubmissionRepository
 
     public IQueryable<Submission> GetAll() => _context.Submissions.AsNoTracking();
 
+    public async Task<Submission?> GetByIdAsync(int id)
+    {
+        return await _context.Submissions
+            .Include(s => s.Challenge)
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.Id == id);
+    }
+
     public async Task RemoveAsync(Submission submission)
     {
         _context.Submissions.Remove(submission);
