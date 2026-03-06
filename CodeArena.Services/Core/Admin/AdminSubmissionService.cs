@@ -35,4 +35,25 @@ public class AdminSubmissionService : IAdminSubmissionService
             s.SubmittedAt
         )).ToListAsync();
     }
+
+    public async Task<AdminSubmissionReviewDto?> GetSubmissionForReviewAsync(int id)
+    {
+        var submission = await _repository.GetByIdAsync(id);
+        if (submission is null)
+        {
+            return null;
+        }
+
+        return new AdminSubmissionReviewDto
+        (
+            submission.Id,            
+            submission.Challenge.Title,
+            submission.User.DisplayName,
+            submission.Language.ToString(),
+            submission.Challenge.Difficulty.ToString(),
+            submission.SolutionCode,
+            submission.SubmittedAt
+        );
+
+    }
 }
