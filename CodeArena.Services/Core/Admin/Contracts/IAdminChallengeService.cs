@@ -15,4 +15,5 @@ public interface IAdminChallengeService
     Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id);
     Task UpdateChallengeAsync(EditChallengeDto editDto);
     Task DeleteChallengeAsync(int id);
+    Task RestoreChallengeAsync(int id); 
 }

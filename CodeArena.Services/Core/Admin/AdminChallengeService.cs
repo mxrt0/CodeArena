@@ -77,6 +77,14 @@ public class AdminChallengeService : IAdminChallengeService
         )).ToListAsync();
     }
 
+    public async Task RestoreChallengeAsync(int id)
+    {
+        var challenge = await _repository.GetByIdAsync(id);
+        if (challenge is null || !challenge.IsDeleted) return;
+
+        await _repository.RestoreAsync(challenge);
+    }
+
     public async Task UpdateChallengeAsync(EditChallengeDto editDto)
     {
         var challenge = await _repository.GetByIdAsync(editDto.Id, includeDeleted: true);
