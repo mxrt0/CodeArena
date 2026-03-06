@@ -14,6 +14,6 @@ public sealed record AdminSubmissionReviewDto(
     string Language,
     string Difficulty,
     string SolutionCode,
-    string SubmittedAt
+    DateTime SubmittedAt
 );
 
