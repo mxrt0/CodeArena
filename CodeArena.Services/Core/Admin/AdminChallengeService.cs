@@ -79,7 +79,7 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task RestoreChallengeAsync(int id)
     {
-        var challenge = await _repository.GetByIdAsync(id);
+        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true);
         if (challenge is null || !challenge.IsDeleted) return;
 
         await _repository.RestoreAsync(challenge);
