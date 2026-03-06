@@ -16,7 +16,7 @@
                         Status: <span class="badge @(c.IsDeleted ? "bg-danger" : "bg-success")">
                             @(c.IsDeleted ? "Deleted" : "Active")</span>
                     </p>
-                    <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-warning btn-sm">Edit</a>
+                    <a asp-action="Edit" asp-route-id="@c.Id" class="btn btn-info btn-sm">Edit</a>
                     @if (!c.IsDeleted)
                     {
                         <button type="button" class="btn btn-danger btn-sm"
@@ -24,7 +24,15 @@
                             Delete
                         </button>
                         <partial name="_ConfirmDeletePartial" model="c" />
-                    }                   
+                    }
+                    else
+                    {
+                        <form asp-action="Restore" asp-route-id="@c.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-warning btn-sm">
+                                Restore
+                            </button>
+                        </form>
+                    }
                 </div>
             </div>
         </div>
