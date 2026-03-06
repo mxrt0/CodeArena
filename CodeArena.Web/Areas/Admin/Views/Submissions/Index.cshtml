@@ -41,9 +41,8 @@
                         <td>@s.SubmittedAt.ToString(ApplicationConstants.DefaultDateFormat, CultureInfo.InvariantCulture)</td>
 
                         <td class="text-end">
-                            <a asp-area="Admin"
-                               asp-controller="Submissions"
-                               asp-action="Details"
+                            <a
+                               asp-action="Review"
                                asp-route-id="@s.SubmissionId"
                                class="btn btn-primary btn-sm">
                                 Review
