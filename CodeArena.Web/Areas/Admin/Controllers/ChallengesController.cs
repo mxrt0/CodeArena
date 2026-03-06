@@ -113,4 +113,19 @@ public class ChallengesController : BaseAdminController
         return RedirectToAction(nameof(Index));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Restore(int id)
+    {
+        var challenge = await _challengeService.GetChallengeByIdAsync(id);
+        if (challenge is null)
+        {
+            return NotFound();
+        }
+
+        await _challengeService.RestoreChallengeAsync(challenge.Id);
+
+        return RedirectToAction(nameof(Index));
+    }
+
 }
