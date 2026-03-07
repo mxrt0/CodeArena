@@ -9,7 +9,7 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+// TODO: Implement stuff from Workshop 05.03
 namespace CodeArena.Web
 {
     public class Program
