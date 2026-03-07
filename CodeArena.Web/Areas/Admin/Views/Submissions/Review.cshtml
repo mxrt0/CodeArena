@@ -27,14 +27,23 @@
 
             <hr />
 
-            <form asp-action="Approve" method="post" class="d-inline"
-                asp-route-id="@Model.Submission.SubmissionId">
-                <button type="submit" class="btn btn-success me-2">Approve</button>
-            </form>
+            <form method="post" class="d-inline">
 
-            <form asp-action="Reject" method="post" class="d-inline"
-                  asp-route-id="@Model.Submission.SubmissionId">
-                <button type="submit" class="btn btn-danger">Reject</button>
+                <input type="hidden" asp-for="Submission.SubmissionId" />
+
+                <div class="mb-3">
+                    <label asp-for="SubmissionFeedback" class="form-label"></label>
+                    <textarea asp-for="SubmissionFeedback" rows="5" class="form-control"></textarea>
+                </div>
+
+                <button type="submit" asp-action="Approve" class="btn btn-success me-2">
+                    Approve
+                </button>
+
+                <button type="submit" asp-action="Reject" class="btn btn-danger">
+                    Reject
+                </button>
+
             </form>
 
             <a asp-action="Index" class="btn btn-secondary ms-3">Back to Pending Submissions</a>

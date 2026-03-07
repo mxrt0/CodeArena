@@ -21,8 +21,10 @@ public class AdminSubmissionService : IAdminSubmissionService
         _repository = repository;
     }
 
-    public async Task ApproveAsync(int id)
+    public async Task ApproveAsync(int id, string? feedback = null)
     {
+        feedback ??= string.Empty;
+
         var submission = await _repository.GetByIdAsync(id);
         if (submission is null)
         {
@@ -30,6 +32,7 @@ public class AdminSubmissionService : IAdminSubmissionService
         }
 
         submission.Status = SubmissionStatus.Approved;
+        submission.Feedback = feedback;
 
         await _repository.UpdateAsync(submission);
     }
@@ -70,8 +73,10 @@ public class AdminSubmissionService : IAdminSubmissionService
 
     }
 
-    public async Task RejectAsync(int id)
+    public async Task RejectAsync(int id, string? feedback = null)
     {
+        feedback ??= string.Empty;
+
         var submission = await _repository.GetByIdAsync(id);
         if (submission is null)
         {
@@ -79,6 +84,7 @@ public class AdminSubmissionService : IAdminSubmissionService
         }
 
         submission.Status = SubmissionStatus.Rejected;
+        submission.Feedback = feedback;
 
         await _repository.UpdateAsync(submission);
     }

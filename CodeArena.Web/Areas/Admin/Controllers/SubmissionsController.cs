@@ -38,16 +38,16 @@ public class SubmissionsController : BaseAdminController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Approve(int id) 
+    public async Task<IActionResult> Approve(SubmissionReviewViewModel vm) 
     {
-       await _submissionService.ApproveAsync(id);
+       await _submissionService.ApproveAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
-    public async Task<IActionResult> Reject(int id)
+    public async Task<IActionResult> Reject(SubmissionReviewViewModel vm)
     {
-        await _submissionService.RejectAsync(id);
+        await _submissionService.RejectAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
         return RedirectToAction(nameof(Index));
     }
 }

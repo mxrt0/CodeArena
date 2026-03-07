@@ -11,6 +11,6 @@ public interface IAdminSubmissionService
 {
     Task<IEnumerable<SubmissionDisplayDto>> GetPendingSubmissionsAsync();
     Task<AdminSubmissionReviewDto?> GetSubmissionForReviewAsync(int id);
-    Task ApproveAsync(int id);
-    Task RejectAsync(int id);
+    Task ApproveAsync(int id, string? feedback = null);
+    Task RejectAsync(int id, string? feedback = null);
 }
