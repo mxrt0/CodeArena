@@ -1,9 +1,12 @@
-﻿using CodeArena.Data.Common.Enums;
+﻿using CodeArena.Common;
+using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Submission;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using static CodeArena.Common.OutputMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,6 +69,26 @@ public class SubmissionService : ISubmissionService
             Status = SubmissionStatus.Pending
         };
         await _repository.AddAsync(submission);
+    }
+
+    public async Task<IEnumerable<SubmissionDisplayDto>> GetUserSubmissionsAsync(ClaimsPrincipal user)
+    {
+        var userId = _userManager.GetUserId(user);
+        var submissions = _repository.GetAll()
+                              .Where(s => s.UserId == userId)
+                              .Include(s => s.Challenge);
+        return await submissions.Select(s => new SubmissionDisplayDto
+        (
+            s.Id,
+            s.ChallengeId,
+            s.Challenge.Title,
+            s.Language.ToString(),
+            s.Status.ToString(),
+            string.IsNullOrWhiteSpace(s.Feedback)
+                ? NoFeedbackMessage
+                : s.Feedback,
+            s.SubmittedAt
+        )).ToListAsync();
     }
 
     public async Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
