@@ -21,6 +21,19 @@ public class AdminSubmissionService : IAdminSubmissionService
         _repository = repository;
     }
 
+    public async Task ApproveAsync(int id)
+    {
+        var submission = await _repository.GetByIdAsync(id);
+        if (submission is null)
+        {
+            throw new InvalidOperationException("Submission not found.");
+        }
+
+        submission.Status = SubmissionStatus.Approved;
+
+        await _repository.UpdateAsync(submission);
+    }
+
     public async Task<IEnumerable<SubmissionDisplayDto>> GetPendingSubmissionsAsync()
     {
         var submissions = _repository.GetAll()
@@ -55,5 +68,18 @@ public class AdminSubmissionService : IAdminSubmissionService
             submission.SubmittedAt
         );
 
+    }
+
+    public async Task RejectAsync(int id)
+    {
+        var submission = await _repository.GetByIdAsync(id);
+        if (submission is null)
+        {
+            throw new InvalidOperationException("Submission not found.");
+        }
+
+        submission.Status = SubmissionStatus.Rejected;
+
+        await _repository.UpdateAsync(submission);
     }
 }
