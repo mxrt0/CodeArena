@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"] - CodeArena Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    @RenderSection("Styles", required: false)
+</head>
+<body class="admin-body">
+
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+
+            <nav class="col-md-2 d-md-block bg-opacity-25 bg-secondary sidebar collapse show" id="sidebarMenu">
+                <div class="d-flex flex-column h-100">
+
+                    <div class="sidebar-header text-center py-4">
+                        <h2 class="mb-0">CodeArena <small>Admin</small></h2>
+                        <hr />
+                    </div>
+
+                    <div class="px-3 flex-grow-1">
+                        <h6>Navigation</h6>
+                        <ul class="nav flex-column mb-4">
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Dashboard" ? "active" : "")"
+                                   asp-area="Admin" asp-controller="Dashboard">
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Challenges" ? "active" : "")"
+                                   asp-area="Admin" asp-controller="Challenges">
+                                    Challenges
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Submissions" ? "active" : "")"
+                                   asp-area="Admin" asp-controller="Submissions">
+                                    Submissions
+                                </a>
+                            </li>
+                        </ul>
+
+                        <h6>Management</h6>
+                        <a class="btn btn-sm btn-primary w-100 mb-3"
+                           asp-area="Admin" asp-controller="Challenges" asp-action="Create">
+                            + Create Challenge
+                        </a>
+                    </div>
+
+                    <div class="mt-auto p-3 border-top">
+                        <form method="get" asp-area="Identity" asp-page="/Account/Logout"
+                              asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                            <button type="submit" class="btn btn-outline-danger w-100">
+                                Log Out
+                            </button>
+                        </form>
+                    </div>
+
+                </div>
+            </nav>
+
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4 py-4 main-content">
+
+                <div class="toast-container position-fixed bottom-0 end-0 p-3">
+                    <div id="adminToast" class="toast" role="alert">
+                        <div class="toast-body" id="adminToastBody"></div>
+                        <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+
+                @await RenderSectionAsync("Back", false)
+                @RenderBody()
+            </main>
+
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

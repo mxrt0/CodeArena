@@ -1,0 +1,88 @@
+﻿@model ChallengesIndexViewModel
+
+@{
+    ViewData["Title"] = "Manage Challenges";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-3">Manage Challenges</h2>
+
+    <a asp-action="Create" class="btn btn-primary mb-3">
+        Create New Challenge
+    </a>
+
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Difficulty</th>
+                        <th>Status</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var c in Model.Challenges)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@c.Title</strong>
+                            </td>
+
+                            <td>
+                                <span class="badge bg-primary">
+                                    @c.Difficulty
+                                </span>
+                            </td>
+
+                            <td>
+                                <span class="badge @(c.IsDeleted ? "bg-danger" : "bg-success")">
+                                    @(c.IsDeleted ? "Deleted" : "Active")
+                                </span>
+                            </td>
+
+                            <td class="text-end">
+
+                                <a asp-action="Edit"
+                                   asp-route-id="@c.Id"
+                                   class="btn btn-info btn-sm">
+                                    Edit
+                                </a>
+
+                                @if (!c.IsDeleted)
+                                {
+                                    <button type="button"
+                                            class="btn btn-danger btn-sm"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal-@c.Id">
+                                        Delete
+                                    </button>
+                                }
+                                else
+                                {
+                                    <form asp-action="Restore"
+                                          asp-route-id="@c.Id"
+                                          method="post"
+                                          class="d-inline">
+
+                                        <button type="submit"
+                                                class="btn btn-warning btn-sm">
+                                            Restore
+                                        </button>
+
+                                    </form>
+                                }
+
+                            </td>
+                        </tr>
+                @if (!c.IsDeleted)
+                {
+                    <partial name="_ConfirmDeletePartial" model="c" />
+                }
+            }
+                </tbody>
+
+            </table>
+
+        </div>

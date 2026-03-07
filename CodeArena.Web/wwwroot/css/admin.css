@@ -1,0 +1,17 @@
+﻿html, body {
+    height: 100%;
+}
+
+.admin-body {
+    min-height: 100%;
+}
+
+.sidebar {
+    min-height: 100vh; 
+}
+
+.main-content {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

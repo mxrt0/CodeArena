@@ -12,6 +12,8 @@ public sealed record ChallengeDisplayDto(
     string Description,
     string Difficulty,
     string[] Tags,
-    int SubmissionCount
+    int SubmissionCount,
+    bool IsDeleted
 );
+
 

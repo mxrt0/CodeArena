@@ -30,14 +30,37 @@ public class SubmissionRepository : ISubmissionRepository
         return await _context.Submissions.AnyAsync(predicate);
     }
 
+    public Task<int> CountAsync(Expression<Func<Submission, bool>>? predicate = null)
+    {
+        return predicate is null 
+            ? _context.Submissions.CountAsync() 
+            : _context.Submissions.CountAsync(predicate);
+    }
+
     public async Task<Submission?> FirstOrDefaultAsync(Expression<Func<Submission, bool>> predicate)
     {
         return await _context.Submissions.FirstOrDefaultAsync(predicate);
     }
 
+    public IQueryable<Submission> GetAll() => _context.Submissions.AsNoTracking();
+
+    public async Task<Submission?> GetByIdAsync(int id)
+    {
+        return await _context.Submissions
+            .Include(s => s.Challenge)
+            .Include(s => s.User)
+            .FirstOrDefaultAsync(s => s.Id == id);
+    }
+
     public async Task RemoveAsync(Submission submission)
     {
         _context.Submissions.Remove(submission);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(Submission submission)
+    {
+        _context.Submissions.Update(submission);
         await _context.SaveChangesAsync();
     }
 }

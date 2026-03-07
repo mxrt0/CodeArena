@@ -7,8 +7,4 @@ namespace CodeArena.Web.Controllers;
 [Authorize]
 public class BaseController : Controller
 {
-    public string? GetUserId()
-    {
-        return User.FindFirstValue(ClaimTypes.NameIdentifier);
-    }
 }

@@ -4,10 +4,12 @@ using CodeArena.Data.Repositories;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Data.Seeding;
 using CodeArena.Services.Core;
+using CodeArena.Services.Core.Admin;
+using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+// TODO: Implement stuff from Workshop 05.03
 namespace CodeArena.Web
 {
     public class Program
@@ -39,10 +41,15 @@ namespace CodeArena.Web
 
             builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
 
             builder.Services.AddScoped<IChallengeService, ChallengeService>();
-            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+            builder.Services.AddScoped<IAdminChallengeService, AdminChallengeService>();
 
+            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+            builder.Services.AddScoped<IAdminSubmissionService, AdminSubmissionService>();
+
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
 
@@ -51,6 +58,10 @@ namespace CodeArena.Web
             using var scope = app.Services.CreateScope();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             await RoleSeeder.SeedAsync(roleManager);
+
+            var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            await AdminSeeder.EnsureAdminUserExistsAsync(userManager, configuration);
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -70,6 +81,10 @@ namespace CodeArena.Web
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
                 name: "default",

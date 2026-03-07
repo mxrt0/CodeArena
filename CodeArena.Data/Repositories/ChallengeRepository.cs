@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,36 +19,49 @@ public class ChallengeRepository : IChallengeRepository
         _context = context;
     }
 
-    public Task AddAsync(Challenge challenge)
+    public async Task AddAsync(Challenge challenge)
     {
-        throw new NotImplementedException();
+        await _context.AddAsync(challenge);
+        await _context.SaveChangesAsync();
     }
 
-    public Task DeleteAsync(int id)
+    public Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null)
     {
-        throw new NotImplementedException();
+        return predicate is null 
+            ? _context.Challenges.CountAsync()
+            : _context.Challenges.CountAsync(predicate);
     }
 
-    public async Task<Challenge?> GetByIdAsync(int id)
+    public async Task DeleteAsync(Challenge challenge)
+    { 
+        challenge.IsDeleted = true;
+        await _context.SaveChangesAsync();
+    }
+
+    public IQueryable<Challenge> GetAll(bool includeDeleted = false) => includeDeleted
+        ? _context.Challenges.IgnoreQueryFilters().AsNoTracking()
+        : _context.Challenges.AsNoTracking();
+
+    public async Task<Challenge?> GetByIdAsync(int id, bool includeDeleted = false)
     {
-        return await _context.Challenges
-            .AsNoTracking()
+        var query = includeDeleted
+        ? _context.Challenges.IgnoreQueryFilters()
+        : _context.Challenges;
+
+        return await query
             .Include(c => c.Submissions)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<IEnumerable<Challenge>> GetChallengesAsync()
+    public async Task RestoreAsync(Challenge challenge)
     {
-        var query = _context.Challenges
-            .AsNoTracking()
-            .Include(c => c.Submissions)
-            .OrderBy(c => c.Difficulty);
-
-        return await query.ToListAsync();
+        challenge.IsDeleted = false;
+        await _context.SaveChangesAsync();
     }
 
-    public Task UpdateAsync(Challenge challenge)
+    public async Task UpdateAsync(Challenge challenge)
     {
-        throw new NotImplementedException();
+        _context.Challenges.Update(challenge);
+        await _context.SaveChangesAsync();
     }
 }

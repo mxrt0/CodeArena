@@ -124,6 +124,9 @@ namespace CodeArena.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Tags")
                         .IsRequired()
                         .HasMaxLength(200)
@@ -142,18 +145,20 @@ namespace CodeArena.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 3, 1, 19, 19, 58, 133, DateTimeKind.Utc).AddTicks(9742),
+                            CreatedAt = new DateTime(2026, 3, 5, 18, 8, 30, 863, DateTimeKind.Utc).AddTicks(5181),
                             Description = "Write a function that takes two numbers and returns their sum. Example: Input: 3, 5 → Output: 8.",
                             Difficulty = "Easy",
+                            IsDeleted = false,
                             Tags = "math",
                             Title = "Sum Two Numbers"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 3, 1, 19, 19, 58, 133, DateTimeKind.Utc).AddTicks(9797),
+                            CreatedAt = new DateTime(2026, 3, 5, 18, 8, 30, 863, DateTimeKind.Utc).AddTicks(5188),
                             Description = "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'.",
                             Difficulty = "Medium",
+                            IsDeleted = false,
                             Tags = "loops",
                             Title = "FizzBuzz"
                         });
