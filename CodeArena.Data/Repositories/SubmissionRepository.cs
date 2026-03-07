@@ -57,4 +57,10 @@ public class SubmissionRepository : ISubmissionRepository
         _context.Submissions.Remove(submission);
         await _context.SaveChangesAsync();
     }
+
+    public async Task UpdateAsync(Submission submission)
+    {
+        _context.Submissions.Update(submission);
+        await _context.SaveChangesAsync();
+    }
 }
