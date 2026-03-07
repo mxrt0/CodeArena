@@ -2,6 +2,7 @@
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Submission;
 using CodeArena.Web.Models.Challenge;
+using CodeArena.Web.Models.Submission;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,9 +21,13 @@ public class SubmissionsController : BaseController
         _challengeService = challengeService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        return View();
+        var vm = new SubmissionsIndexViewModel
+        {
+            Submissions = await _submissionService.GetUserSubmissionsAsync(User)
+        };
+        return View(vm);
     }
 
     public async Task<IActionResult> Create(SubmissionCreateDto createDto)
@@ -49,9 +54,11 @@ public class SubmissionsController : BaseController
     }
 
     [HttpPost]
-    public async Task<IActionResult> Cancel(int challengeId)
+    public async Task<IActionResult> Cancel(int challengeId, bool redirectToSubmissions)
     {
         await _submissionService.CancelPendingAsync(challengeId, User);
-        return RedirectToAction("Details", "Challenges", new { id = challengeId });
+        return redirectToSubmissions 
+            ? RedirectToAction(nameof(Index))
+            : RedirectToAction("Details", "Challenges", new { id = challengeId });
     }
 }
