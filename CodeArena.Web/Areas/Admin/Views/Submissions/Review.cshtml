@@ -27,13 +27,13 @@
 
             <hr />
 
-            <form asp-action="Approve" method="post" class="d-inline">
-                <input type="hidden" asp-for="Submission.SubmissionId" />
+            <form asp-action="Approve" method="post" class="d-inline"
+                asp-route-id="@Model.Submission.SubmissionId">
                 <button type="submit" class="btn btn-success me-2">Approve</button>
             </form>
 
-            <form asp-action="Reject" method="post" class="d-inline">
-                <input type="hidden" asp-for="Submission.SubmissionId" />
+            <form asp-action="Reject" method="post" class="d-inline"
+                  asp-route-id="@Model.Submission.SubmissionId">
                 <button type="submit" class="btn btn-danger">Reject</button>
             </form>
 
