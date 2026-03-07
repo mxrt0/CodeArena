@@ -36,4 +36,18 @@ public class SubmissionsController : BaseAdminController
         };
         return View(vm);
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Approve(int id) 
+    {
+       await _submissionService.ApproveAsync(id);
+       return RedirectToAction(nameof(Index));
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Reject(int id)
+    {
+        await _submissionService.RejectAsync(id);
+        return RedirectToAction(nameof(Index));
+    }
 }
