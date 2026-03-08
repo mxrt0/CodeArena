@@ -1,0 +1,38 @@
+﻿@model SubmissionDisplayDto
+<div class="modal fade" id="cancelSubmissionModal-@Model.SubmissionId" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Cancel Submission</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to cancel this submission?
+            </div>
+
+            <div class="modal-footer">
+
+                <form id="cancelSubmissionForm-@Model.SubmissionId" method="post" 
+                    asp-controller="Submissions"
+                    asp-action="Cancel"
+                    asp-route-challengeId="@Model.ChallengeId"
+                    asp-route-redirectToSubmissions="true">
+                    <input type="hidden" name="submissionId" id="submissionIdField" />
+
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        Close
+                    </button>
+
+                    <button type="submit" class="btn btn-danger">
+                        Cancel Submission
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+</div>

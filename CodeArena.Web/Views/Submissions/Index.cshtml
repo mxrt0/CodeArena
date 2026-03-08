@@ -1,0 +1,99 @@
+﻿@model SubmissionsIndexViewModel
+
+@{
+    ViewData["Title"] = "My Submissions";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">My Submissions</h2>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            @if (!Model.Submissions.Any())
+            {
+                <div class="alert alert-info">
+                    You haven't submitted any solutions yet.
+                </div>
+            }
+            else
+            {
+                <table class="table table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Challenge</th>
+                            <th>Language</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Feedback</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var s in Model.Submissions)
+                        {
+                            <tr class="@(s.Status == "Rejected" ? "table-danger" : "")">
+                                <td>
+                                    <p class="fw-bold">@s.ChallengeTitle</p>
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        @s.Language
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @s.SubmittedAt.ToString(ApplicationConstants.DefaultDateFormat,
+                                    CultureInfo.InvariantCulture)
+                        </td>
+
+                        <td>
+                            <span class="badge
+                                        @(s.Status == "Approved" ? "bg-success"
+                                                                          : s.Status == "Rejected" ? "bg-danger"
+                                                                          : "bg-warning text-dark")">
+                                        @s.Status
+                                    </span>
+                                </td>
+
+                                <td title="@s.Feedback">
+                                    @(s.Feedback?.Length > 50
+                                        ? s.Feedback.Substring(0, 50) + "..."
+                                        : s.Feedback)
+                                </td>
+
+                                <td class="text-end">
+                                    <a asp-controller="Challenges"
+                                       asp-action="Details"
+                                       asp-route-id="@s.ChallengeId"
+                                       class="btn btn-primary btn-sm">
+                                        View Challenge
+                                    </a>
+                                    @if (s.Status == "Pending")
+                                    {
+                                        <button type="button"
+                                                class="btn btn-danger btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#cancelSubmissionModal-@s.SubmissionId">
+                                            Cancel
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                            @if (s.Status == "Pending")
+                            {
+                                <partial name="_ConfirmCancelSubmissionPartial" model="s" />
+                            }
+                        }
+                    </tbody>
+
+                </table>
+            }
+
+        </div>
+    </div>
+
+</div>

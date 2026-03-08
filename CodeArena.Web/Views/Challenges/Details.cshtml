@@ -45,6 +45,12 @@
                         </button>
                     </form>
                 }
+                else if (Model.HasApprovedSubmission)
+                {
+                    <div class="alert alert-success">
+                        You have already completed this challenge. Good work!
+                    </div>
+                }
                 else
                 {
                     <h5 class="mt-4">Submit Your Solution</h5>

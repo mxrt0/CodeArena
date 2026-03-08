@@ -42,6 +42,7 @@ public class ChallengesController : BaseController
         if (User?.Identity?.IsAuthenticated ?? false)
         {
             vm.HasPendingSubmission = await _submissionService.HasPendingSubmissionAsync(id, User);
+            vm.HasApprovedSubmission = await _submissionService.HasApprovedSubmissionAsync(id, User);
         }
         return View(vm);
     }

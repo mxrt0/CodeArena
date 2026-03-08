@@ -11,4 +11,5 @@ public class ChallengeDetailsViewModel
     public SubmissionLanguage? Language { get; set; }
 
     public bool HasPendingSubmission { get; set; }  
+    public bool HasApprovedSubmission { get; set; } 
 }
