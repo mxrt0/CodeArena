@@ -5,12 +5,17 @@
 
 <div class="container mt-4">
     <div class="card shadow-sm">
-        <div class="card-body">
+        <div class="card-body d-flex flex-column">
 
-            <h2 class="card-title mb-3">@Model.Challenge.Title</h2>
+            <h2 class="card-title mb-3 fw-bolder">
+                @Model.Challenge.Title
+            </h2>
 
-            <div class="mb-3">
-                <span class="badge bg-primary fs-6">
+            <div class="mb-1">
+                <span class="badge fs-6
+                    @(Model.Challenge.Difficulty == "Easy" ? "bg-success" :
+                            Model.Challenge.Difficulty == "Medium" ? "bg-warning text-dark" :
+                            "bg-danger")">
                     @Model.Challenge.Difficulty
                 </span>
             </div>
@@ -27,29 +32,29 @@
 
             <hr />
 
-            <p class="card-text">@Model.Challenge.Description</p>
+            <pre class="bg-light p-3 border rounded">@Model.Challenge.Description</pre>
 
             @if (User?.Identity?.IsAuthenticated ?? false)
             {
                 <hr />
                 @if (Model.HasPendingSubmission)
                 {
-                    <div class="alert alert-warning">
+                    <div class="alert alert-warning text-center w-75 m-auto">
                         You already have a submission pending review.
                     </div>
 
-                    <form asp-controller="Submissions" asp-action="Cancel" method="post">
-                        <input type="hidden" name="challengeId" value="@Model.Challenge.Id" />
-                        <button type="submit" class="btn btn-danger">
-                            Cancel Submission
-                        </button>
-                    </form>
+                    <a asp-controller="Submissions" asp-action="Index" class="btn btn-info m-auto">
+                        View Your Submissions
+                    </a>
                 }
                 else if (Model.HasApprovedSubmission)
                 {
-                    <div class="alert alert-success">
-                        You have already completed this challenge. Good work!
+                    <div class="alert alert-success text-center w-75 m-auto">
+                        ✓ You have solved this challenge!
                     </div>
+                    <a asp-controller="Submissions" asp-action="Index" class="btn btn-info m-auto mt-2">
+                        View Your Submissions
+                    </a>
                 }
                 else
                 {
@@ -60,7 +65,10 @@
 
                         <div class="mb-3">
                             <label asp-for="SolutionCode" class="form-label">Paste your code here:</label>
-                            <textarea class="form-control" asp-for="SolutionCode" rows="5" required></textarea>
+                            <textarea class="form-control font-monospace"
+                                      asp-for="SolutionCode"
+                                      rows="8"
+                                      required></textarea>
                             <span asp-validation-for="SolutionCode" class="text-danger"></span>
                         </div>
 
@@ -76,7 +84,7 @@
                             <span asp-validation-for="Language" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-success">Submit Solution</button>
+                        <button type="submit" class="btn btn-success">Submit For Review</button>
                     </form>
                 }
                 
@@ -88,10 +96,9 @@
                 </div>
             }
 
-            <div class="mt-4">
-                <a asp-action="Index" class="btn btn-outline-secondary">Back to Challenges</a>
-            </div>
-
+            <a asp-action="Index" class="btn btn-outline-secondary d-block m-auto mt-2">
+                Back to Challenges
+            </a>
         </div>
     </div>
 </div>
