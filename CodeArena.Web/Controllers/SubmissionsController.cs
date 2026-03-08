@@ -50,7 +50,7 @@ public class SubmissionsController : BaseController
             return View("~/Views/Challenges/Details.cshtml", vm);
         }
         await _submissionService.CreateSubmissionAsync(createDto, User);
-        return RedirectToAction("Details", "Challenges", new {id = createDto.ChallengeId});
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
