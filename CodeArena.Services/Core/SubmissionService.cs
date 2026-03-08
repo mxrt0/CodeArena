@@ -91,6 +91,15 @@ public class SubmissionService : ISubmissionService
         )).ToListAsync();
     }
 
+    public async Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    {
+        var userId = _userManager.GetUserId(user);
+        return await _repository.AnyAsync(s =>
+            s.ChallengeId == challengeId &&
+            s.UserId == userId &&
+            s.Status == SubmissionStatus.Approved);
+    }
+
     public async Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
