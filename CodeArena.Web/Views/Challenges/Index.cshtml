@@ -25,12 +25,30 @@ else
                             @challenge.Title
                         </h5>
 
+                        @if (challenge.IsSolved)
+                        {
+                            <div class="mb-2">
+                                <span class="badge bg-success">
+                                    Solved
+                                </span>
+                            </div>
+
+                        }
+                        
                         <p class="card-text text-muted flex-grow-1 text-center">
-                            @challenge.Description
+                            @(challenge.Description.Length <= 200 
+                                          ? challenge.Description
+                                          : challenge.Description.Substring(0, 
+                                                 challenge.Description.IndexOf(' ', 200))
+                                                 + "...")
                         </p>
 
+                        
                         <div class="mb-2">
-                            <span class="badge bg-primary">
+                            <span class="badge bg-primary 
+                                @(challenge.Difficulty == "Easy" ? "bg-success" :
+                                    challenge.Difficulty == "Medium" ? "bg-warning text-dark" :
+                                    "bg-danger")">
                                 @challenge.Difficulty
                             </span>
                         </div>

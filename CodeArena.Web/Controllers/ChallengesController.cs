@@ -20,6 +20,10 @@ public class ChallengesController : BaseController
     public async Task<IActionResult> Index()
     {
         var challenges = await _service.GetChallengesAsync();
+        foreach (var challenge in challenges)
+        {
+            challenge.IsSolved = await _submissionService.HasApprovedSubmissionAsync(challenge.Id, User);
+        }
         var vm = new ChallengeIndexViewModel
         {
            Challenges = challenges

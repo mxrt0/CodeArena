@@ -14,6 +14,9 @@ public sealed record ChallengeDisplayDto(
     string[] Tags,
     int SubmissionCount,
     bool IsDeleted
-);
+)
+{
+    public bool IsSolved { get; set; }
+}
 
 
