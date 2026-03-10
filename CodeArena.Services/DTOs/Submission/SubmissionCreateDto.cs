@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static CodeArena.Data.Common.EntityValidation.Submission;
+using static CodeArena.Common.OutputMessages;
 
 namespace CodeArena.Services.DTOs.Submission;
 
@@ -14,11 +15,11 @@ public class SubmissionCreateDto
     [Required]
     public int ChallengeId { get; set; }
 
-    [Required(ErrorMessage = "Solution is required.")]
-    [StringLength(SolutionCodeMaxLength, MinimumLength = 5, ErrorMessage = "Submission must be between 5 and 10000 characters.")]
+    [Required(ErrorMessage = SolutionCodeRequiredMessage)]
+    [StringLength(SolutionCodeMaxLength, MinimumLength = 5, ErrorMessage = InvalidSolutionCodeLengthMessage)]
     public string SolutionCode { get; set; } = null!;
 
-    [Required(ErrorMessage = "Please select a language.")]
+    [Required(ErrorMessage = LanguageNotSelectedMessage)]
     public SubmissionLanguage Language { get; set; }
 }
 
