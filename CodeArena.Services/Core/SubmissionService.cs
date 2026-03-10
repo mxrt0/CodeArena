@@ -71,6 +71,29 @@ public class SubmissionService : ISubmissionService
         await _repository.AddAsync(submission);
     }
 
+    public async Task<SubmissionDetailsDto?> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user)
+    {
+        var userId = _userManager.GetUserId(user);
+        if (userId is null)
+        {
+            return null;
+        }
+
+        return await _repository.GetAll()
+            .Where(s => s.Id == id && s.UserId == userId)
+            .Include(s => s.Challenge)
+            .Select(s => new SubmissionDetailsDto(
+                s.Id,
+                s.Challenge.Title,
+                s.Language.ToString(),
+                s.Status.ToString(),
+                s.Feedback ?? NoFeedbackMessage,
+                s.SolutionCode,
+                s.SubmittedAt
+            ))
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<IEnumerable<SubmissionDisplayDto>> GetUserSubmissionsAsync(ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
