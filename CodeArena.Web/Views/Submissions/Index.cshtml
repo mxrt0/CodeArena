@@ -66,11 +66,16 @@
                                 </td>
 
                                 <td class="text-end">
+                                    <a asp-action="Details"
+                                       asp-route-id="@s.SubmissionId"
+                                       class="btn btn-primary btn-sm">
+                                        View
+                                    </a>
                                     <a asp-controller="Challenges"
                                        asp-action="Details"
                                        asp-route-id="@s.ChallengeId"
-                                       class="btn btn-primary btn-sm">
-                                        View Challenge
+                                       class="btn btn-secondary btn-sm">
+                                        Go to Challenge
                                     </a>
                                     @if (s.Status == "Pending")
                                     {
