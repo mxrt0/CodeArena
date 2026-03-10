@@ -61,4 +61,19 @@ public class SubmissionsController : BaseController
             ? RedirectToAction(nameof(Index))
             : RedirectToAction("Details", "Challenges", new { id = challengeId });
     }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var submission = await _submissionService.GetSubmissionDetailsAsync(id, User);
+        if (submission is null)
+        {
+            return NotFound();
+        }
+
+        var vm = new SubmissionDetailsViewModel 
+        { 
+            Submission = submission
+        };
+        return View(vm);     
+    }
 }
