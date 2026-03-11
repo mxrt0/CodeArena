@@ -1,7 +1,9 @@
-﻿using CodeArena.Services.Core.Contracts;
+﻿using CodeArena.Common.Enums;
+using CodeArena.Services.Core.Contracts;
 using CodeArena.Web.Models.Challenge;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace CodeArena.Web.Controllers;
 
@@ -19,19 +21,22 @@ public class ChallengesController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> Index(ChallengeIndexViewModel filter)
     {
-        var challenges = await _service.GetChallengesAsync();
-        foreach (var challenge in challenges)
-        {
-            challenge.IsSolved = await _submissionService.HasApprovedSubmissionAsync(challenge.Id, User);
-        }
+        var challenges = await _service.GetChallengesAsync(
+            statusFilter: filter.StatusFilter,
+            user: User?.Identity?.IsAuthenticated ?? false
+                    ? User
+                    : null);
+
         if (!string.IsNullOrWhiteSpace(filter.SelectedDifficulty))
         {
             challenges = challenges.Where(c => c.Difficulty == filter.SelectedDifficulty);
         }
+
         var vm = new ChallengeIndexViewModel
         {
            Challenges = challenges,
            SelectedDifficulty = filter.SelectedDifficulty,
+           StatusFilter = filter.StatusFilter,
         };
         return View(vm);
     }
@@ -39,7 +44,12 @@ public class ChallengesController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> Details(int id)
     {
-        var challenge = await _service.GetChallengeByIdAsync(id);
+        var challenge = await _service.GetChallengeByIdAsync(
+            id,
+          user: User?.Identity?.IsAuthenticated ?? false
+                    ? User
+                    : null);
+
         if (challenge is null)
         {
             return NotFound();
@@ -48,11 +58,7 @@ public class ChallengesController : BaseController
         {
             Challenge = challenge
         };
-        if (User?.Identity?.IsAuthenticated ?? false)
-        {
-            vm.HasPendingSubmission = await _submissionService.HasPendingSubmissionAsync(id, User);
-            vm.HasApprovedSubmission = await _submissionService.HasApprovedSubmissionAsync(id, User);
-        }
+        
         return View(vm);
     }
 }
