@@ -15,8 +15,14 @@
         <option value="Hard">Hard</option>
     </select>
 
-    <button type="submit" class="btn btn-primary">Filter</button>
+    <select asp-for="StatusFilter" class="form-select w-auto">
+        <option value="">All Challenges</option>
+        <option value="Unsolved">Unsolved</option>
+        <option value="Solved">Solved</option>
+    </select>
 
+    <button type="submit" class="btn btn-primary">Filter</button>
+    <a asp-action="Index" class="btn btn-danger ms-1">Clear Filters</a>
 </form>
 
 @if (!Model.Challenges.Any())
@@ -45,9 +51,16 @@ else
                                     Solved
                                 </span>
                             </div>
-
                         }
-                        
+                        else if (challenge.HasPendingSubmission)
+                        {
+                            <div class="mb-2">
+                                <span class="badge bg-warning">
+                                    Awaiting Review
+                                </span>
+                            </div>
+                        }
+
                         <p class="card-text text-muted flex-grow-1 text-center">
                             @(challenge.Description.Length <= 200 
                                           ? challenge.Description
@@ -55,7 +68,6 @@ else
                                                  challenge.Description.IndexOf(' ', 200))
                                                  + "...")
                         </p>
-
                         
                         <div class="mb-2">
                             <span class="badge bg-primary 
