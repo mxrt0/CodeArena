@@ -17,16 +17,21 @@ public class ChallengesController : BaseController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(ChallengeIndexViewModel filter)
     {
         var challenges = await _service.GetChallengesAsync();
         foreach (var challenge in challenges)
         {
             challenge.IsSolved = await _submissionService.HasApprovedSubmissionAsync(challenge.Id, User);
         }
+        if (!string.IsNullOrWhiteSpace(filter.SelectedDifficulty))
+        {
+            challenges = challenges.Where(c => c.Difficulty == filter.SelectedDifficulty);
+        }
         var vm = new ChallengeIndexViewModel
         {
-           Challenges = challenges
+           Challenges = challenges,
+           SelectedDifficulty = filter.SelectedDifficulty,
         };
         return View(vm);
     }

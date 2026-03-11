@@ -6,6 +6,19 @@
 
 <h2 class="mb-4">Challenges</h2>
 
+<form method="get" class="mb-3 d-flex align-items-center gap-2">
+
+    <select asp-for="SelectedDifficulty" class="form-select w-auto">
+        <option value="">All Difficulties</option>
+        <option value="Easy">Easy</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+    </select>
+
+    <button type="submit" class="btn btn-primary">Filter</button>
+
+</form>
+
 @if (!Model.Challenges.Any())
 {
     <div class="alert alert-info">
