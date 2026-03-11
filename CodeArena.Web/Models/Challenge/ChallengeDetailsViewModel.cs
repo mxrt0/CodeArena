@@ -9,7 +9,4 @@ public class ChallengeDetailsViewModel
 
     public string? SolutionCode { get; set; }
     public SubmissionLanguage? Language { get; set; }
-
-    public bool HasPendingSubmission { get; set; }  
-    public bool HasApprovedSubmission { get; set; } 
 }

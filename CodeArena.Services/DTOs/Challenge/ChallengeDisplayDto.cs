@@ -17,6 +17,7 @@ public sealed record ChallengeDisplayDto(
 )
 {
     public bool IsSolved { get; set; }
+    public bool HasPendingSubmission { get; set; }
 }
 
 
