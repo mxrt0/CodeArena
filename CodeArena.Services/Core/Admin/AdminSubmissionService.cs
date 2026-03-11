@@ -2,7 +2,7 @@
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Submission;
 using CodeArena.Data.Common.Enums;
-using static CodeArena.Common.ApplicationConstants;
+using static CodeArena.Common.OutputMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +28,7 @@ public class AdminSubmissionService : IAdminSubmissionService
         var submission = await _repository.GetByIdAsync(id);
         if (submission is null)
         {
-            throw new InvalidOperationException("Submission not found.");
+            throw new InvalidOperationException(SubmissionNotFoundMessage);
         }
 
         submission.Status = SubmissionStatus.Approved;
@@ -80,7 +80,7 @@ public class AdminSubmissionService : IAdminSubmissionService
         var submission = await _repository.GetByIdAsync(id);
         if (submission is null)
         {
-            throw new InvalidOperationException("Submission not found.");
+            throw new InvalidOperationException(SubmissionNotFoundMessage);
         }
 
         submission.Status = SubmissionStatus.Rejected;

@@ -18,4 +18,8 @@ public static class OutputMessages
     public const string InvalidChallengeDescriptionLengthMessage = "Description must be between 10 and 2000 characters long.";
 
     public const string MissingAdminCredentialsMessage = "Admin email or password not set in configuration.";
+
+    public const string SubmissionNotFoundMessage = "Submission not found.";
+    public const string UnauthenticatedUserSubmissionAttemptMessage = "User must be authenticated to create a submission.";
+    public const string UserAlreadyHasPendingSubmissionMessage = "User already has a pending submission for this challenge.";
 }

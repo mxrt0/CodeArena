@@ -53,11 +53,11 @@ public class SubmissionService : ISubmissionService
 
         if (userId is null)
         {
-            throw new InvalidOperationException("User must be authenticated to create a submission.");
+            throw new InvalidOperationException(UnauthenticatedUserSubmissionAttemptMessage);
         }
         if (await HasPendingSubmissionAsync(createDto.ChallengeId, user))
         {
-            throw new InvalidOperationException("User already has a pending submission for this challenge.");
+            throw new InvalidOperationException(UserAlreadyHasPendingSubmissionMessage);
         }
 
         var submission = new Submission
