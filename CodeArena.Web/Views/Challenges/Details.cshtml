@@ -37,7 +37,7 @@
             @if (User?.Identity?.IsAuthenticated ?? false)
             {
                 <hr />
-                @if (Model.HasPendingSubmission)
+                @if (Model.Challenge.HasPendingSubmission)
                 {
                     <div class="alert alert-warning text-center w-75 m-auto">
                         You already have a submission pending review.
@@ -47,7 +47,7 @@
                         View Your Submissions
                     </a>
                 }
-                else if (Model.HasApprovedSubmission)
+                else if (Model.Challenge.IsSolved)
                 {
                     <div class="alert alert-success text-center w-75 m-auto">
                         ✓ You have solved this challenge!
