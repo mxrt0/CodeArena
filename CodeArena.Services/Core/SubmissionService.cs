@@ -84,6 +84,7 @@ public class SubmissionService : ISubmissionService
             .Include(s => s.Challenge)
             .Select(s => new SubmissionDetailsDto(
                 s.Id,
+                s.Challenge.Id,
                 s.Challenge.Title,
                 s.Language.ToString(),
                 s.Status.ToString(),
