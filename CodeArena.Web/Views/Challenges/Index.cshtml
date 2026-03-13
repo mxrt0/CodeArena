@@ -28,7 +28,7 @@
 @if (!Model.Challenges.Any())
 {
     <div class="alert alert-info">
-        No challenges available yet.
+        No challenges found.
     </div>
 }
 else
@@ -106,8 +106,10 @@ else
             <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                 <a class="page-link"
                        asp-action="Index"
-                       asp-route-page="@(Model.CurrentPage - 1)">
-                    Previous
+                       asp-route-page="@(Model.CurrentPage - 1)"
+                       asp-route-selectedDifficulty="@Model.SelectedDifficulty"
+                       asp-route-statusFilter="@Model.StatusFilter">
+                    &laquo; Previous
                 </a>
             </li>
             @for (int i = 1; i <= Model.TotalPages; i++)
@@ -115,7 +117,9 @@ else
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
                     <a class="page-link"
                            asp-action="Index"
-                           asp-route-page="@i">
+                           asp-route-page="@i"
+                           asp-route-selectedDifficulty="@Model.SelectedDifficulty"
+                           asp-route-statusFilter="@Model.StatusFilter">
                         @i
                     </a>
                 </li>
@@ -123,8 +127,10 @@ else
             <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
                 <a class="page-link"
                        asp-action="Index"
-                       asp-route-page="@(Model.CurrentPage + 1)">
-                    Next
+                       asp-route-page="@(Model.CurrentPage + 1)"
+                       asp-route-selectedDifficulty="@Model.SelectedDifficulty"
+                       asp-route-statusFilter="@Model.StatusFilter">
+                    Next &raquo;
                 </a>
             </li>
         </ul>
