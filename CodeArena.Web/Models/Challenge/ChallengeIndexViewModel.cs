@@ -8,7 +8,7 @@ namespace CodeArena.Web.Models.Challenge;
 public class ChallengeIndexViewModel
 {
     public IEnumerable<ChallengeDisplayDto> Challenges { get; set; } = new List<ChallengeDisplayDto>();
-    public string? SelectedDifficulty { get; set; }
+    public Difficulty? SelectedDifficulty { get; set; } = null;
     public ChallengeStatus StatusFilter { get; set; }
     public int CurrentPage { get; set; } = 1;
     public int TotalPages { get; set; }

@@ -9,7 +9,7 @@ namespace CodeArena.Web.Controllers;
 
 public class ChallengesController : BaseController
 {
-    const int PageSize = 2;
+    const int PageSize = 1;
     private readonly IChallengeService _service;
     private readonly ISubmissionService _submissionService;
 
@@ -26,14 +26,10 @@ public class ChallengesController : BaseController
             page: page,
             pageSize: PageSize,
             statusFilter: inputVm.StatusFilter,
+            difficultyFilter: inputVm.SelectedDifficulty,
             user: User?.Identity?.IsAuthenticated ?? false
                     ? User
                     : null);
-
-        if (!string.IsNullOrWhiteSpace(inputVm.SelectedDifficulty))
-        {
-            challenges = challenges.Where(c => c.Difficulty == inputVm.SelectedDifficulty);
-        }
 
         var vm = new ChallengeIndexViewModel
         {

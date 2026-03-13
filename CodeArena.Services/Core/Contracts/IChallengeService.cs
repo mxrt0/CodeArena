@@ -1,4 +1,5 @@
 ﻿using CodeArena.Common.Enums;
+using CodeArena.Data.Common.Enums;
 using CodeArena.Services.DTOs.Challenge;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ public interface IChallengeService
         int page = 1,
         int pageSize = 10,
         ChallengeStatus? statusFilter = ChallengeStatus.All,
+        Difficulty? difficultyFilter = null,
         ClaimsPrincipal? user = null
     );
 

@@ -65,6 +65,7 @@ public class ChallengeService : IChallengeService
         int page = 1,
         int pageSize = 10,
         ChallengeStatus? statusFilter = ChallengeStatus.All,
+        Difficulty? difficultyFilter = null,
         ClaimsPrincipal? user = null
     )
     {
@@ -84,6 +85,12 @@ public class ChallengeService : IChallengeService
                _ => challenges
             };
         }
+
+        if (difficultyFilter is not null && user is not null)
+        {
+            challenges = challenges.Where(c => c.Difficulty == difficultyFilter);
+        }
+
         var totalCount = await challenges.CountAsync();
 
         var dtos =  await challenges
