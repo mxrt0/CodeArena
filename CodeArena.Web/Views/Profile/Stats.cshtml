@@ -1,0 +1,74 @@
+﻿@model UserStatsViewModel
+
+@{
+    ViewData["Title"] = "My Statistics";
+}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">My Progress</h2>
+
+    <div class="row text-center mb-4">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Solved</h5>
+                    <h3 class="text-success">@Model.Stats.SolvedTotal</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Pending</h5>
+                    <h3 class="text-warning">@Model.Stats.PendingSubmissions</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Rejected</h5>
+                    <h3 class="text-danger">@Model.Stats.RejectedSubmissions</h3>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h5 class="mb-3">Solved by Difficulty</h5>
+
+            <p class="mb-1">Easy</p>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-success"
+                     style="width:@(Model.Stats.EasySolved * 10)%">
+                    @Model.Stats.EasySolved
+                </div>
+            </div>
+
+            <p class="mb-1">Medium</p>
+            <div class="progress mb-3">
+                <div class="progress-bar bg-warning"
+                     style="width:@(Model.Stats.MediumSolved * 10)%">
+                    @Model.Stats.MediumSolved
+                </div>
+            </div>
+
+            <p class="mb-1">Hard</p>
+            <div class="progress">
+                <div class="progress-bar bg-danger"
+                     style="width:@(Model.Stats.HardSolved * 10)%">
+                    @Model.Stats.HardSolved
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
