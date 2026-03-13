@@ -61,7 +61,9 @@ public class ChallengeService : IChallengeService
         return dto;
     }
 
-    public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync(
+    public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
+        int page = 1,
+        int pageSize = 10,
         ChallengeStatus? statusFilter = ChallengeStatus.All,
         ClaimsPrincipal? user = null
     )
@@ -82,7 +84,13 @@ public class ChallengeService : IChallengeService
                _ => challenges
             };
         }
-        var dtos =  await challenges.Select(c => new ChallengeDisplayDto(
+        var totalCount = await challenges.CountAsync();
+
+        var dtos =  await challenges
+            .OrderBy(c => c.Title)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(c => new ChallengeDisplayDto(
                 c.Id,
                 c.Title,
                 c.Description,
@@ -103,6 +111,6 @@ public class ChallengeService : IChallengeService
                             : false;
         }
 
-        return dtos;
+        return (dtos, totalCount);
     }
 }

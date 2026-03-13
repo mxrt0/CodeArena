@@ -11,7 +11,9 @@ namespace CodeArena.Services.Core.Contracts;
 
 public interface IChallengeService
 {
-    Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync(
+    Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
+        int page = 1,
+        int pageSize = 10,
         ChallengeStatus? statusFilter = ChallengeStatus.All,
         ClaimsPrincipal? user = null
     );
