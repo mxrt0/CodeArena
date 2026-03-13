@@ -9,6 +9,7 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+// TODO: Extract filters into separate query wrapper class
 // TODO: Implement stuff from Workshop 05.03
 namespace CodeArena.Web
 {
@@ -43,11 +44,13 @@ namespace CodeArena.Web
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+            builder.Services.AddScoped<IAdminSubmissionService, AdminSubmissionService>();
+
             builder.Services.AddScoped<IChallengeService, ChallengeService>();
             builder.Services.AddScoped<IAdminChallengeService, AdminChallengeService>();
 
-            builder.Services.AddScoped<ISubmissionService, SubmissionService>();
-            builder.Services.AddScoped<IAdminSubmissionService, AdminSubmissionService>();
+            builder.Services.AddScoped<IUserService, UserService>();
 
             builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddControllersWithViews();
