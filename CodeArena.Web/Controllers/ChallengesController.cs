@@ -9,6 +9,7 @@ namespace CodeArena.Web.Controllers;
 
 public class ChallengesController : BaseController
 {
+    const int PageSize = 2;
     private readonly IChallengeService _service;
     private readonly ISubmissionService _submissionService;
 
@@ -19,24 +20,28 @@ public class ChallengesController : BaseController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index(ChallengeIndexViewModel filter)
+    public async Task<IActionResult> Index(ChallengeIndexViewModel inputVm, int page = 1)
     {
-        var challenges = await _service.GetChallengesAsync(
-            statusFilter: filter.StatusFilter,
+        var (challenges, count) = await _service.GetChallengesAsync(
+            page: page,
+            pageSize: PageSize,
+            statusFilter: inputVm.StatusFilter,
             user: User?.Identity?.IsAuthenticated ?? false
                     ? User
                     : null);
 
-        if (!string.IsNullOrWhiteSpace(filter.SelectedDifficulty))
+        if (!string.IsNullOrWhiteSpace(inputVm.SelectedDifficulty))
         {
-            challenges = challenges.Where(c => c.Difficulty == filter.SelectedDifficulty);
+            challenges = challenges.Where(c => c.Difficulty == inputVm.SelectedDifficulty);
         }
 
         var vm = new ChallengeIndexViewModel
         {
            Challenges = challenges,
-           SelectedDifficulty = filter.SelectedDifficulty,
-           StatusFilter = filter.StatusFilter,
+           SelectedDifficulty = inputVm.SelectedDifficulty,
+           StatusFilter = inputVm.StatusFilter,
+           CurrentPage = page,
+           TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
         return View(vm);
     }
