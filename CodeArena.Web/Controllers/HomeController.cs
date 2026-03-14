@@ -47,7 +47,7 @@ namespace CodeArena.Web.Controllers
         public IActionResult Error(int? statusCode)
         {
             if (statusCode == StatusCodes.Status400BadRequest)
-            {
+            { 
                 return View("BadRequest");
             }
             if (statusCode == StatusCodes.Status500InternalServerError)
