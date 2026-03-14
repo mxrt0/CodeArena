@@ -95,24 +95,38 @@ public class SubmissionService : ISubmissionService
             .FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<SubmissionDisplayDto>> GetUserSubmissionsAsync(ClaimsPrincipal user)
+    public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(
+        ClaimsPrincipal user,
+        int page = 1,
+        int pageSize = 10
+    )
     {
         var userId = _userManager.GetUserId(user);
         var submissions = _repository.GetAll()
                               .Where(s => s.UserId == userId)
                               .Include(s => s.Challenge);
-        return await submissions.Select(s => new SubmissionDisplayDto
-        (
-            s.Id,
-            s.ChallengeId,
-            s.Challenge.Title,
-            s.Language.ToString(),
-            s.Status.ToString(),
-            string.IsNullOrWhiteSpace(s.Feedback)
-                ? NoFeedbackMessage
-                : s.Feedback,
-            s.SubmittedAt
-        )).ToListAsync();
+
+        var totalCount = await submissions.CountAsync();
+
+        var dtos = await submissions
+            .OrderByDescending(s => s.SubmittedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(s => new SubmissionDisplayDto
+            (
+                s.Id,
+                s.ChallengeId,
+                s.Challenge.Title,
+                s.Language.ToString(),
+                s.Status.ToString(),
+                string.IsNullOrWhiteSpace(s.Feedback)
+                    ? NoFeedbackMessage
+                    : s.Feedback,
+                s.SubmittedAt
+            ))
+            .ToListAsync();
+
+        return (dtos, totalCount);
     }
 
     public async Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user)
