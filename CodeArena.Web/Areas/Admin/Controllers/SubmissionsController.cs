@@ -6,18 +6,25 @@ namespace CodeArena.Web.Areas.Admin.Controllers;
 
 public class SubmissionsController : BaseAdminController
 {
+    const int PageSize = 5;
     private readonly IAdminSubmissionService _submissionService;
     public SubmissionsController(IAdminSubmissionService submissionService)
     {
         _submissionService = submissionService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1)
     {
-        var submissions = await _submissionService.GetPendingSubmissionsAsync();
+        var (submissions, count) = await _submissionService.GetPendingSubmissionsAsync(
+            page,
+            PageSize
+        );
+
         var vm = new SubmissionsIndexViewModel
         {
-            Submissions = submissions
+            Submissions = submissions,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
         return View(vm);
     }
