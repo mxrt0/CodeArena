@@ -1,0 +1,76 @@
+﻿@model SubmissionDetailsViewModel
+
+@{
+    ViewData["Title"] = "Submission Details";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-body">
+
+            <h2 class="card-title mb-3">
+                @Model.Submission.ChallengeTitle
+            </h2>
+
+            <div class="mb-3">
+
+                <span class="badge bg-secondary me-2">
+                    @Model.Submission.Language
+                </span>
+
+                <span class="badge
+                    @(Model.Submission.Status == "Approved" ? "bg-success" :
+                                            Model.Submission.Status == "Rejected" ? "bg-danger" :
+                                            Model.Submission.Status == "Pending" ? "bg-warning text-dark" :
+                                            "bg-secondary")">
+
+                    @Model.Submission.Status
+                </span>
+
+            </div>
+
+            <p class="text-muted">
+                Submitted on
+                <strong>
+                    @(Model.Submission.SubmittedAt
+                    .ToString(ApplicationConstants.DefaultDateFormat, CultureInfo.InvariantCulture))
+                </strong>
+            </p>
+
+            <hr />
+
+            @if (!string.IsNullOrWhiteSpace(Model.Submission.Feedback))
+            {
+                <div class="alert alert-info">
+                    <strong>Admin Feedback:</strong>
+                    <p class="mb-0 mt-2">
+                        @Model.Submission.Feedback
+                    </p>
+                </div>
+
+                <hr />
+            }
+
+            <h5>Your Solution</h5>
+
+            <pre class="bg-light p-3 border rounded font-monospace">
+@Model.Submission.SolutionCode
+            </pre>
+
+            <div class="mt-2">
+                <a asp-controller="Challenges"
+                   asp-action="Details"
+                   asp-route-id="@Model.Submission.ChallengeId"
+                   class="btn btn-outline-primary">
+                    View Challenge
+                </a>
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Back to Submissions
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

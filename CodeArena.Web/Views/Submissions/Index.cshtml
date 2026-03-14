@@ -9,18 +9,16 @@
     <h2 class="mb-4">My Submissions</h2>
 
     <div class="card shadow-sm">
-        <div class="card-body">
-
             @if (!Model.Submissions.Any())
             {
                 <div class="alert alert-info">
-                    You haven't submitted any solutions yet.
+                    No submissions found.
                 </div>
             }
             else
             {
                 <table class="table table-striped table-hover align-middle">
-                    <thead class="table-dark">
+                    <thead class="table-primary table-responsive">
                         <tr>
                             <th>Challenge</th>
                             <th>Language</th>
@@ -66,11 +64,16 @@
                                 </td>
 
                                 <td class="text-end">
+                                    <a asp-action="Details"
+                                       asp-route-id="@s.SubmissionId"
+                                       class="btn btn-primary btn-sm">
+                                        View
+                                    </a>
                                     <a asp-controller="Challenges"
                                        asp-action="Details"
                                        asp-route-id="@s.ChallengeId"
-                                       class="btn btn-primary btn-sm">
-                                        View Challenge
+                                       class="btn btn-secondary btn-sm">
+                                        Go to Challenge
                                     </a>
                                     @if (s.Status == "Pending")
                                     {
@@ -92,8 +95,34 @@
 
                 </table>
             }
-
-        </div>
     </div>
 
 </div>
+<nav class="mt-2">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
+            <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)">
+                &laquo; Previous
+            </a>
+        </li>
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                <a class="page-link"
+                       asp-action="Index"
+                       asp-route-page="@i">
+                    @i
+                </a>
+            </li>
+        }
+        <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+            <a class="page-link"
+                   asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)">
+                Next &raquo;
+            </a>
+        </li>
+    </ul>
+</nav>

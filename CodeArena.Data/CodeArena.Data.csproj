@@ -16,4 +16,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CodeArena.Common\CodeArena.Common.csproj" />
+  </ItemGroup>
+
 </Project>

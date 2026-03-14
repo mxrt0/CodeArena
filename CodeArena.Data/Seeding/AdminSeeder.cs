@@ -1,6 +1,7 @@
 ﻿using CodeArena.Data.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using static CodeArena.Common.OutputMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ public static class AdminSeeder
         string? AdminPassword = config["AdminUser:Password"];
 
         if (string.IsNullOrWhiteSpace(AdminEmail) || string.IsNullOrWhiteSpace(AdminPassword))
-            throw new InvalidOperationException("Admin email or password not set in configuration.");
+            throw new InvalidOperationException(MissingAdminCredentialsMessage);
 
         var user = await userManager.FindByEmailAsync(AdminEmail);
 

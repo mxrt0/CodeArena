@@ -1,12 +1,15 @@
-﻿using CodeArena.Services.Core.Contracts;
+﻿using CodeArena.Common.Enums;
+using CodeArena.Services.Core.Contracts;
 using CodeArena.Web.Models.Challenge;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace CodeArena.Web.Controllers;
 
 public class ChallengesController : BaseController
 {
+    const int PageSize = 1;
     private readonly IChallengeService _service;
     private readonly ISubmissionService _submissionService;
 
@@ -17,12 +20,24 @@ public class ChallengesController : BaseController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(ChallengeIndexViewModel inputVm, int page = 1)
     {
-        var challenges = await _service.GetChallengesAsync();
+        var (challenges, count) = await _service.GetChallengesAsync(
+            page: page,
+            pageSize: PageSize,
+            statusFilter: inputVm.StatusFilter,
+            difficultyFilter: inputVm.SelectedDifficulty,
+            user: User?.Identity?.IsAuthenticated ?? false
+                    ? User
+                    : null);
+
         var vm = new ChallengeIndexViewModel
         {
-           Challenges = challenges
+           Challenges = challenges,
+           SelectedDifficulty = inputVm.SelectedDifficulty,
+           StatusFilter = inputVm.StatusFilter,
+           CurrentPage = page,
+           TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
         return View(vm);
     }
@@ -30,7 +45,12 @@ public class ChallengesController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> Details(int id)
     {
-        var challenge = await _service.GetChallengeByIdAsync(id);
+        var challenge = await _service.GetChallengeByIdAsync(
+            id,
+          user: User?.Identity?.IsAuthenticated ?? false
+                    ? User
+                    : null);
+
         if (challenge is null)
         {
             return NotFound();
@@ -39,11 +59,7 @@ public class ChallengesController : BaseController
         {
             Challenge = challenge
         };
-        if (User?.Identity?.IsAuthenticated ?? false)
-        {
-            vm.HasPendingSubmission = await _submissionService.HasPendingSubmissionAsync(id, User);
-            vm.HasApprovedSubmission = await _submissionService.HasApprovedSubmissionAsync(id, User);
-        }
+        
         return View(vm);
     }
 }

@@ -10,6 +10,7 @@ namespace CodeArena.Web.Controllers;
 
 public class SubmissionsController : BaseController
 {
+    const int PageSize = 2;
     private readonly ISubmissionService _submissionService;
     private readonly IChallengeService _challengeService;
 
@@ -21,11 +22,18 @@ public class SubmissionsController : BaseController
         _challengeService = challengeService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1)
     {
+        var (submissions, count) = await _submissionService.GetUserSubmissionsAsync(
+                User,
+                page,
+                PageSize
+            );
         var vm = new SubmissionsIndexViewModel
         {
-            Submissions = await _submissionService.GetUserSubmissionsAsync(User)
+            Submissions = submissions,
+            CurrentPage = page,
+            TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
         return View(vm);
     }
@@ -60,5 +68,20 @@ public class SubmissionsController : BaseController
         return redirectToSubmissions 
             ? RedirectToAction(nameof(Index))
             : RedirectToAction("Details", "Challenges", new { id = challengeId });
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var submission = await _submissionService.GetSubmissionDetailsAsync(id, User);
+        if (submission is null)
+        {
+            return NotFound();
+        }
+
+        var vm = new SubmissionDetailsViewModel 
+        { 
+            Submission = submission
+        };
+        return View(vm);     
     }
 }
