@@ -1,0 +1,16 @@
+﻿@if (TempData[ErrorTempDataKey] is not null)
+{
+    <script>toastr.error('@TempData[ErrorTempDataKey]')</script>
+}
+else if (TempData[SuccessTempDataKey] is not null)
+{
+    <script>toastr.success('@TempData[SuccessTempDataKey]')</script>
+}
+else if (TempData[InfoTempDataKey] is not null)
+{
+    <script>toastr.info('@TempData[InfoTempDataKey]')</script>
+}
+else if (TempData[WarningTempDataKey] is not null)
+{
+    <script>toastr.warning('@TempData[WarningTempDataKey]')</script>
+}
