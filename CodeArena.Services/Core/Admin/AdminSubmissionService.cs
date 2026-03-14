@@ -37,19 +37,31 @@ public class AdminSubmissionService : IAdminSubmissionService
         await _repository.UpdateAsync(submission);
     }
 
-    public async Task<IEnumerable<SubmissionDisplayDto>> GetPendingSubmissionsAsync()
+    public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
+       int page = 1,
+       int pageSize = 10
+    )
     {
         var submissions = _repository.GetAll()
             .Where(s => s.Status == SubmissionStatus.Pending);
 
-        return await submissions.Select(s => new SubmissionDisplayDto
+        var totalCount = await submissions.CountAsync();
+
+        var dtos = await submissions
+        .OrderByDescending(s => s.SubmittedAt)
+        .Skip((page - 1) * pageSize)
+        .Take(pageSize)
+        .Select(s => new SubmissionDisplayDto
         (
             s.Id,            
             s.User.DisplayName,
             s.Challenge.Title,
             s.Language.ToString(),
             s.SubmittedAt
-        )).ToListAsync();
+        ))
+        .ToListAsync();
+
+        return (dtos, totalCount);
     }
 
     public async Task<AdminSubmissionReviewDto?> GetSubmissionForReviewAsync(int id)
