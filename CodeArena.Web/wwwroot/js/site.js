@@ -1,3 +1,3 @@
 ﻿toastr.options = {
-    "positionClass": "toast-top-right"
+    "positionClass": "toast-bottom-right"
 };
