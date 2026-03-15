@@ -91,6 +91,7 @@ namespace CodeArena.Web
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseExceptionHandler("/Home/Error/500");
             app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
 
             app.MapControllerRoute(
