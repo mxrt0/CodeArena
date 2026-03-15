@@ -3,6 +3,8 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
+using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
 
@@ -46,6 +48,7 @@ public class ChallengesController : BaseAdminController
             return View(vm);
         }
         await _challengeService.CreateChallengeAsync(vm.Challenge);
+        TempData[SuccessTempDataKey] = ChallengeCreatedMessage;
         return RedirectToAction(nameof(Index));
     }
 
@@ -94,7 +97,7 @@ public class ChallengesController : BaseAdminController
         );
 
         await _challengeService.UpdateChallengeAsync(editDto);
-
+        TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
         return RedirectToAction(nameof(Index));
     }
 
@@ -109,7 +112,7 @@ public class ChallengesController : BaseAdminController
         }
 
         await _challengeService.DeleteChallengeAsync(challenge.Id);
-
+        TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
         return RedirectToAction(nameof(Index));
     }
 
@@ -124,7 +127,7 @@ public class ChallengesController : BaseAdminController
         }
 
         await _challengeService.RestoreChallengeAsync(challenge.Id);
-
+        TempData[SuccessTempDataKey] = ChallengeRestoredMessage;
         return RedirectToAction(nameof(Index));
     }
 

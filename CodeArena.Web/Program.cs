@@ -83,7 +83,10 @@ namespace CodeArena.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
 
             app.MapControllerRoute(
                 name: "areas",
