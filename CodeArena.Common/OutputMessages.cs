@@ -32,4 +32,9 @@ public static class OutputMessages
     public const string SubmissionCancelledMessage = "Your submission has been cancelled.";
     public const string SubmissionApprovedMessage = "Submission approved.";
     public const string SubmissionRejectedMessage = "Submission rejected.";
+
+    public const string ChallengeNotFoundExceptionMessage = "Challenge with Id {0} was not found.";
+    public const string SubmissionNotFoundExceptionMessage = "Submission with Id {0} was not found.";
+    public const string SubmissionAlreadyPendingExceptionMessage = "User '{0}' already has a pending submission for challenge {1}.";
+    public const string UnauthorizedActionExceptionMessage = "You are not authorized to perform this action.";
 }
