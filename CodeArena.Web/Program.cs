@@ -40,6 +40,11 @@ namespace CodeArena.Web
                 options.Password.RequiredLength = 6;
             });
 
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = "/Home/Error/403";
+            });
+
             builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
