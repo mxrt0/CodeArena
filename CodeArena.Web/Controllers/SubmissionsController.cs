@@ -7,6 +7,7 @@ using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CodeArena.Web.Controllers;
 
@@ -15,13 +16,16 @@ public class SubmissionsController : BaseController
     const int PageSize = 2;
     private readonly ISubmissionService _submissionService;
     private readonly IChallengeService _challengeService;
+    private readonly ILogger<SubmissionsController> _logger;
 
     public SubmissionsController(
         ISubmissionService submissionService,
-        IChallengeService challengeService)
+        IChallengeService challengeService,
+        ILogger<SubmissionsController> logger)
     {
         _submissionService = submissionService;
         _challengeService = challengeService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index(int page = 1)
@@ -44,15 +48,15 @@ public class SubmissionsController : BaseController
     {
         if (!ModelState.IsValid)
         {
-            var challenge = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId);
-            if (challenge is null)
+            var result = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId);
+            if (!result.Success)
             {
                 return NotFound();
             }
 
             var vm = new ChallengeDetailsViewModel
             {
-                Challenge = challenge,
+                Challenge = result.Data!,
                 SolutionCode = createDto.SolutionCode,
                 Language = createDto.Language
             };
@@ -76,15 +80,21 @@ public class SubmissionsController : BaseController
 
     public async Task<IActionResult> Details(int id)
     {
-        var submission = await _submissionService.GetSubmissionDetailsAsync(id, User);
-        if (submission is null)
+        if (id is 0)
         {
+            return BadRequest();
+        }
+
+        var result = await _submissionService.GetSubmissionDetailsAsync(id, User);
+        if (!result.Success)
+        {
+            _logger.LogInformation(result.ErrorMessage);
             return NotFound();
         }
 
         var vm = new SubmissionDetailsViewModel 
         { 
-            Submission = submission
+            Submission = result.Data!
         };
         return View(vm);     
     }

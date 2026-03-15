@@ -1,4 +1,5 @@
 ﻿using CodeArena.Services.DTOs.Submission;
+using CodeArena.Services.Results;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,5 +20,5 @@ public interface ISubmissionService
         int page = 1,
         int pageSize = 10
     );
-    Task<SubmissionDetailsDto?> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user);
+    Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user);
 }

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using CodeArena.Services.Results;
 
 namespace CodeArena.Services.Core.Contracts;
 
@@ -20,5 +21,5 @@ public interface IChallengeService
         ClaimsPrincipal? user = null
     );
 
-    Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null);
+    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null);
 }

@@ -1,10 +1,13 @@
-﻿using CodeArena.Common.Enums;
+﻿using CodeArena.Common;
+using CodeArena.Common.Enums;
 using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Challenge;
+using CodeArena.Services.Results;
 using Microsoft.AspNetCore.Identity;
+using static CodeArena.Common.OutputMessages;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -32,12 +35,12 @@ public class ChallengeService : IChallengeService
         _submissionService = submissionService;
     }
 
-    public async Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null)
+    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null)
     {
         var challenge = await _repository.GetByIdAsync(id);
         if (challenge is null)
         {
-            return null;
+            return ServiceResult<ChallengeDisplayDto>.Fail(string.Format(ChallengeNotFoundMessage, id));
         }
 
         var dto = new ChallengeDisplayDto(
@@ -58,7 +61,7 @@ public class ChallengeService : IChallengeService
                         ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user) 
                         : false;
 
-        return dto;
+        return ServiceResult<ChallengeDisplayDto>.Ok(dto);
     }
 
     public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
