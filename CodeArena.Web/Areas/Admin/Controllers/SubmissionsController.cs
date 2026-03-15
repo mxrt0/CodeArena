@@ -1,5 +1,7 @@
 ﻿using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Web.Areas.Admin.Models;
+using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
@@ -48,6 +50,7 @@ public class SubmissionsController : BaseAdminController
     public async Task<IActionResult> Approve(SubmissionReviewViewModel vm) 
     {
        await _submissionService.ApproveAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
+        TempData[SuccessTempDataKey] = SubmissionApprovedMessage;
        return RedirectToAction(nameof(Index));
     }
 
@@ -55,6 +58,7 @@ public class SubmissionsController : BaseAdminController
     public async Task<IActionResult> Reject(SubmissionReviewViewModel vm)
     {
         await _submissionService.RejectAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
+        TempData[SuccessTempDataKey] = SubmissionRejectedMessage;
         return RedirectToAction(nameof(Index));
     }
 }

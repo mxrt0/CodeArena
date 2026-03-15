@@ -22,4 +22,14 @@ public static class OutputMessages
     public const string SubmissionNotFoundMessage = "Submission not found.";
     public const string UnauthenticatedUserSubmissionAttemptMessage = "User must be authenticated to create a submission.";
     public const string UserAlreadyHasPendingSubmissionMessage = "User already has a pending submission for this challenge.";
+
+    public const string ChallengeCreatedMessage = "Challenge has been created.";
+    public const string ChallengeUpdatedMessage = "Challenge has been updated.";
+    public const string ChallengeDeletedMessage = "Challenge has been deleted.";
+    public const string ChallengeRestoredMessage = "Challenge has been restored.";
+
+    public const string SubmissionCreatedMessage = "Your submission has been submitted.";
+    public const string SubmissionCancelledMessage = "Your submission has been cancelled.";
+    public const string SubmissionApprovedMessage = "Submission approved.";
+    public const string SubmissionRejectedMessage = "Submission rejected.";
 }

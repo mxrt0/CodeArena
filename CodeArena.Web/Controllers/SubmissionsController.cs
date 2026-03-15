@@ -3,6 +3,8 @@ using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Submission;
 using CodeArena.Web.Models.Challenge;
 using CodeArena.Web.Models.Submission;
+using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,6 +60,7 @@ public class SubmissionsController : BaseController
             return View("~/Views/Challenges/Details.cshtml", vm);
         }
         await _submissionService.CreateSubmissionAsync(createDto, User);
+        TempData[SuccessTempDataKey] = SubmissionCreatedMessage;
         return RedirectToAction(nameof(Index));
     }
 
@@ -65,6 +68,7 @@ public class SubmissionsController : BaseController
     public async Task<IActionResult> Cancel(int challengeId, bool redirectToSubmissions)
     {
         await _submissionService.CancelPendingAsync(challengeId, User);
+        TempData[InfoTempDataKey] = SubmissionCancelledMessage; 
         return redirectToSubmissions 
             ? RedirectToAction(nameof(Index))
             : RedirectToAction("Details", "Challenges", new { id = challengeId });
