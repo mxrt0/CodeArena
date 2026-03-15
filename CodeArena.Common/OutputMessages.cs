@@ -19,7 +19,6 @@ public static class OutputMessages
 
     public const string MissingAdminCredentialsMessage = "Admin email or password not set in configuration.";
 
-    public const string SubmissionNotFoundMessage = "Submission not found.";
     public const string UnauthenticatedUserSubmissionAttemptMessage = "User must be authenticated to create a submission.";
     public const string UserAlreadyHasPendingSubmissionMessage = "User already has a pending submission for this challenge.";
 
@@ -33,8 +32,9 @@ public static class OutputMessages
     public const string SubmissionApprovedMessage = "Submission approved.";
     public const string SubmissionRejectedMessage = "Submission rejected.";
 
-    public const string ChallengeNotFoundExceptionMessage = "Challenge with Id {0} was not found.";
-    public const string SubmissionNotFoundExceptionMessage = "Submission with Id {0} was not found.";
-    public const string SubmissionAlreadyPendingExceptionMessage = "User '{0}' already has a pending submission for challenge {1}.";
-    public const string UnauthorizedActionExceptionMessage = "You are not authorized to perform this action.";
+    public const string ChallengeNotFoundMessage = "Challenge with Id {0} was not found.";
+    public const string SubmissionNotFoundMessage = "Submission with Id {0} was not found.";
+    public const string SubmissionAlreadyPendingMessage = "User '{0}' already has a pending submission for challenge {1}.";
+    public const string UnauthorizedActionMessage = "User '{0}' attempted an unauthorized action.";
+    public const string UnauthenticatedActionMessage = "Unauthenticated user attempted an action which requires authentication.";
 }

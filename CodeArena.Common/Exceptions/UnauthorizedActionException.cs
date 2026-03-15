@@ -10,7 +10,7 @@ namespace CodeArena.Common.Exceptions;
 public class UnauthorizedActionException : Exception
 {
     public UnauthorizedActionException(string? message = null)
-        : base(message ?? UnauthorizedActionExceptionMessage) 
+        : base() 
     { 
     }
 }

@@ -10,7 +10,7 @@ namespace CodeArena.Common.Exceptions;
 public class SubmissionAlreadyPendingException : Exception
 {
     public SubmissionAlreadyPendingException(int challengeId, string userName)
-        : base(string.Format(SubmissionAlreadyPendingExceptionMessage, userName, challengeId)) 
+        : base() 
     {
     }
 }

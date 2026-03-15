@@ -10,7 +10,7 @@ namespace CodeArena.Common.Exceptions;
 public class ChallengeNotFoundException : Exception
 {
     public ChallengeNotFoundException(int challengeId) 
-        : base(string.Format(ChallengeNotFoundExceptionMessage, challengeId))
+        : base(string.Format(ChallengeNotFoundMessage, challengeId))
     {
     }
 }

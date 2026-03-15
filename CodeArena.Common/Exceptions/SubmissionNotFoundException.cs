@@ -10,7 +10,7 @@ namespace CodeArena.Common.Exceptions;
 public class SubmissionNotFoundException : Exception
 {
     public SubmissionNotFoundException(int submissionId)
-        : base(string.Format(SubmissionNotFoundExceptionMessage, submissionId))
+        : base(string.Format(SubmissionNotFoundMessage, submissionId))
     {
     }
 }
