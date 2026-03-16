@@ -4,6 +4,7 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
 using Microsoft.EntityFrameworkCore;
+using CodeArena.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,26 +37,26 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task DeleteChallengeAsync(int id)
     {
-        var challenge = await _repository.GetByIdAsync(id);
-        if (challenge is null) return;
+        var challenge = await _repository.GetByIdAsync(id) ?? throw new ChallengeNotFoundException(id);
+
+        if (challenge.IsDeleted) throw new ChallengeAlreadyDeletedException(id);
 
         await _repository.DeleteAsync(challenge);
     }
 
-    public async Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id)
+    public async Task<ChallengeDisplayDto> GetChallengeByIdAsync(int id)
     {
-        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true);
-        if (challenge is null)
-        {
-            return null;
-        }
+        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true)
+            ?? throw new ChallengeNotFoundException(id);
 
         return new ChallengeDisplayDto(
             challenge.Id,
             challenge.Title,
             challenge.Description,
             challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
+            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(t => t.Trim())
+            .ToArray(),
             challenge.Submissions.Count,
             challenge.IsDeleted
         );
@@ -71,7 +72,10 @@ public class AdminChallengeService : IAdminChallengeService
                 c.Title,
                 c.Description,
                 c.Difficulty.ToString(),
-                c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray(),
+                c.Tags
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => t.Trim())
+                .ToArray(),
                 c.Submissions.Count,
                 c.IsDeleted
         )).ToListAsync();
@@ -79,19 +83,18 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task RestoreChallengeAsync(int id)
     {
-        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true);
-        if (challenge is null || !challenge.IsDeleted) return;
+        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true)
+            ?? throw new ChallengeNotFoundException(id);
+
+        if (!challenge.IsDeleted) throw new ChallengeAlreadyActiveException(id);
 
         await _repository.RestoreAsync(challenge);
     }
 
     public async Task UpdateChallengeAsync(EditChallengeDto editDto)
     {
-        var challenge = await _repository.GetByIdAsync(editDto.Id, includeDeleted: true);
-        if (challenge is null)
-        {
-            return;
-        }
+        var challenge = await _repository.GetByIdAsync(editDto.Id, includeDeleted: true)
+            ?? throw new ChallengeNotFoundException(editDto.Id);
 
         challenge.Title = editDto.Title;
         challenge.Description = editDto.Description;

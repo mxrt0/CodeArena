@@ -13,7 +13,7 @@ public interface IAdminSubmissionService
         int page = 1,
         int pageSize = 10
     );
-    Task<AdminSubmissionReviewDto?> GetSubmissionForReviewAsync(int id);
+    Task<AdminSubmissionReviewDto> GetSubmissionForReviewAsync(int id);
     Task ApproveAsync(int id, string? feedback = null);
     Task RejectAsync(int id, string? feedback = null);
 }

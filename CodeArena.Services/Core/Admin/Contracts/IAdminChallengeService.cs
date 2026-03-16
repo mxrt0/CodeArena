@@ -12,7 +12,7 @@ public interface IAdminChallengeService
 {
     Task CreateChallengeAsync(CreateChallengeDto dto);
     Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync();
-    Task<ChallengeDisplayDto?> GetChallengeByIdAsync(int id);
+    Task<ChallengeDisplayDto> GetChallengeByIdAsync(int id);
     Task UpdateChallengeAsync(EditChallengeDto editDto);
     Task DeleteChallengeAsync(int id);
     Task RestoreChallengeAsync(int id); 
