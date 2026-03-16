@@ -51,7 +51,7 @@ public class ChallengesController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> Details(int id)
     {
-        if (id is 0)
+        if (id <= 0)
         {
             return BadRequest();
         }
