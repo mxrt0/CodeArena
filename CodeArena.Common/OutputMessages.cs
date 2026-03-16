@@ -38,9 +38,17 @@ public static class OutputMessages
     public const string UnauthorizedActionMessage = "User '{0}' attempted an unauthorized action.";
     public const string UnauthenticatedActionMessage = "Unauthenticated user attempted an action which requires authentication.";
 
+    // Logging
     public const string ChallengeAlreadyDeletedMessage = "Admin attempted to alter state of already deleted challenge with ID: {0}.";
     public const string ChallengeAlreadyActiveMessage = "Admin attempted to restore already active challenge with ID: {0}.";
 
     public const string SubmissionAlreadyApprovedMessage = "Admin attempted to alter status of already approved submission with ID: {0}.";
     public const string SubmissionAlreadyRejectedMessage = "Admin attempted to alter status of already rejected submission with ID: {0}.";
+
+    // User-targeted
+    public const string Admin_SubmissionAlreadyApprovedMessage = "This submission is already marked as approved.";
+    public const string Admin_SubmissionAlreadyRejectedMessage = "This submission is already marked as rejected.";
+
+    public const string Admin_ChallengeAlreadyDeletedMessage = "This challenge is already marked deleted.";
+    public const string Admin_ChallengeAlreadyActiveMessage = "This challenge is already active.";
 }

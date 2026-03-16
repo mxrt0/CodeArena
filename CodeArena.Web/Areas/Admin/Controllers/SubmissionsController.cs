@@ -3,6 +3,7 @@ using CodeArena.Web.Areas.Admin.Models;
 using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
 using Microsoft.AspNetCore.Mvc;
+using CodeArena.Common.Exceptions;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
 
@@ -33,32 +34,68 @@ public class SubmissionsController : BaseAdminController
 
     public async Task<IActionResult> Review(int id)
     {
-        var submission = await _submissionService.GetSubmissionForReviewAsync(id);
-        if (submission is null)
+        try
         {
-            return NotFound();
-        }
+            var submission = await _submissionService.GetSubmissionForReviewAsync(id);
 
-        var vm = new SubmissionReviewViewModel
+            var vm = new SubmissionReviewViewModel
+            {
+                Submission = submission
+            };
+            return View(vm);
+        }
+        catch (SubmissionNotFoundException ex)
         {
-            Submission = submission
-        };
-        return View(vm);
+            TempData[ErrorTempDataKey] = ex.Message;
+            return RedirectToAction(nameof(Index));
+        }
     }
 
     [HttpPost]
     public async Task<IActionResult> Approve(SubmissionReviewViewModel vm) 
     {
-       await _submissionService.ApproveAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
-        TempData[SuccessTempDataKey] = SubmissionApprovedMessage;
-       return RedirectToAction(nameof(Index));
+        try
+        {
+            await _submissionService.ApproveAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
+            TempData[SuccessTempDataKey] = SubmissionRejectedMessage;
+        }
+        catch (SubmissionNotFoundException ex)
+        {
+            TempData[ErrorTempDataKey] = ex.Message;
+        }
+        catch (SubmissionAlreadyApprovedException)
+        {
+            TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyApprovedMessage;
+        }
+        catch (SubmissionAlreadyRejectedException)
+        {
+            TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyRejectedMessage;
+        }
+
+        return RedirectToAction(nameof(Index));
     }
 
     [HttpPost]
     public async Task<IActionResult> Reject(SubmissionReviewViewModel vm)
     {
-        await _submissionService.RejectAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
-        TempData[SuccessTempDataKey] = SubmissionRejectedMessage;
+        try
+        {
+            await _submissionService.RejectAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
+            TempData[SuccessTempDataKey] = SubmissionRejectedMessage;
+        }
+        catch (SubmissionNotFoundException ex)
+        {
+            TempData[ErrorTempDataKey] = ex.Message;
+        }
+        catch (SubmissionAlreadyApprovedException)
+        {
+            TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyApprovedMessage;
+        }
+        catch (SubmissionAlreadyRejectedException)
+        {
+            TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyRejectedMessage;
+        }
+
         return RedirectToAction(nameof(Index));
     }
 }

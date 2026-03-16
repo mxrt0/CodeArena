@@ -5,6 +5,7 @@ using CodeArena.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Mvc;
 using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
+using CodeArena.Common.Exceptions;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
 
@@ -38,43 +39,43 @@ public class ChallengesController : BaseAdminController
     {
         if (!ModelState.IsValid)
         {
-            foreach (var entry in ModelState)
-            {
-                foreach (var error in entry.Value.Errors)
-                {
-                    Console.WriteLine(error.ErrorMessage);
-                }
-            }
             return View(vm);
         }
+
         await _challengeService.CreateChallengeAsync(vm.Challenge);
         TempData[SuccessTempDataKey] = ChallengeCreatedMessage;
+
         return RedirectToAction(nameof(Index));
     }
 
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
-        var challenge = await _challengeService.GetChallengeByIdAsync(id);
-        
-        if (challenge is null)
+        try
         {
-            return NotFound();
-        }
+            var challenge = await _challengeService.GetChallengeByIdAsync(id);
 
-        var challengeDto = new CreateChallengeDto
+            var challengeDto = new CreateChallengeDto
+            {
+                Title = challenge.Title,
+                Description = challenge.Description,
+                Difficulty = Enum.Parse<Difficulty>(challenge.Difficulty),
+                Tags = string.Join(",", challenge.Tags)
+            };
+
+            var vm = new CreateChallengeViewModel
+            {
+                Challenge = challengeDto,
+            };
+
+            TempData["ChallengeId"] = id;
+            return View(vm);
+        }
+        catch (ChallengeNotFoundException ex)
         {
-            Title = challenge.Title,
-            Description = challenge.Description,
-            Difficulty = Enum.Parse<Difficulty>(challenge.Difficulty),
-            Tags = string.Join(",", challenge.Tags)
-        };
-        var vm = new CreateChallengeViewModel
-        {
-            Challenge = challengeDto,
-        };
-        TempData["ChallengeId"] = id;
-        return View(vm);
+            TempData[ErrorTempDataKey] = ex.Message;
+            return RedirectToAction(nameof(Index));
+        }
     }
 
     [HttpPost]
@@ -83,21 +84,27 @@ public class ChallengesController : BaseAdminController
         if (!ModelState.IsValid)
             return View(vm);
 
-        var existing = await _challengeService.GetChallengeByIdAsync(id);
-        if (existing is null)
-            return NotFound();
+        try
+        {
+            var existing = await _challengeService.GetChallengeByIdAsync(id);
 
-        var editDto = new EditChallengeDto
-        (
-            Id: id,
-            Title: vm.Challenge.Title,
-            Description: vm.Challenge.Description,
-            Difficulty: vm.Challenge.Difficulty,
-            Tags: vm.Challenge.Tags ?? string.Empty
-        );
+            var editDto = new EditChallengeDto
+            (
+                Id: id,
+                Title: vm.Challenge.Title,
+                Description: vm.Challenge.Description,
+                Difficulty: vm.Challenge.Difficulty,
+                Tags: vm.Challenge.Tags ?? string.Empty
+            );
 
-        await _challengeService.UpdateChallengeAsync(editDto);
-        TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
+            await _challengeService.UpdateChallengeAsync(editDto);
+            TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
+        }
+        catch (ChallengeNotFoundException ex)
+        {
+            TempData[ErrorTempDataKey] = ex.Message; 
+        }
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -105,14 +112,21 @@ public class ChallengesController : BaseAdminController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Delete(int id)
     {
-        var challenge = await _challengeService.GetChallengeByIdAsync(id);
-        if (challenge is null)
+        try
         {
-            return NotFound(); 
-        }
+            var challenge = await _challengeService.GetChallengeByIdAsync(id);
 
-        await _challengeService.DeleteChallengeAsync(challenge.Id);
-        TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
+            await _challengeService.DeleteChallengeAsync(challenge.Id);
+            TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
+        }
+        catch (ChallengeNotFoundException ex)
+        {
+            TempData[ErrorTempDataKey] = ex.Message;
+        }
+        catch (ChallengeAlreadyDeletedException)
+        {
+            TempData[ErrorTempDataKey] = Admin_ChallengeAlreadyDeletedMessage;
+        }
         return RedirectToAction(nameof(Index));
     }
 
@@ -120,14 +134,22 @@ public class ChallengesController : BaseAdminController
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Restore(int id)
     {
-        var challenge = await _challengeService.GetChallengeByIdAsync(id);
-        if (challenge is null)
+        try
         {
-            return NotFound();
+            var challenge = await _challengeService.GetChallengeByIdAsync(id);
+
+            await _challengeService.RestoreChallengeAsync(challenge.Id);
+            TempData[SuccessTempDataKey] = ChallengeRestoredMessage;
+        }
+        catch (ChallengeNotFoundException ex)
+        {
+            TempData[ErrorTempDataKey] = ex.Message;
+        }
+        catch (ChallengeAlreadyActiveException)
+        {
+            TempData[ErrorTempDataKey] = Admin_ChallengeAlreadyActiveMessage;
         }
 
-        await _challengeService.RestoreChallengeAsync(challenge.Id);
-        TempData[SuccessTempDataKey] = ChallengeRestoredMessage;
         return RedirectToAction(nameof(Index));
     }
 
