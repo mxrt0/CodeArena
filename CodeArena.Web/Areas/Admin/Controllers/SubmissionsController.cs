@@ -11,9 +11,12 @@ public class SubmissionsController : BaseAdminController
 {
     const int PageSize = 5;
     private readonly IAdminSubmissionService _submissionService;
-    public SubmissionsController(IAdminSubmissionService submissionService)
+    private readonly ILogger<SubmissionsController> _logger;
+    public SubmissionsController(IAdminSubmissionService submissionService,
+        ILogger<SubmissionsController> logger)
     {
         _submissionService = submissionService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index(int page = 1)
@@ -46,6 +49,7 @@ public class SubmissionsController : BaseAdminController
         }
         catch (SubmissionNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message;
             return RedirectToAction(nameof(Index));
         }
@@ -61,14 +65,17 @@ public class SubmissionsController : BaseAdminController
         }
         catch (SubmissionNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message;
         }
-        catch (SubmissionAlreadyApprovedException)
+        catch (SubmissionAlreadyApprovedException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyApprovedMessage;
         }
-        catch (SubmissionAlreadyRejectedException)
+        catch (SubmissionAlreadyRejectedException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyRejectedMessage;
         }
 
@@ -85,14 +92,17 @@ public class SubmissionsController : BaseAdminController
         }
         catch (SubmissionNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message;
         }
-        catch (SubmissionAlreadyApprovedException)
+        catch (SubmissionAlreadyApprovedException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyApprovedMessage;
         }
-        catch (SubmissionAlreadyRejectedException)
+        catch (SubmissionAlreadyRejectedException ex)
         {
+            _logger.LogWarning(ex.Message); 
             TempData[ErrorTempDataKey] = Admin_SubmissionAlreadyRejectedMessage;
         }
 

@@ -12,10 +12,13 @@ namespace CodeArena.Web.Areas.Admin.Controllers;
 public class ChallengesController : BaseAdminController
 {
     private readonly IAdminChallengeService _challengeService;
+    private readonly ILogger<ChallengesController> _logger;
 
-    public ChallengesController(IAdminChallengeService challengeService)
+    public ChallengesController(IAdminChallengeService challengeService,
+        ILogger<ChallengesController> logger)
     {
         _challengeService = challengeService;
+        _logger = logger;
     }
 
     public async Task<IActionResult> Index()
@@ -73,6 +76,7 @@ public class ChallengesController : BaseAdminController
         }
         catch (ChallengeNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message;
             return RedirectToAction(nameof(Index));
         }
@@ -102,6 +106,7 @@ public class ChallengesController : BaseAdminController
         }
         catch (ChallengeNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message; 
         }
 
@@ -121,10 +126,12 @@ public class ChallengesController : BaseAdminController
         }
         catch (ChallengeNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message;
         }
-        catch (ChallengeAlreadyDeletedException)
+        catch (ChallengeAlreadyDeletedException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = Admin_ChallengeAlreadyDeletedMessage;
         }
         return RedirectToAction(nameof(Index));
@@ -143,10 +150,12 @@ public class ChallengesController : BaseAdminController
         }
         catch (ChallengeNotFoundException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = ex.Message;
         }
-        catch (ChallengeAlreadyActiveException)
+        catch (ChallengeAlreadyActiveException ex)
         {
+            _logger.LogWarning(ex.Message);
             TempData[ErrorTempDataKey] = Admin_ChallengeAlreadyActiveMessage;
         }
 
