@@ -1,20 +1,77 @@
 ﻿@model HomeIndexViewModel
 @{
-ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home Page";
 }
 
 <div class="container mt-5">
 
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">Level Up Your Coding Skills</h1>
+        <h1 class="display-4 fw-bold">
+            <i class="bi me-2"></i>
+            Level Up Your Coding Skills
+        </h1>
+
         <p class="lead text-muted">
-            Complete challenges. Track progress. Improve daily.
+            Complete challenges. Track your progress. Become consistent.
         </p>
 
-        <a asp-controller="Challenges"
-           asp-action="Index"
-           class="btn btn-dark btn-lg mt-3">
-            Browse Challenges
-        </a>
+        <div class="mt-4">
+            <a asp-controller="Challenges"
+                   asp-action="Index"
+                   class="btn btn-primary btn-lg me-2">
+                <i class="bi bi-arrow-down-right-circle me-1"></i>
+                Browse Challenges
+            </a>
+
+            @if (!(User?.Identity?.IsAuthenticated ?? false))
+            {
+                <a asp-area="Identity"
+                       asp-page="/Account/Register"
+                       class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-person-plus me-1"></i>
+                    Get Started
+                </a>
+            }
+        </div>
+    </div>
+
+    <div class="row text-center g-4">
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="bi bi-trophy display-6 mb-3"></i>
+                    <h5 class="fw-semibold">Solve Challenges</h5>
+                    <p class="text-muted">
+                        Practice with curated problems across different difficulties.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="bi bi-graph-up display-6 mb-3"></i>
+                    <h5 class="fw-semibold">Track Progress</h5>
+                    <p class="text-muted">
+                        Monitor your submissions and improve over time.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="bi bi-lightning-charge display-6 mb-3"></i>
+                    <h5 class="fw-semibold">Stay Consistent</h5>
+                    <p class="text-muted">
+                        Build a habit and sharpen your problem-solving skills daily.
+                    </p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
