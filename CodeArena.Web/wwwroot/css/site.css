@@ -86,16 +86,12 @@ body {
             color: #aaa;
         }
 
-        /* Links */
-        body.dark-mode a {
-            color: #9ecbff;
-        }
-
-            body.dark-mode a:hover {
-                color: #cfe2ff;
-            }
-
 .card:hover {
     transform: translateY(-3px);
     transition: 0.2s ease;
+}
+
+#themeToggle:focus {
+    outline: 2px solid #aaa;
+    outline-offset: 2px;
 }
