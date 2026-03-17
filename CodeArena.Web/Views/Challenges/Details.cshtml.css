@@ -1,0 +1,47 @@
+﻿/* Dark mode card */
+body.dark-mode .challenge-details-card {
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+}
+
+    /* Preformatted description */
+    body.dark-mode .challenge-details-card pre {
+        background-color: #2a2a2a;
+        color: #f1f1f1;
+        border-color: #444;
+    }
+
+/* Alerts */
+body.dark-mode .alert {
+    color: #f1f1f1;
+}
+
+body.dark-mode .alert-warning {
+    color: #000;
+    background-color: #ffc107;
+}
+
+body.dark-mode .alert-success {
+    color: #fff;
+    background-color: #28a745;
+}
+
+/* Buttons */
+body.dark-mode .btn-outline-secondary {
+    color: #f1f1f1;
+    border-color: #f1f1f1;
+}
+
+    body.dark-mode .btn-outline-secondary:hover {
+        background-color: #333;
+        color: #fff;
+    }
+
+/* Badges */
+body.dark-mode .badge {
+    color: #fff !important;
+}
+
+    body.dark-mode .badge.bg-warning {
+        color: #000 !important;
+    }
