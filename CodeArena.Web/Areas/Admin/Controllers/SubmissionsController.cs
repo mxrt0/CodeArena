@@ -61,7 +61,7 @@ public class SubmissionsController : BaseAdminController
         try
         {
             await _submissionService.ApproveAsync(vm.Submission.SubmissionId, vm.SubmissionFeedback);
-            TempData[SuccessTempDataKey] = SubmissionRejectedMessage;
+            TempData[SuccessTempDataKey] = SubmissionApprovedMessage;
         }
         catch (SubmissionNotFoundException ex)
         {
