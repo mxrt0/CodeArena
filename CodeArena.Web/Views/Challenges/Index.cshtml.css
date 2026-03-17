@@ -1,0 +1,71 @@
+﻿/* Base hover for both modes */
+.challenge-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .challenge-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    }
+
+/* Minimum height for descriptions */
+.challenge-page .card-text {
+    min-height: 3rem;
+}
+
+/* Dark mode overrides */
+body.dark-mode .challenge-page {
+    background-color: #121212;
+}
+
+body.dark-mode .challenge-card {
+    background-color: #1e1e1e;
+    color: #f1f1f1;
+}
+
+body.dark-mode .btn-outline-dark {
+    border-color: #f1f1f1;
+    color: #f1f1f1;
+}
+
+    body.dark-mode .btn-outline-dark:hover {
+        background-color: #333;
+        color: #fff;
+    }
+
+body.dark-mode .badge {
+    color: #fff !important;
+}
+
+    body.dark-mode .badge.bg-warning {
+        color: #000 !important; /* keep warning badges readable */
+    }
+
+body.dark-mode .form-select,
+body.dark-mode .form-control {
+    background-color: #2a2a2a;
+    color: #f1f1f1;
+    border-color: #444;
+}
+
+body.dark-mode .pagination .page-link {
+    background-color: #2a2a2a;
+    color: #f1f1f1;
+    border-color: #444;
+}
+
+body.dark-mode .pagination .page-item.active .page-link {
+    background-color: #444;
+    border-color: #666;
+    color: #fff;
+}
+
+body.dark-mode .btn-outline-danger,
+body.dark-mode .btn-outline-danger:hover,
+body.dark-mode .btn-outline-danger:focus,
+body.dark-mode .btn-outline-danger:active {
+    color: #ccc; /* slight gray */
+    border-color: #ff5c5c; /* keep red outline */
+    background-color: transparent; /* maintain outline look */
+    box-shadow: none; /* remove focus glow if any */
+}
