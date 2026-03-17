@@ -2,13 +2,14 @@
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Submission;
 using CodeArena.Data.Common.Enums;
-using static CodeArena.Common.OutputMessages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using CodeArena.Common.Exceptions;
+using static CodeArena.Common.OutputMessages;
 
 namespace CodeArena.Services.Core.Admin;
 
@@ -23,13 +24,15 @@ public class AdminSubmissionService : IAdminSubmissionService
 
     public async Task ApproveAsync(int id, string? feedback = null)
     {
-        feedback ??= string.Empty;
+        feedback ??= NoFeedbackMessage;
 
-        var submission = await _repository.GetByIdAsync(id);
-        if (submission is null)
-        {
-            throw new InvalidOperationException(SubmissionNotFoundMessage);
-        }
+        var submission = await _repository.GetByIdAsync(id) ?? throw new SubmissionNotFoundException(id);
+      
+        if (submission.Status == SubmissionStatus.Approved) 
+            throw new SubmissionAlreadyApprovedException(id);
+
+        if (submission.Status == SubmissionStatus.Rejected)
+            throw new SubmissionAlreadyRejectedException(id);
 
         submission.Status = SubmissionStatus.Approved;
         submission.Feedback = feedback;
@@ -64,13 +67,9 @@ public class AdminSubmissionService : IAdminSubmissionService
         return (dtos, totalCount);
     }
 
-    public async Task<AdminSubmissionReviewDto?> GetSubmissionForReviewAsync(int id)
+    public async Task<AdminSubmissionReviewDto> GetSubmissionForReviewAsync(int id)
     {
-        var submission = await _repository.GetByIdAsync(id);
-        if (submission is null)
-        {
-            return null;
-        }
+        var submission = await _repository.GetByIdAsync(id) ?? throw new SubmissionNotFoundException(id);
 
         return new AdminSubmissionReviewDto
         (
@@ -82,18 +81,19 @@ public class AdminSubmissionService : IAdminSubmissionService
             submission.SolutionCode,
             submission.SubmittedAt
         );
-
     }
 
     public async Task RejectAsync(int id, string? feedback = null)
     {
-        feedback ??= string.Empty;
+        feedback ??= NoFeedbackMessage;
 
-        var submission = await _repository.GetByIdAsync(id);
-        if (submission is null)
-        {
-            throw new InvalidOperationException(SubmissionNotFoundMessage);
-        }
+        var submission = await _repository.GetByIdAsync(id) ?? throw new SubmissionNotFoundException(id);
+
+        if (submission.Status == SubmissionStatus.Approved)
+            throw new SubmissionAlreadyApprovedException(id);
+
+        if (submission.Status == SubmissionStatus.Rejected)
+            throw new SubmissionAlreadyRejectedException(id);
 
         submission.Status = SubmissionStatus.Rejected;
         submission.Feedback = feedback;

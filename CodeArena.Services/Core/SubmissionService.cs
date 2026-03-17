@@ -13,6 +13,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using CodeArena.Services.Results;
 
 namespace CodeArena.Services.Core;
 
@@ -71,15 +72,23 @@ public class SubmissionService : ISubmissionService
         await _repository.AddAsync(submission);
     }
 
-    public async Task<SubmissionDetailsDto?> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user)
+    public async Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
         if (userId is null)
         {
-            return null;
+            return ServiceResult<SubmissionDetailsDto>.Fail(UnauthenticatedActionMessage);
+        }
+        if (!await _repository.AnyAsync(s => s.Id == id))
+        {
+            return ServiceResult<SubmissionDetailsDto>.Fail(string.Format(SubmissionNotFoundMessage, id));
+        }
+        if (!await _repository.AnyAsync(s => s.Id == id && s.UserId == userId))
+        {
+            return ServiceResult<SubmissionDetailsDto>.Fail(string.Format(UnauthorizedActionMessage, userId));
         }
 
-        return await _repository.GetAll()
+        var dto = await _repository.GetAll()
             .Where(s => s.Id == id && s.UserId == userId)
             .Include(s => s.Challenge)
             .Select(s => new SubmissionDetailsDto(
@@ -92,7 +101,9 @@ public class SubmissionService : ISubmissionService
                 s.SolutionCode,
                 s.SubmittedAt
             ))
-            .FirstOrDefaultAsync();
+            .FirstAsync();
+
+        return ServiceResult<SubmissionDetailsDto>.Ok(dto);
     }
 
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(

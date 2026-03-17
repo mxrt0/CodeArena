@@ -12,11 +12,17 @@ public class ChallengesController : BaseController
     const int PageSize = 1;
     private readonly IChallengeService _service;
     private readonly ISubmissionService _submissionService;
+    private readonly ILogger<ChallengesController> _logger;
 
-    public ChallengesController(IChallengeService service, ISubmissionService submissionService)
+    public ChallengesController(
+        IChallengeService service,
+        ISubmissionService submissionService,
+        ILogger<ChallengesController> logger
+    )
     {
         _service = service;
         _submissionService = submissionService;
+        _logger = logger;
     }
 
     [AllowAnonymous]
@@ -45,19 +51,25 @@ public class ChallengesController : BaseController
     [AllowAnonymous]
     public async Task<IActionResult> Details(int id)
     {
-        var challenge = await _service.GetChallengeByIdAsync(
+        if (id <= 0)
+        {
+            return BadRequest();
+        }
+
+        var result = await _service.GetChallengeByIdAsync(
             id,
           user: User?.Identity?.IsAuthenticated ?? false
                     ? User
                     : null);
 
-        if (challenge is null)
+        if (!result.Success)
         {
+            _logger.LogInformation(result.ErrorMessage);
             return NotFound();
         }
         var vm = new ChallengeDetailsViewModel
         {
-            Challenge = challenge
+            Challenge = result.Data!
         };
         
         return View(vm);
