@@ -9,7 +9,7 @@ namespace CodeArena.Web.Controllers;
 
 public class ChallengesController : BaseController
 {
-    const int PageSize = 1;
+    const int PageSize = 12;
     private readonly IChallengeService _service;
     private readonly ISubmissionService _submissionService;
     private readonly ILogger<ChallengesController> _logger;
