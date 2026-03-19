@@ -47,11 +47,12 @@
 
             @if (!string.IsNullOrWhiteSpace(Model.Submission.Feedback))
             {
-                <div class="alert alert-info">
-                    <strong>Admin Feedback</strong>
-                    <p class="mb-0 mt-2">
-                        @Model.Submission.Feedback
-                    </p>
+                <div class="feedback-card mb-3 p-3 rounded shadow-sm border-left-info">
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-chat-left-text me-2 fs-5 text-info"></i>
+                        <strong>Admin Feedback</strong>
+                    </div>
+                    <p class="mb-0">@Model.Submission.Feedback</p>
                 </div>
 
                 <hr />
@@ -61,10 +62,12 @@
                 <i class="bi bi-code-slash me-1"></i>
                 Your Solution
             </h5>
-
-            <pre class="submission-code-block p-3 border rounded font-monospace">
-@Model.Submission.SolutionCode
-            </pre>
+            <div class="code-container position-relative p-0">
+                <button class="copy-btn">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <pre><code class="language-@Model.Submission.Language.ToLower()">@Model.Submission.SolutionCode</code></pre>
+            </div>
 
             <div class="mt-3 d-flex gap-2 flex-wrap">
 
@@ -87,3 +90,11 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/copyToClipboard.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+    </script>
+}
