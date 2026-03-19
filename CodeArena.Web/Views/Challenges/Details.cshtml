@@ -2,7 +2,11 @@
 @{
     ViewData["Title"] = Model.Challenge.Title;
 }
-
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/eclipse.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+}
 <div class="container mt-4">
     <div class="card shadow-sm challenge-details-card">
         <div class="card-body d-flex flex-column">
@@ -25,7 +29,9 @@
                 <div class="mb-3">
                     @foreach (var tag in Model.Challenge.Tags)
                     {
-                        <span class="badge bg-secondary me-1">@tag</span>
+                        <span class="badge bg-secondary me-1">
+                            <i class="bi bi-tags me-1"></i>@tag
+                        </span>
                     }
                 </div>
             }
@@ -39,7 +45,8 @@
                 <hr />
                 @if (Model.Challenge.HasPendingSubmission)
                 {
-                    <div class="alert alert-warning text-center w-75 m-auto">
+                    <div class="alert alert-warning text-center w-75 mx-auto mt-3">
+                        <i class="bi bi-clock-history me-1"></i>
                         You already have a submission pending review.
                     </div>
 
@@ -49,8 +56,9 @@
                 }
                 else if (Model.Challenge.IsSolved)
                 {
-                    <div class="alert alert-success text-center w-75 m-auto">
-                        ✓ You have solved this challenge!
+                    <div class="alert alert-success text-center w-75 mx-auto mt-3">
+                        <i class="bi bi-check-circle me-1"></i>
+                        You have solved this challenge!
                     </div>
 
                     <a asp-controller="Submissions" asp-action="Index" class="btn btn-info d-block m-auto mt-2">
@@ -59,13 +67,15 @@
                 }
                 else
                 {
-                    <h5 class="mt-4">Submit Your Solution</h5>
+                    <h5 class="mt-4">
+                        <i class="bi bi-code-slash me-1"></i>
+                        Submit Your Solution
+                    </h5>
 
                     <form asp-controller="Submissions" asp-action="Create" method="post">
                         <input type="hidden" name="ChallengeId" value="@Model.Challenge.Id" />
 
                         <div class="mb-3">
-                            <label asp-for="SolutionCode" class="form-label">Paste your code here:</label>
                             <textarea class="form-control font-monospace"
                                       asp-for="SolutionCode"
                                       rows="8"
@@ -73,8 +83,8 @@
                             <span asp-validation-for="SolutionCode" class="text-danger"></span>
                         </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Language" class="form-label">Language</label>
+                        <div class="mb-3 w-25">
+                            <label asp-for="Language" class="form-label fw-bold">Language</label>
                             <select class="form-select" asp-for="Language" required>
                                 <option value="">--Select--</option>
                                 <option value="CSharp">C#</option>
@@ -85,7 +95,8 @@
                             <span asp-validation-for="Language" class="text-danger"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-success d-block m-auto">Submit For Review</button>
+                        <button type="submit" class="btn btn-success d-block m-auto">
+                            <i class="bi bi-upload me-1"></i>Submit</button>
                     </form>
                 }
             }
@@ -96,9 +107,18 @@
                 </div>
             }
 
-            <a asp-action="Index" class="btn btn-outline-secondary d-block m-auto mt-3">
-                Back to Challenges
+            <a asp-action="Index" class="btn btn-outline-secondary d-block m-auto mt-2">
+                <i class="bi bi-arrow-left me-1"></i>
+                Back
             </a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/python/python.min.js"></script>
+    <script src="~/js/codeMirror.js"></script>
+}
