@@ -15,6 +15,7 @@ toggleBtn?.addEventListener("click", () => {
     body.classList.toggle("dark-mode");
 
     const isDark = body.classList.contains("dark-mode");
+    document.getElementById('hljs-theme-dark').disabled = !isDark;
     localStorage.setItem("theme", isDark ? "dark" : "light");
 
     if (icon) {
