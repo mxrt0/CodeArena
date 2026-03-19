@@ -8,6 +8,7 @@ const icon = toggleBtn?.querySelector("i");
 
 if (localStorage.getItem("theme") === "dark") {
     body.classList.add("dark-mode");
+    document.getElementById('hljs-theme-dark').disabled = false;
     if (icon) icon.classList.replace("bi-moon", "bi-sun");
 }
 
