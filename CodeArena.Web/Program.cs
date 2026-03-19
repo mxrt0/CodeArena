@@ -44,7 +44,10 @@ namespace CodeArena.Web
             {
                 options.AccessDeniedPath = "/Home/Error/403";
             });
-
+            builder.Services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
             builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
