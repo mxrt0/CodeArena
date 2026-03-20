@@ -10,7 +10,7 @@ using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
-// TODO: Implement stuff from Workshop 05.03
+// TODO: Implement slugs for challenges
 namespace CodeArena.Web
 {
     public class Program
