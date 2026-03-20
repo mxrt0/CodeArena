@@ -27,7 +27,7 @@ namespace CodeArena.Web.Controllers
                 var user = await _userManager.GetUserAsync(User);
                 if (user is not null && await _userManager.IsInRoleAsync(user, "Admin"))
                 {
-                    return LocalRedirect("/Admin");
+                    return LocalRedirect("/admin");
                 }
             }
             var challenges = await _challengeService.GetChallengesAsync();
