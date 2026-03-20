@@ -26,7 +26,7 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
 
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?
                                   .ToString()?.ToLower() == "home" ? "active fw-bold" : "")" 
@@ -88,9 +88,10 @@
     </div>
 
     <footer class="border-top mt-auto py-3 text-muted">
-        <div class="container d-flex justify-content-between">
-            <span>&copy; 2026 CodeArena</span>
-            <span class="small">Built with ASP.NET MVC</span>
+        <div class="d-flex justify-content-center align-items-center gap-2">
+            <span>© 2026 CodeArena</span>
+            <span>•</span>          
+            <span>Built with ASP.NET MVC</span>
         </div>
     </footer>
     

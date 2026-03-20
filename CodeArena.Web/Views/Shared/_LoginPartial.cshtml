@@ -9,8 +9,8 @@
 
     @if (SignInManager.IsSignedIn(User) && user is not null)
     {
-        <li class="nav-item me-2">
-            <span class="nav-link fw-semibold">
+        <li class="nav-item me-3 d-flex align-items-center">
+            <span class="fw-semibold">
                 <i class="bi bi-person-circle me-1"></i>
                 @user.DisplayName
             </span>
@@ -31,7 +31,7 @@
     else
     {
         <li class="nav-item me-2">
-            <a class="btn btn-sm btn-outline-primary"
+            <a class="btn btn-sm btn-outline-secondary"
                    asp-area="Identity"
                    asp-page="/Account/Login">
                 <i class="bi bi-box-arrow-in-right me-1"></i> Login
