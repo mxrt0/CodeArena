@@ -10,7 +10,7 @@ using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
-// TODO: Implement stuff from Workshop 05.03
+// TODO: Implement slugs for challenges
 namespace CodeArena.Web
 {
     public class Program
@@ -44,7 +44,10 @@ namespace CodeArena.Web
             {
                 options.AccessDeniedPath = "/Home/Error/403";
             });
-
+            builder.Services.AddRouting(options =>
+            {
+                options.LowercaseUrls = true;
+            });
             builder.Services.AddScoped<IChallengeRepository, ChallengeRepository>();
             builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();

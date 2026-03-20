@@ -1,138 +1,155 @@
 ﻿@model ChallengeIndexViewModel
-
 @{
     ViewData["Title"] = "Challenges";
 }
 
-<h2 class="mb-4">Challenges</h2>
+<div class="container mt-4 challenge-page">
 
-<form method="get" class="mb-3 d-flex align-items-center gap-2">
+    <form method="get" class="mb-4 d-flex align-items-center gap-2 flex-wrap">
+        <select asp-for="SelectedDifficulty" class="form-select w-auto">
+            <option value="">All Difficulties</option>
+            <option value="Easy">Easy</option>
+            <option value="Medium">Medium</option>
+            <option value="Hard">Hard</option>
+        </select>
 
-    <select asp-for="SelectedDifficulty" class="form-select w-auto">
-        <option value="">All Difficulties</option>
-        <option value="Easy">Easy</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
-    </select>
+        <select asp-for="StatusFilter" class="form-select w-auto">
+            <option value="">All Challenges</option>
+            <option value="Unsolved">Unsolved</option>
+            <option value="Solved">Solved</option>
+        </select>
 
-    <select asp-for="StatusFilter" class="form-select w-auto">
-        <option value="">All Challenges</option>
-        <option value="Unsolved">Unsolved</option>
-        <option value="Solved">Solved</option>
-    </select>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-funnel"></i> <span class="d-none d-sm-inline ms-sm-1">Filter</span>
+        </button>
+        <a asp-action="Index" class="btn btn-outline-danger ms-1">
+            <i class="bi bi-x-lg"></i> <span class="d-none d-sm-inline ms-sm-1">Clear</span>
+        </a>
+    </form>
 
-    <button type="submit" class="btn btn-primary">Filter</button>
-    <a asp-action="Index" class="btn btn-danger ms-1">Clear Filters</a>
-</form>
+    @if (!Model.Challenges.Any())
+    {
+        <div class="text-center py-5">
 
-@if (!Model.Challenges.Any())
-{
-    <div class="alert alert-info">
-        No challenges found.
-    </div>
-}
-else
-{
-    <div class="row">
-        @foreach (var challenge in Model.Challenges)
-        {
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body d-flex flex-column">
+            <i class="bi bi-search display-5 text-muted"></i>
 
-                        <h5 class="card-title">
-                            @challenge.Title
-                        </h5>
+            <h5 class="mt-3 fw-semibold">No challenges found</h5>
 
-                        @if (challenge.IsSolved)
-                        {
-                            <div class="mb-2">
-                                <span class="badge bg-success">
-                                    Solved
-                                </span>
-                            </div>
-                        }
-                        else if (challenge.HasPendingSubmission)
-                        {
-                            <div class="mb-2">
-                                <span class="badge bg-warning">
-                                    Awaiting Review
-                                </span>
-                            </div>
-                        }
+            <p class="text-muted mb-3">
+                Try adjusting your filters.
+            </p>
 
-                        <p class="card-text text-muted flex-grow-1 text-center">
-                            @(challenge.Description.Length <= 200 
-                                          ? challenge.Description
-                                          : challenge.Description.Substring(0, 
-                                                 challenge.Description.IndexOf(' ', 200))
-                                                 + "...")
-                        </p>
-                        
-                        <div class="mb-2">
-                            <span class="badge bg-primary 
-                                @(challenge.Difficulty == "Easy" ? "bg-success" :
-                                    challenge.Difficulty == "Medium" ? "bg-warning text-dark" :
-                                    "bg-danger")">
-                                @challenge.Difficulty
-                            </span>
-                        </div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                Clear Filters
+            </a>
 
-                        @if (challenge.Tags != null && challenge.Tags.Any())
-                        {
-                            <div class="mb-3">
-                                @foreach (var tag in challenge.Tags)
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var challenge in Model.Challenges)
+            {
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="card h-100 shadow-sm challenge-card">
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="card-title fw-bold mb-2">
+                                @challenge.Title
+                            </h5>
+
+                            <div class="mb-2 d-flex gap-2 flex-wrap">
+                                @if (challenge.IsSolved)
                                 {
-                                    <span class="badge bg-secondary me-1">
-                                        @tag
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle me-1"></i>
+                                        Solved
+                                    </span>
+                                }
+                                else if (challenge.HasPendingSubmission)
+                                {
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-hourglass-split me-1"></i>
+                                        Awaiting Review
                                     </span>
                                 }
                             </div>
-                        }
 
-                        <a asp-action="Details"
-                           asp-route-id="@challenge.Id"
-                           class="btn btn-outline-dark mt-auto">
-                            View Details
-                        </a>
+                            <p class="card-text text-muted flex-grow-1 text-truncate">
+                                @(challenge.Description.Length <= 200
+                                    ? challenge.Description
+                                    : challenge.Description.Substring(0,
+                                          challenge.Description.IndexOf(' ', 200)) + "...")
+                            </p>
 
+                            <div class="mb-2 d-flex gap-1 flex-wrap">
+                                <span class="badge
+                                    @(challenge.Difficulty == "Easy" ? "bg-success" :
+                                                                            challenge.Difficulty == "Medium" ? "bg-warning text-dark" :
+                                                                            "bg-danger")">
+                                    <i class="bi bi-bar-chart-line me-1"></i>
+                                    @challenge.Difficulty
+                                </span>
+
+                                @if (challenge.Tags != null && challenge.Tags.Any())
+                                {
+                                    @foreach (var tag in challenge.Tags)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <i class="bi bi-tags me-1"></i>@tag
+                                        </span>
+                                    }
+                                }
+                            </div>
+
+                            <a asp-action="Details"
+                                   asp-route-id="@challenge.Id"
+                                   class="btn btn-outline-secondary t-auto">
+                                <i class="bi bi-eye me-1"></i>
+                                View Details
+                            </a>
+
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
-    <nav>
-        <ul class="pagination justify-content-center">
-            <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-page="@(Model.CurrentPage - 1)"
-                       asp-route-selectedDifficulty="@Model.SelectedDifficulty"
-                       asp-route-statusFilter="@Model.StatusFilter">
-                    &laquo; Previous
-                </a>
-            </li>
-            @for (int i = 1; i <= Model.TotalPages; i++)
-            {
-                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+            }
+        </div>
+
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                     <a class="page-link"
                            asp-action="Index"
-                           asp-route-page="@i"
+                           asp-route-page="@(Model.CurrentPage - 1)"
                            asp-route-selectedDifficulty="@Model.SelectedDifficulty"
                            asp-route-statusFilter="@Model.StatusFilter">
-                        @i
+                        &laquo; Previous
                     </a>
                 </li>
-            }
-            <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
-                <a class="page-link"
-                       asp-action="Index"
-                       asp-route-page="@(Model.CurrentPage + 1)"
-                       asp-route-selectedDifficulty="@Model.SelectedDifficulty"
-                       asp-route-statusFilter="@Model.StatusFilter">
-                    Next &raquo;
-                </a>
-            </li>
-        </ul>
-    </nav>
-}
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link"
+                               asp-action="Index"
+                               asp-route-page="@i"
+                               asp-route-selectedDifficulty="@Model.SelectedDifficulty"
+                               asp-route-statusFilter="@Model.StatusFilter">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@(Model.CurrentPage + 1)"
+                           asp-route-selectedDifficulty="@Model.SelectedDifficulty"
+                           asp-route-statusFilter="@Model.StatusFilter">
+                        Next &raquo;
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
