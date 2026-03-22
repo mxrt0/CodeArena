@@ -79,7 +79,7 @@
                             <textarea class="form-control font-monospace"
                                       asp-for="SolutionCode"
                                       rows="8"
-                                      required></textarea>
+                                      ></textarea>
                             <span asp-validation-for="SolutionCode" class="text-danger"></span>
                         </div>
 
@@ -115,7 +115,9 @@
     </div>
 </div>
 
-@section Scripts {
+@section Scripts { 
+    <partial name="_ValidationScriptsPartial" />
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/clike/clike.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/javascript/javascript.min.js"></script>
