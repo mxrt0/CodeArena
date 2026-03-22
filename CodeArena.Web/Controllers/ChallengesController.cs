@@ -29,7 +29,7 @@ public class ChallengesController : BaseController
     public async Task<IActionResult> Index(ChallengeIndexViewModel inputVm, int page = 1)
     {
         var (challenges, count) = await _service.GetChallengesAsync(
-            page: page,
+            page: Math.Max(1, page),
             pageSize: PageSize,
             statusFilter: inputVm.StatusFilter,
             difficultyFilter: inputVm.SelectedDifficulty,
