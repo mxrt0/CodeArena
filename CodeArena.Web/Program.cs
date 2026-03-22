@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
 // TODO: Implement slugs for challenges
+// TODO: Unique Check on Username
 namespace CodeArena.Web
 {
     public class Program
