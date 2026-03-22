@@ -1,0 +1,119 @@
+﻿/* Page spacing */
+.admin-challenges-page {
+    padding-bottom: 2rem;
+}
+
+    /* Header */
+    .admin-challenges-page h2 {
+        letter-spacing: 0.3px;
+    }
+
+/* Table base */
+.admin-table {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    background-color: #ffffff;
+}
+
+    /* Header row */
+    .admin-table thead {
+        background-color: #f9fafb;
+    }
+
+        .admin-table thead th {
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+    /* Rows */
+    .admin-table tbody tr {
+        transition: background-color 0.15s ease, transform 0.05s ease;
+    }
+
+        .admin-table tbody tr:hover {
+            background-color: #f3f4f6;
+        }
+
+    /* Cells */
+    .admin-table td {
+        vertical-align: middle;
+        padding: 0.85rem 0.75rem;
+    }
+
+        /* Title column */
+        .admin-table td.fw-semibold {
+            color: #111827;
+        }
+
+    /* Buttons spacing */
+    .admin-table .btn {
+        margin-left: 0.25rem;
+    }
+
+    /* Badge polish */
+    .admin-table .badge {
+        font-size: 0.75rem;
+        padding: 0.4em 0.6em;
+        border-radius: 6px;
+    }
+
+    /* Make actions not wrap weirdly */
+    .admin-table td.text-end {
+        white-space: nowrap;
+    }
+
+/* ---------- DARK MODE ---------- */
+
+body.dark-mode .admin-table {
+    background-color: #111827;
+    border-color: #374151;
+}
+
+
+    /* Text */
+    body.dark-mode .admin-table td {
+        color: #e5e7eb;
+    }
+
+        body.dark-mode .admin-table td.fw-semibold {
+            color: #f9fafb;
+        }
+
+/* Buttons */
+body.dark-mode .btn-outline-primary {
+    color: #93c5fd;
+    border-color: #3b82f6;
+}
+
+    body.dark-mode .btn-outline-primary:hover {
+        background-color: #3b82f6;
+        color: white;
+    }
+
+body.dark-mode .btn-outline-danger {
+    color: #fca5a5;
+    border-color: #ef4444;
+}
+
+    body.dark-mode .btn-outline-danger:hover {
+        background-color: #ef4444;
+        color: white;
+    }
+
+body.dark-mode .btn-outline-warning {
+    color: #fcd34d;
+    border-color: #f59e0b;
+}
+
+    body.dark-mode .btn-outline-warning:hover {
+        background-color: #f59e0b;
+        color: #111827;
+    }
+
+body.dark-mode .table-responsive {
+    border-radius: 12px;
+}
+
