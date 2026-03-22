@@ -27,6 +27,7 @@ public class ChallengesController : BaseAdminController
         {
             Challenges = await _challengeService.GetChallengesAsync()
         };
+        ViewData["ActivePage"] = "Challenges";
         return View(vm);
     }
 
