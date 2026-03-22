@@ -70,9 +70,9 @@
 
                     </div>
 
-                    <div class="p-3 border-top d-flex flex-column gap-2">
+                    <div class="p-3 border-top d-flex flex-column gap-2 align-items-start">
 
-                        <button id="themeToggle" class="btn btn-outline-secondary w-25">
+                        <button id="themeToggle" class="btn btn-outline-secondary w-auto">
                             <i class="bi bi-moon"></i>
                         </button>
 
@@ -81,7 +81,7 @@
                               asp-page="/Account/Logout"
                               asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
 
-                            <button type="submit" class="btn btn-outline-danger w-50">
+                            <button type="submit" class="btn btn-outline-danger">
                                 <i class="bi bi-box-arrow-right me-1"></i>
                                 Logout
                             </button>
