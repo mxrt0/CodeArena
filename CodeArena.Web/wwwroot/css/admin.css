@@ -160,3 +160,15 @@ body.dark-mode {
     body.dark-mode .dashboard-card h6 {
         color: #bbbbbb;
     }
+/* Base */
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+    body.dark-mode .card {
+        color: #e0e0e0;
+        background-color: #121212;
+    }
+body.dark-mode .admin-table th, body.dark-mode .admin-table tr {
+    color: #e0e0e0;
+}
