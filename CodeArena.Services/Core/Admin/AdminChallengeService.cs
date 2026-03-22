@@ -74,7 +74,6 @@ public class AdminChallengeService : IAdminChallengeService
                 c.Difficulty.ToString(),
                 c.Tags
                 .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(t => t.Trim())
                 .ToArray(),
                 c.Submissions.Count,
                 c.IsDeleted
