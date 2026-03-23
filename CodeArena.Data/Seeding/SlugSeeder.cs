@@ -22,7 +22,7 @@ public static class SlugSeeder
                                         .GetAll()
                                         .Where(c => !string.IsNullOrWhiteSpace(c.Slug))
                                         .Select(c => c.Slug)
-                                        .ToListAsync() as List<string>;
+                                        .ToListAsync();
 
         var slugSet = new HashSet<string>(existingSlugs);
 
