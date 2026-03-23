@@ -5,6 +5,7 @@ using System.Security.Claims;
 namespace CodeArena.Web.Controllers;
 
 [Authorize]
+[AutoValidateAntiforgeryToken]
 public class BaseController : Controller
 {
 }
