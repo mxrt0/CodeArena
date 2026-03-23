@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
 // TODO: Implement slugs for challenges
 // TODO: Unique Check on Username
+// TODO: Extension methods for DI and possibly other
 namespace CodeArena.Web
 {
     public class Program
