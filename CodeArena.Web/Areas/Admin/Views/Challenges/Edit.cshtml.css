@@ -1,0 +1,58 @@
+﻿.edit-card {
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    transition: all 0.2s ease;
+}
+
+    .edit-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+/* Scoped inputs (avoids Bootstrap fights) */
+.admin-edit-page .form-control,
+.admin-edit-page .form-select {
+    background-color: #f8f9fa;
+    border: 1px solid #dcdfe3;
+    color: #212529;
+    border-radius: 0.5rem;
+}
+
+    .admin-edit-page .form-control:focus,
+    .admin-edit-page .form-select:focus {
+        background-color: #ffffff;
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.15rem rgba(13,110,253,0.15);
+    }
+
+/* Dark mode */
+body.dark-mode .edit-card {
+    background-color: #1e1e1e;
+    border-color: #2c2c2c;
+    color: #e0e0e0;
+}
+
+    body.dark-mode .edit-card:hover {
+        box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+body.dark-mode .admin-edit-page .form-control,
+body.dark-mode .admin-edit-page .form-select {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-color: #2c2c2c;
+}
+
+    body.dark-mode .admin-edit-page .form-control::placeholder {
+        color: #aaa;
+    }
+
+/* Validation */
+body.dark-mode .text-danger {
+    color: #ff6b6b !important;
+}
+.edit-card {
+    border-left: 4px solid #ffc107;
+}
+body.dark-mode .edit-card {
+    border-left: 4px solid #f7c320;
+}

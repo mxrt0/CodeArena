@@ -1,44 +1,74 @@
 ﻿@model CreateChallengeViewModel
 @{
-    ViewData["Title"] = "Edit challenge";
+    ViewData["Title"] = "Edit Challenge";
 }
-<h2>Edit Challenge</h2>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" name="id" value="@TempData["ChallengeId"]" />
+<div class="container mt-4 admin-edit-page">
 
-    <div class="mb-3">
-        <label asp-for="Challenge.Title" class="form-label"></label>
-        <input asp-for="Challenge.Title" class="form-control" />
-        <span asp-validation-for="Challenge.Title" class="text-danger"></span>
+    <h2 class="mb-4 fw-bold">
+        <i class="bi bi-pencil-square me-2"></i>
+        Edit Challenge
+    </h2>
+
+    <div class="card shadow-sm edit-card">
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+                <input type="hidden" name="id" value="@TempData["ChallengeId"]" />
+
+                <div class="mb-4">
+                    <label asp-for="Challenge.Title" class="form-label fw-semibold"></label>
+                    <input asp-for="Challenge.Title" class="form-control" />
+                    <span asp-validation-for="Challenge.Title" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Challenge.Description" class="form-label fw-semibold"></label>
+                    <textarea asp-for="Challenge.Description" rows="6" class="form-control"></textarea>
+                    <span asp-validation-for="Challenge.Description" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Challenge.Difficulty" class="form-label fw-semibold"></label>
+                        <select asp-for="Challenge.Difficulty" class="form-select">
+                            <option value="">-- Select Difficulty --</option>
+                            <option value="Easy">Easy</option>
+                            <option value="Medium">Medium</option>
+                            <option value="Hard">Hard</option>
+                        </select>
+                        <span asp-validation-for="Challenge.Difficulty" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Challenge.Tags" class="form-label fw-semibold"></label>
+                        <input asp-for="Challenge.Tags" class="form-control" placeholder="e.g. arrays, sorting" />
+                    </div>
+
+                </div>
+
+                <div class="d-flex gap-2 mt-3">
+
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-save me-1"></i>
+                        Save Changes
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-danger">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="Challenge.Description" class="form-label"></label>
-        <textarea asp-for="Challenge.Description" rows="5" class="form-control"></textarea>
-        <span asp-validation-for="Challenge.Description" class="text-danger"></span>
-    </div>
+</div>
 
-    <div class="mb-3">
-        <label asp-for="Challenge.Difficulty" class="form-label"></label>
-        <select asp-for="Challenge.Difficulty" class="form-select">
-            <option value="">--Select Difficulty--</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-        </select>
-        <span asp-validation-for="Challenge.Difficulty" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Challenge.Tags" class="form-label"></label>
-        <input asp-for="Challenge.Tags" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-info">Edit</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
-</form>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
-
