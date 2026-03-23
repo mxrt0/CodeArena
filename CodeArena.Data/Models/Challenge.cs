@@ -27,7 +27,7 @@ public class Challenge
 
     public bool IsDeleted { get; set; }
 
-    public string? Slug { get; set; }
+    public string Slug { get; set; } = null!;
     public ICollection<Submission> Submissions { get; set; } = new HashSet<Submission>();
 }
 
