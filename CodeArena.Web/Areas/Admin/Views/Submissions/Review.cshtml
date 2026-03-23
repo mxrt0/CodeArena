@@ -4,49 +4,116 @@
     ViewData["Title"] = "Review Submission";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Review Submission</h2>
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" />
+    <link id="hljs-theme-dark" rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+          disabled />
+    <link rel="stylesheet" href="~/css/admin-review.css" asp-append-version="true" />
+}
 
-    <div class="card shadow-sm">
+<div class="container mt-4 admin-review-page">
+
+    <h2 class="mb-4 fw-bold">
+        <i class="bi bi-clipboard-check me-2"></i>
+        Review Submission
+    </h2>
+
+    <div class="card shadow-sm review-card">
         <div class="card-body">
-            <h4 class="card-title">@Model.Submission.ChallengeTitle</h4>
-            <p class="card-text"><strong>Submitted by:</strong> @Model.Submission.UserDisplayName</p>
-            <p class="card-text"><strong>Language:</strong> @Model.Submission.Language</p>
-            <p class="card-text"><strong>Difficulty:</strong> @Model.Submission.Difficulty</p>
-            <p class="card-text">
-                <strong>Submitted At:</strong>
-                @Model.Submission.SubmittedAt.ToString(ApplicationConstants.DefaultDateFormat, System.Globalization.CultureInfo.InvariantCulture)
+
+            <h4 class="fw-bold mb-3">
+                @Model.Submission.ChallengeTitle
+            </h4>
+
+            <div class="meta-row mb-3 d-flex flex-wrap gap-2 align-items-center">
+
+                <span class="badge bg-secondary">
+                    @Model.Submission.Language
+                </span>
+
+                <span class="badge bg-primary">
+                    @Model.Submission.Difficulty
+                </span>
+
+                <span class="user-badge">
+                    <i class="bi bi-person-circle me-1"></i>
+                    @Model.Submission.UserDisplayName
+                </span>
+
+            </div>
+
+            <p class="text-muted mb-3">
+                Submitted on
+                <strong>
+                    @Model.Submission.SubmittedAt.ToString(ApplicationConstants.DefaultDateFormat, CultureInfo.InvariantCulture)
+                </strong>
             </p>
 
             <hr />
+            <h5 class="fw-semibold mb-3">
+                <i class="bi bi-code-slash me-1"></i>
+                Solution Code
+            </h5>
 
-            <h5>Solution Code:</h5>
-            <pre class="border p-3 bg-light" style="white-space: pre-wrap;">
- @Model.Submission.SolutionCode
-            </pre>
+            <div class="code-container position-relative p-0">
+                <button class="copy-btn align-self-end">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+                <pre><code class="language-@Model.Submission.Language.ToLower()">@Model.Submission.SolutionCode</code></pre>
+            </div>
 
             <hr />
 
-            <form method="post" class="d-inline">
+            <form method="post">
 
                 <input type="hidden" asp-for="Submission.SubmissionId" />
 
                 <div class="mb-3">
-                    <label asp-for="SubmissionFeedback" class="form-label"></label>
-                    <textarea asp-for="SubmissionFeedback" rows="5" class="form-control"></textarea>
+                    <label asp-for="SubmissionFeedback" class="form-label fw-semibold">
+                        <i class="bi bi-chat-left-text me-1"></i>
+                        Feedback (optional)
+                    </label>
+
+                    <textarea asp-for="SubmissionFeedback"
+                              rows="5"
+                              class="form-control bg-light"></textarea>
                 </div>
 
-                <button type="submit" asp-action="Approve" class="btn btn-success me-2">
-                    Approve
-                </button>
+                <div class="d-flex gap-2 flex-wrap">
 
-                <button type="submit" asp-action="Reject" class="btn btn-danger">
-                    Reject
-                </button>
+                    <button type="submit"
+                            asp-action="Approve"
+                            class="btn btn-success">
+                        <i class="bi bi-check-circle me-1"></i>
+                        Approve
+                    </button>
+
+                    <button type="submit"
+                            asp-action="Reject"
+                            class="btn btn-danger">
+                        <i class="bi bi-x-circle me-1"></i>
+                        Reject
+                    </button>
+
+                    <a asp-action="Index"
+                           class="btn btn-outline-secondary ms-auto">
+                        <i class="bi bi-arrow-left me-1"></i>
+                        Back
+                    </a>
+
+                </div>
 
             </form>
 
-            <a asp-action="Index" class="btn btn-secondary ms-3">Back to Pending Submissions</a>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/js/copyToClipboard.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+    </script>
+}

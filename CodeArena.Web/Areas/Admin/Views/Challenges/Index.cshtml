@@ -4,16 +4,24 @@
     ViewData["Title"] = "Manage Challenges";
 }
 
-<div class="container mt-4">
+<div class="container mt-4 admin-challenges-page">
 
-    <h2 class="mb-3">Manage Challenges</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-trophy me-2"></i>
+            Manage Challenges
+        </h2>
 
-    <a asp-action="Create" class="btn btn-primary mb-3">
-        Create New Challenge
-    </a>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i>
+            Create Challenge
+        </a>
+    </div>
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table admin-table align-middle mb-0">
 
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
+                <thead>
                     <tr>
                         <th>Title</th>
                         <th>Difficulty</th>
@@ -26,12 +34,15 @@
                     @foreach (var c in Model.Challenges)
                     {
                         <tr>
-                            <td>
-                                <strong>@c.Title</strong>
+                            <td class="fw-semibold">
+                                @c.Title
                             </td>
 
                             <td>
-                                <span class="badge bg-primary">
+                                <span class="badge
+                                    @(c.Difficulty == "Easy" ? "bg-success" :
+                                                                                                                  c.Difficulty == "Medium" ? "bg-warning text-dark" :
+                                                                                                                  "bg-danger")">
                                     @c.Difficulty
                                 </span>
                             </td>
@@ -45,18 +56,20 @@
                             <td class="text-end">
 
                                 <a asp-action="Edit"
-                                   asp-route-id="@c.Id"
-                                   class="btn btn-info btn-sm">
-                                    Edit
+                                       asp-route-id="@c.Id"
+                                       class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-pencil-square"></i>
+                                    <span class="d-none d-md-inline ms-md-1">Edit</span>
                                 </a>
 
                                 @if (!c.IsDeleted)
                                 {
                                     <button type="button"
-                                            class="btn btn-danger btn-sm"
+                                            class="btn btn-outline-danger btn-sm"
                                             data-bs-toggle="modal"
                                             data-bs-target="#deleteModal-@c.Id">
-                                        Delete
+                                        <i class="bi bi-trash"></i>
+                                        <span class="d-none d-md-inline ms-md-1">Delete</span>
                                     </button>
                                 }
                                 else
@@ -67,7 +80,8 @@
                                           class="d-inline">
 
                                         <button type="submit"
-                                                class="btn btn-warning btn-sm">
+                                                class="btn btn-outline-warning btn-sm">
+                                            <i class="bi bi-arrow-counterclockwise me-1"></i>
                                             Restore
                                         </button>
 
@@ -76,13 +90,17 @@
 
                             </td>
                         </tr>
-                @if (!c.IsDeleted)
-                {
-                    <partial name="_ConfirmDeletePartial" model="c" />
-                }
-            }
+
+                        @if (!c.IsDeleted)
+                        {
+                            <partial name="_ConfirmDeletePartial" model="c" />
+                        }
+                    }
                 </tbody>
 
             </table>
 
         </div>
+    </div>
+    </div>
+        

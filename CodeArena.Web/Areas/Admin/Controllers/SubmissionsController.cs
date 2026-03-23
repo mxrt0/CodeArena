@@ -4,6 +4,7 @@ using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
 using Microsoft.AspNetCore.Mvc;
 using CodeArena.Common.Exceptions;
+using AspNetCoreGeneratedDocument;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
 
@@ -22,7 +23,7 @@ public class SubmissionsController : BaseAdminController
     public async Task<IActionResult> Index(int page = 1)
     {
         var (submissions, count) = await _submissionService.GetPendingSubmissionsAsync(
-            page,
+            Math.Max(1, page),
             PageSize
         );
 
@@ -32,6 +33,8 @@ public class SubmissionsController : BaseAdminController
             CurrentPage = page,
             TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
+
+        ViewData["ActivePage"] = "Submissions";
         return View(vm);
     }
 

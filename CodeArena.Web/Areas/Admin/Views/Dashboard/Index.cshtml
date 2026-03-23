@@ -2,41 +2,77 @@
 @{
     ViewData["Title"] = "Dashboard";
 }
-<h2>Admin Dashboard</h2>
 
-<div class="row">
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h6>Total Users</h6>
-            <h3>@Model.DashboardData.TotalUsers</h3>
-        </div>
+<div class="container mt-4 admin-dashboard">
+
+    <div class="d-flex justify-content-center align-items-center mb-4">
+        <h2 class="fw-bold mb-0">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Admin Dashboard
+        </h2>
     </div>
 
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h6>Total Challenges</h6>
-            <h3>@Model.DashboardData.TotalChallenges</h3>
-        </div>
-    </div>
+    <div class="container mt-4 admin-dashboard">
 
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h6>Pending</h6>
-            <h3>@Model.DashboardData.PendingSubmissions</h3>
-        </div>
-    </div>
+        <h5 class="mb-3 text-muted">Overview</h5>
+        <div class="row g-4 mb-4">
 
-    <div class="col-md-3">
-        <div class="card p-3">
-            <h6>Approved</h6>
-            <h3>@Model.DashboardData.ApprovedSubmissions</h3>
-        </div>
-    </div>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card dashboard-card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-people display-6 text-primary mb-2"></i>
+                        <h6>Total Users</h6>
+                        <h3>@Model.DashboardData.TotalUsers</h3>
+                    </div>
+                </div>
+            </div>
 
-    <div class="col-md-3 mt-3">
-        <div class="card p-3">
-            <h6>Rejected</h6>
-            <h3>@Model.DashboardData.RejectedSubmissions</h3>
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card dashboard-card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-trophy display-6 text-warning mb-2"></i>
+                        <h6>Challenges</h6>
+                        <h3>@Model.DashboardData.TotalChallenges</h3>
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <h5 class="mb-3 text-muted">Submissions</h5>
+        <div class="row g-4">
+
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card dashboard-card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-hourglass-split display-6 text-warning mb-2"></i>
+                        <h6>Pending</h6>
+                        <h3>@Model.DashboardData.PendingSubmissions</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card dashboard-card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-check-circle display-6 text-success mb-2"></i>
+                        <h6>Approved</h6>
+                        <h3>@Model.DashboardData.ApprovedSubmissions</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+                <div class="card dashboard-card text-center h-100">
+                    <div class="card-body">
+                        <i class="bi bi-x-circle display-6 text-danger mb-2"></i>
+                        <h6>Rejected</h6>
+                        <h3>@Model.DashboardData.RejectedSubmissions</h3>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
     </div>
 </div>

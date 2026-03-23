@@ -32,7 +32,7 @@ public class SubmissionsController : BaseController
     {
         var (submissions, count) = await _submissionService.GetUserSubmissionsAsync(
                 User,
-                page,
+                Math.Max(1, page),
                 PageSize
             );
         var vm = new SubmissionsIndexViewModel

@@ -1,9 +1,12 @@
 ﻿var textarea = document.querySelector('textarea[name="SolutionCode"]');
-
+$.validator.setDefaults({
+    ignore: ":hidden:not(textarea)"
+});
+var currentTheme = localStorage.getItem('theme') || 'light';
 var editor = CodeMirror.fromTextArea(textarea, {
     lineNumbers: true,        
     mode: "text/x-csharp",
-    theme: document.body.classList.contains("dark-mode") ? "dracula" : "eclipse",
+    theme: currentTheme === 'dark' ? "dracula" : "eclipse",
     indentUnit: 4,
     tabSize: 4,
     viewportMargin: Infinity
@@ -27,3 +30,8 @@ document.addEventListener("themeChanged", (e) => {
     const isDark = e.detail.isDark;
     editor.setOption("theme", isDark ? "dracula" : "eclipse");
 });
+
+$('form[method="post"]').on('submit', () => {
+    editor.save();
+    $("textarea[name='SolutionCode']").valid();
+})
