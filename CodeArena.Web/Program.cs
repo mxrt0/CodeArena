@@ -76,6 +76,9 @@ namespace CodeArena.Web
             var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
             await AdminSeeder.EnsureAdminUserExistsAsync(userManager, configuration);
 
+            var challengeRepository = scope.ServiceProvider.GetRequiredService<IChallengeRepository>();
+            await SlugSeeder.EnsureAllChallengesHaveSlugsAsync(challengeRepository);
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
