@@ -18,7 +18,7 @@
 
     /* Header row */
     .admin-table thead {
-        background-color: #f9fafb;
+        
     }
 
         .admin-table thead th {
@@ -34,7 +34,7 @@
     }
 
         .admin-table tbody tr:hover {
-            background-color: #f3f4f6;
+            background-color: #2b4552;
         }
 
     /* Cells */
