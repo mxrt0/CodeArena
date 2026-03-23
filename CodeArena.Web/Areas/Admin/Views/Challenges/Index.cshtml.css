@@ -34,8 +34,11 @@
     }
 
         .admin-table tbody tr:hover {
-            background-color: #2b4552;
+            background-color: lightgray;
         }
+body.dark-mode .admin-table tbody tr:hover {
+    background-color: #2b4552;
+}
 
     /* Cells */
     .admin-table td {
