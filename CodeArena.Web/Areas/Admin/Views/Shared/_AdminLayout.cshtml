@@ -7,6 +7,7 @@
     <link rel="icon" href="~/img/admin_logo.png" type="image/png" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CodeArena.Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" integrity="sha384-tViUnnbYAV00FLIhhi3v/dWt3Jxw4gZQcNoSCxCIFNJVCx7/D55/wXsrNIRANwdD" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" />
     @RenderSection("Styles", required: false)
@@ -34,7 +35,7 @@
 
                             <li class="nav-item">
                                 <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Dashboard" ? "active" : "")"
-                                       asp-area="Admin" asp-controller="Dashboard">
+                                       asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                                     <i class="bi bi-speedometer2 me-2"></i>
                                     Dashboard
                                 </a>
@@ -42,7 +43,7 @@
 
                             <li class="nav-item">
                                 <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Challenges" ? "active" : "")"
-                                       asp-area="Admin" asp-controller="Challenges">
+                                       asp-area="Admin" asp-controller="Challenges" asp-action="Index">
                                     <i class="bi bi-trophy me-2"></i>
                                     Challenges
                                 </a>
@@ -50,7 +51,7 @@
 
                             <li class="nav-item">
                                 <a class="nav-link @(ViewData["ActivePage"]?.ToString() == "Submissions" ? "active" : "")"
-                                       asp-area="Admin" asp-controller="Submissions">
+                                       asp-area="Admin" asp-controller="Submissions" asp-action="Index">
                                     <i class="bi bi-journal-code me-2"></i>
                                     Submissions
                                 </a>
