@@ -49,6 +49,8 @@ public class ChallengeRepository : IChallengeRepository
         ? _context.Challenges.IgnoreQueryFilters().AsNoTracking()
         : _context.Challenges.AsNoTracking();
 
+    public IQueryable<Challenge> GetAllTracked() => _context.Challenges;
+
     public async Task<Challenge?> GetByIdAsync(int id, bool includeDeleted = false)
     {
         var query = includeDeleted
@@ -65,6 +67,8 @@ public class ChallengeRepository : IChallengeRepository
         challenge.IsDeleted = false;
         await _context.SaveChangesAsync();
     }
+
+    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
     public async Task UpdateAsync(Challenge challenge)
     {
