@@ -17,4 +17,5 @@ public interface IChallengeRepository
     Task DeleteAsync(Challenge challenge);
     Task RestoreAsync(Challenge challenge); 
     Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null);
+    Task<bool> AnyAsync(Expression<Func<Challenge, bool>>? predicate = null);
 }

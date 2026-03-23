@@ -25,6 +25,13 @@ public class ChallengeRepository : IChallengeRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> AnyAsync(Expression<Func<Challenge, bool>>? predicate = null)
+    {
+        return predicate is null
+            ? await _context.Challenges.AnyAsync()
+            : await _context.Challenges.AnyAsync(predicate);
+    }
+
     public Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null)
     {
         return predicate is null 
