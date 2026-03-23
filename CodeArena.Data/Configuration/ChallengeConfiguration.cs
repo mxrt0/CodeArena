@@ -20,7 +20,8 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             Title = "Sum Two Numbers",
             Difficulty = Difficulty.Easy,
             Tags = "math",
-            Description = "Write a function that takes two numbers and returns their sum. Example: Input: 3, 5 → Output: 8."
+            Description = "Write a function that takes two numbers and returns their sum. Example: Input: 3, 5 → Output: 8.",
+            Slug ="sum-two-numbers"
         },
         new Challenge
         {
@@ -28,7 +29,8 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             Title = "FizzBuzz",
             Difficulty = Difficulty.Medium,
             Tags = "loops",
-            Description = "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'."
+            Description = "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'.",
+            Slug = "fizzbuzz"
         }
     };
 
@@ -40,6 +42,9 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         builder.HasData(data);
 
         builder.HasQueryFilter(c => !c.IsDeleted);
+
+        builder.HasIndex(c => c.Slug)
+            .IsUnique();
     }
 }
 
