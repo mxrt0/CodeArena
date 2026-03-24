@@ -8,6 +8,7 @@ namespace CodeArena.Services.DTOs.Challenge;
 
 public sealed record ChallengeDisplayDto(
     int Id,
+    string Slug,
     string Title,
     string Description,
     string Difficulty,
