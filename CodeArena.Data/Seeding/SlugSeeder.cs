@@ -18,27 +18,13 @@ public static class SlugSeeder
                                         .Where(c => string.IsNullOrWhiteSpace(c.Slug))
                                         .ToListAsync();
 
-        var existingSlugs = await challengeRepository
-                                        .GetAll()
-                                        .Where(c => !string.IsNullOrWhiteSpace(c.Slug))
-                                        .Select(c => c.Slug)
-                                        .ToListAsync();
-
-        var slugSet = new HashSet<string>(existingSlugs);
+        var slugSet = await challengeRepository.GetExistingSlugsAsync();
 
         if (!challengesWithoutSlugs.Any()) return;
 
         foreach (var c in challengesWithoutSlugs)
         {
-            var baseSlug = SlugGenerator.Generate(c.Title);
-            var slug = baseSlug;
-            int counter = 1;
-
-            while (slugSet.Contains(slug))
-            {
-                slug = $"{baseSlug}-{counter}";
-                counter++;
-            }
+            var slug = SlugGenerator.GenerateUnique(c.Title, slugSet);
 
             c.Slug = slug;
             slugSet.Add(slug);
