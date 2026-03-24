@@ -20,4 +20,6 @@ public interface IChallengeRepository
     Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null);
     Task<bool> AnyAsync(Expression<Func<Challenge, bool>>? predicate = null);
     Task SaveChangesAsync();
+    Task<HashSet<string>> GetExistingSlugsAsync();
+
 }

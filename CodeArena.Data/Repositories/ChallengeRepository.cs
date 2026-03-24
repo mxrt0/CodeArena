@@ -62,6 +62,16 @@ public class ChallengeRepository : IChallengeRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<HashSet<string>> GetExistingSlugsAsync()
+    {
+        var slugs = await GetAll()
+                            .Where(c => !string.IsNullOrWhiteSpace(c.Slug))
+                            .Select(c => c.Slug)
+                            .ToListAsync();
+
+        return new HashSet<string>(slugs);
+    }
+
     public async Task RestoreAsync(Challenge challenge)
     {
         challenge.IsDeleted = false;
