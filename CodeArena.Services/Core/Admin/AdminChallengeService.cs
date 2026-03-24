@@ -56,6 +56,7 @@ public class AdminChallengeService : IAdminChallengeService
 
         return new ChallengeDisplayDto(
             challenge.Id,
+            challenge.Slug,
             challenge.Title,
             challenge.Description,
             challenge.Difficulty.ToString(),
@@ -74,6 +75,7 @@ public class AdminChallengeService : IAdminChallengeService
 
         return await challenges.Select(c => new ChallengeDisplayDto(
                 c.Id,
+                c.Slug,
                 c.Title,
                 c.Description,
                 c.Difficulty.ToString(),
