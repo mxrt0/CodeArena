@@ -19,4 +19,18 @@ public static class SlugGenerator
 
         return slug;
     }
+    public static string GenerateUnique(string title, HashSet<string> existingSlugs)
+    {
+        var baseSlug = Generate(title);
+        var slug = baseSlug;
+        int counter = 1;
+
+        while (existingSlugs.Contains(slug))
+        {
+            slug = $"{baseSlug}-{counter}";
+            counter++;
+        }
+
+        return slug;
+    }
 }
