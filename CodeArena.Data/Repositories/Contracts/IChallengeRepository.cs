@@ -13,6 +13,7 @@ public interface IChallengeRepository
     IQueryable<Challenge> GetAll(bool includeDeleted = false);
     IQueryable<Challenge> GetAllTracked();
     Task<Challenge?> GetByIdAsync(int id, bool includeDeleted = false);
+    Task<Challenge?> GetBySlugAsync(string slug);
     Task AddAsync(Challenge challenge);
     Task UpdateAsync(Challenge challenge);
     Task DeleteAsync(Challenge challenge);

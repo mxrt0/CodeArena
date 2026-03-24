@@ -62,6 +62,13 @@ public class ChallengeRepository : IChallengeRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Challenge?> GetBySlugAsync(string slug)
+    {
+        return await _context.Challenges
+            .Include(c => c.Submissions)
+            .FirstOrDefaultAsync(c => c.Slug.ToLower() == slug.ToLower());
+    }
+
     public async Task<HashSet<string>> GetExistingSlugsAsync()
     {
         var slugs = await GetAll()
