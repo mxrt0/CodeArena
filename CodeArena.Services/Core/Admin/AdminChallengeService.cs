@@ -1,10 +1,12 @@
-﻿using CodeArena.Data.Models;
+﻿using CodeArena.Common.Exceptions;
+using CodeArena.Common.Utilities;
+using CodeArena.Data.Models;
+using CodeArena.Data.Repositories;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
 using Microsoft.EntityFrameworkCore;
-using CodeArena.Common.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,12 +26,15 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task CreateChallengeAsync(CreateChallengeDto dto)
     {
+        var slugSet = await _repository.GetExistingSlugsAsync();
+
         var challenge = new Challenge
         {
             Title = dto.Title,
             Description = dto.Description,
             Difficulty = dto.Difficulty,
-            Tags = dto.Tags ?? string.Empty
+            Tags = dto.Tags ?? string.Empty,
+            Slug = SlugGenerator.GenerateUnique(dto.Title, slugSet)
         };
 
         await _repository.AddAsync(challenge);
