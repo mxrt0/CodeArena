@@ -32,7 +32,7 @@ public static class OutputMessages
     public const string SubmissionApprovedMessage = "Submission approved.";
     public const string SubmissionRejectedMessage = "Submission rejected.";
 
-    public const string ChallengeNotFoundMessage = "Challenge with Id {0} was not found.";
+    public const string ChallengeNotFoundMessage = "Challenge with identifier '{0}' was not found.";
     public const string SubmissionNotFoundMessage = "Submission with Id {0} was not found.";
     public const string SubmissionAlreadyPendingMessage = "User '{0}' already has a pending submission for challenge {1}.";
     public const string UnauthorizedActionMessage = "User '{0}' attempted an unauthorized action.";
