@@ -107,6 +107,11 @@ namespace CodeArena.Web
                 pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
             app.MapControllerRoute(
+                name: "challengeSlugs",
+                pattern: "challenges/{slug}",
+                defaults: new { controller = "Challenges", action = "Details" });
+
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
