@@ -126,6 +126,7 @@ public class SubmissionService : ISubmissionService
             .Select(s => new SubmissionDisplayDto
             (
                 s.Id,
+                s.ChallengeId,
                 s.Challenge.Slug,
                 s.Challenge.Title,
                 s.Language.ToString(),
