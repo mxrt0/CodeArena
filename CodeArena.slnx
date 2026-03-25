@@ -5,6 +5,11 @@
   <Folder Name="/Services/">
     <Project Path="CodeArena.Services/CodeArena.Services.csproj" />
   </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="CodeArena.IntegrationTests/CodeArena.IntegrationTests.csproj" Id="d4a3217a-bdc7-423e-a9d6-4e743d652d23" />
+    <Project Path="CodeArena.Services.Tests/CodeArena.Services.Tests.csproj" Id="eb314673-9022-47af-a731-2ebe9d93c5be" />
+    <Project Path="CodeArena.Web.Tests/CodeArena.Web.Tests.csproj" Id="9239cc09-244e-4764-bb68-0dd34444be4e" />
+  </Folder>
   <Folder Name="/Web/">
     <Project Path="CodeArena.Web/CodeArena.Web.csproj" />
   </Folder>
