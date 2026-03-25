@@ -49,15 +49,15 @@ public class ChallengesController : BaseController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(string slug)
     {
-        if (id <= 0)
+        if (string.IsNullOrWhiteSpace(slug))
         {
             return BadRequest();
         }
 
-        var result = await _service.GetChallengeByIdAsync(
-            id,
+        var result = await _service.GetChallengeBySlugAsync(
+            slug,
           user: User?.Identity?.IsAuthenticated ?? false
                     ? User
                     : null);

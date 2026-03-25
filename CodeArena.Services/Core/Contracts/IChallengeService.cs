@@ -22,4 +22,5 @@ public interface IChallengeService
     );
 
     Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null);
+    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null);
 }

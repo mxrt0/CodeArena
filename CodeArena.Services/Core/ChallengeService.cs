@@ -45,6 +45,7 @@ public class ChallengeService : IChallengeService
 
         var dto = new ChallengeDisplayDto(
             challenge.Id,
+            challenge.Slug,
             challenge.Title,
             challenge.Description,
             challenge.Difficulty.ToString(),
@@ -59,6 +60,36 @@ public class ChallengeService : IChallengeService
 
         dto.IsSolved = user is not null 
                         ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user) 
+                        : false;
+
+        return ServiceResult<ChallengeDisplayDto>.Ok(dto);
+    }
+
+    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null)
+    {
+        var challenge = await _repository.GetBySlugAsync(slug);
+        if (challenge is null)
+        {
+            return ServiceResult<ChallengeDisplayDto>.Fail(string.Format(ChallengeNotFoundMessage, slug));
+        }
+
+        var dto = new ChallengeDisplayDto(
+            challenge.Id,
+            challenge.Slug,
+            challenge.Title,
+            challenge.Description,
+            challenge.Difficulty.ToString(),
+            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
+            challenge.Submissions.Count,
+            IsDeleted: false
+        );
+
+        dto.HasPendingSubmission = user is not null
+                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+                                    : false;
+
+        dto.IsSolved = user is not null
+                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user)
                         : false;
 
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
@@ -102,6 +133,7 @@ public class ChallengeService : IChallengeService
             .Take(pageSize)
             .Select(c => new ChallengeDisplayDto(
                 c.Id,
+                c.Slug,
                 c.Title,
                 c.Description,
                 c.Difficulty.ToString(),

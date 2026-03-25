@@ -25,6 +25,13 @@ public class ChallengeRepository : IChallengeRepository
         await _context.SaveChangesAsync();
     }
 
+    public async Task<bool> AnyAsync(Expression<Func<Challenge, bool>>? predicate = null)
+    {
+        return predicate is null
+            ? await _context.Challenges.AnyAsync()
+            : await _context.Challenges.AnyAsync(predicate);
+    }
+
     public Task<int> CountAsync(Expression<Func<Challenge, bool>>? predicate = null)
     {
         return predicate is null 
@@ -42,6 +49,8 @@ public class ChallengeRepository : IChallengeRepository
         ? _context.Challenges.IgnoreQueryFilters().AsNoTracking()
         : _context.Challenges.AsNoTracking();
 
+    public IQueryable<Challenge> GetAllTracked() => _context.Challenges;
+
     public async Task<Challenge?> GetByIdAsync(int id, bool includeDeleted = false)
     {
         var query = includeDeleted
@@ -53,11 +62,30 @@ public class ChallengeRepository : IChallengeRepository
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
+    public async Task<Challenge?> GetBySlugAsync(string slug)
+    {
+        return await _context.Challenges
+            .Include(c => c.Submissions)
+            .FirstOrDefaultAsync(c => c.Slug.ToLower() == slug.ToLower());
+    }
+
+    public async Task<HashSet<string>> GetExistingSlugsAsync()
+    {
+        var slugs = await GetAll()
+                            .Where(c => !string.IsNullOrWhiteSpace(c.Slug))
+                            .Select(c => c.Slug)
+                            .ToListAsync();
+
+        return new HashSet<string>(slugs);
+    }
+
     public async Task RestoreAsync(Challenge challenge)
     {
         challenge.IsDeleted = false;
         await _context.SaveChangesAsync();
     }
+
+    public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
 
     public async Task UpdateAsync(Challenge challenge)
     {

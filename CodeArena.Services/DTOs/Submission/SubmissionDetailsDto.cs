@@ -8,7 +8,7 @@ namespace CodeArena.Services.DTOs.Submission;
 
 public sealed record SubmissionDetailsDto(
     int SubmissionId,
-    int ChallengeId,
+    string ChallengeSlug,
     string ChallengeTitle,
     string Language,
     string Status,

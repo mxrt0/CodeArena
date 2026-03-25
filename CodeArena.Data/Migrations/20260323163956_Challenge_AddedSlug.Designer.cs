@@ -4,6 +4,7 @@ using CodeArena.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CodeArena.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260323163956_Challenge_AddedSlug")]
+    partial class Challenge_AddedSlug
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -128,8 +131,7 @@ namespace CodeArena.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Slug")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tags")
                         .IsRequired()
@@ -143,31 +145,26 @@ namespace CodeArena.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Slug")
-                        .IsUnique();
-
                     b.ToTable("Challenges");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 3, 23, 17, 29, 43, 604, DateTimeKind.Utc).AddTicks(4380),
+                            CreatedAt = new DateTime(2026, 3, 23, 16, 39, 54, 675, DateTimeKind.Utc).AddTicks(449),
                             Description = "Write a function that takes two numbers and returns their sum. Example: Input: 3, 5 → Output: 8.",
                             Difficulty = "Easy",
                             IsDeleted = false,
-                            Slug = "sum-two-numbers",
                             Tags = "math",
                             Title = "Sum Two Numbers"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 3, 23, 17, 29, 43, 604, DateTimeKind.Utc).AddTicks(4388),
+                            CreatedAt = new DateTime(2026, 3, 23, 16, 39, 54, 675, DateTimeKind.Utc).AddTicks(456),
                             Description = "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'.",
                             Difficulty = "Medium",
                             IsDeleted = false,
-                            Slug = "fizzbuzz",
                             Tags = "loops",
                             Title = "FizzBuzz"
                         });

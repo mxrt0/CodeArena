@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
 // TODO: Implement slugs for challenges
 // TODO: Unique Check on Username
+// TODO: Extension methods for DI and possibly other
 namespace CodeArena.Web
 {
     public class Program
@@ -75,6 +76,9 @@ namespace CodeArena.Web
             var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
             await AdminSeeder.EnsureAdminUserExistsAsync(userManager, configuration);
 
+            var challengeRepository = scope.ServiceProvider.GetRequiredService<IChallengeRepository>();
+            await SlugSeeder.EnsureAllChallengesHaveSlugsAsync(challengeRepository);
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -101,6 +105,11 @@ namespace CodeArena.Web
             app.MapControllerRoute(
                 name: "areas",
                 pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
+                name: "challengeSlugs",
+                pattern: "challenges/{slug}",
+                defaults: new { controller = "Challenges", action = "Details" });
 
             app.MapControllerRoute(
                 name: "default",

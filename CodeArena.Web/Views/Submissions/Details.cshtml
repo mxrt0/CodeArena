@@ -76,10 +76,9 @@
 
             <div class="mt-3 d-flex gap-2 flex-wrap">
 
-                <a asp-controller="Challenges"
-                       asp-action="Details"
-                       asp-route-id="@Model.Submission.ChallengeId"
-                       class="btn btn-outline-primary">
+                <a asp-route="challengeSlugs"
+                    asp-route-slug="@Model.Submission.ChallengeSlug"
+                    class="btn btn-outline-primary">
                     <i class="bi bi-box-arrow-up-right"></i>
                     <span class="d-none d-md-inline ms-md-1">View Challenge</span>
                 </a>
