@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeArena.Data\CodeArena.Data.csproj" />
     <ProjectReference Include="..\CodeArena.Services\CodeArena.Services.csproj" />
   </ItemGroup>
 
