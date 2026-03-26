@@ -42,7 +42,7 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task DeleteChallengeAsync(int id)
     {
-        var challenge = await _repository.GetByIdAsync(id) ?? throw new ChallengeNotFoundException(id);
+        var challenge = await _repository.GetByIdAsync(id, includeDeleted: true) ?? throw new ChallengeNotFoundException(id);
 
         if (challenge.IsDeleted) throw new ChallengeAlreadyDeletedException(id);
 
