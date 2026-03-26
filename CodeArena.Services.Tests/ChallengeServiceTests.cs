@@ -15,7 +15,7 @@ using System.Security.Claims;
 namespace CodeArena.Services.Tests;
 
 [TestFixture]
-public class Tests
+public class ChallengeServiceTests
 {
     private UserManager<ApplicationUser> _userManager;
     private Challenge _exampleChallenge;
@@ -72,7 +72,7 @@ public class Tests
     }
 
     [Test]
-    public async Task GetChallengeByIdAsync_WhenNonExistentId_ReturnsFailResult()
+    public async Task GetChallengeByIdAsync_WhenNoUser_ReturnsFailResult()
     {
         var challengeRepositoryMock = new Mock<IChallengeRepository>();
         var submissionServiceMock = new Mock<ISubmissionService>();
