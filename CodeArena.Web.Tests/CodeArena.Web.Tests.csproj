@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CodeArena.Common\CodeArena.Common.csproj" />
     <ProjectReference Include="..\CodeArena.Services\CodeArena.Services.csproj" />
     <ProjectReference Include="..\CodeArena.Web\CodeArena.Web.csproj" />
   </ItemGroup>
