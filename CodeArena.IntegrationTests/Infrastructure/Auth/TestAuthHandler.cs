@@ -22,9 +22,10 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, "test-user-id"),
-            new Claim(ClaimTypes.Name, "test-user")
+            new Claim(ClaimTypes.Name, "test-user"),
+            new Claim(ClaimTypes.Role, "Admin") 
         };
-
+ 
         var identity = new ClaimsIdentity(claims, SchemeName);
         var principal = new ClaimsPrincipal(identity);
         var ticket = new AuthenticationTicket(principal, SchemeName);
