@@ -124,3 +124,7 @@ body.dark-mode .navbar-toggler-icon {
 .navbar-toggler{
     border-color: #ffffff !important;
 }
+
+.login-card label:not([for='rememberMeCheck']) {
+    color: #212529;
+}

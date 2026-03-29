@@ -16,14 +16,14 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                            <label asp-for="Input.Email" class="text-dark">Email</label>
+                            <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="" />
+                            <label asp-for="Input.Email">Email</label>
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
 
                         <div class="form-floating mb-3">
-                            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                            <label asp-for="Input.Password" class="text-dark">Password</label>
+                            <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="" />
+                            <label asp-for="Input.Password">Password</label>
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
 
@@ -32,9 +32,9 @@
                             <label class="form-check-label" for="rememberMeCheck">@Html.DisplayNameFor(m => m.Input.RememberMe)</label>
                         </div>
 
-                        <button id="login-submit" type="submit" class="btn btn-primary w-100 mb-3">
-                            <i class="bi bi-box-arrow-in-right me-1"></i> Log in
-                            </button>
+                        <button id="login-submit" type="submit" class="btn btn-primary w-75 d-block mx-auto mb-3">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Log In
+                        </button>
 
                         <p class="text-center mb-0">
                             <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
