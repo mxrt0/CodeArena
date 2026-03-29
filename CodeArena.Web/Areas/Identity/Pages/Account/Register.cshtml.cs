@@ -124,7 +124,7 @@ public class RegisterModel : PageModel
             if (await _userManager.Users
                 .AnyAsync(u => u.NormalizedDisplayName == normalizedDisplayName))
             {
-                ModelState.AddModelError("DisplayName", string.Format(DisplayNameAlreadyExistsMessage, Input.DisplayName));
+                ModelState.AddModelError("Input.DisplayName", string.Format(DisplayNameAlreadyExistsMessage, Input.DisplayName));
                 return Page();
             }
 
