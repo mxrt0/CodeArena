@@ -42,7 +42,7 @@ public class ChallengesController : BaseController
            Challenges = challenges,
            SelectedDifficulty = inputVm.SelectedDifficulty,
            StatusFilter = inputVm.StatusFilter,
-           CurrentPage = page,
+           CurrentPage = Math.Max(1, page),
            TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
         return View(vm);

@@ -30,7 +30,7 @@ public class SubmissionsController : BaseAdminController
         var vm = new SubmissionsIndexViewModel
         {
             Submissions = submissions,
-            CurrentPage = page,
+            CurrentPage = Math.Max(1, page),
             TotalPages = (int)Math.Ceiling(count / (double)PageSize)
         };
 
