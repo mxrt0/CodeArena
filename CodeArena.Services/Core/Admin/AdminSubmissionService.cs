@@ -10,16 +10,23 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using CodeArena.Common.Exceptions;
 using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CodeArena.Services.Core.Admin;
 
 public class AdminSubmissionService : IAdminSubmissionService
 {
     private readonly ISubmissionRepository _repository;
+    private readonly IMemoryCache _cache;
 
-    public AdminSubmissionService(ISubmissionRepository repository)
+    public AdminSubmissionService(
+        ISubmissionRepository repository,
+        IMemoryCache cache
+    )
     {
         _repository = repository;
+        _cache = cache;
     }
 
     public async Task ApproveAsync(int id, string? feedback = null)
@@ -38,6 +45,13 @@ public class AdminSubmissionService : IAdminSubmissionService
         submission.Feedback = feedback;
 
         await _repository.UpdateAsync(submission);
+
+        InvalidateCache(
+            CacheKey_PendingSubmissions,
+            CacheKey_SubmissionsAll,
+            string.Format(CacheKey_Admin_SubmissionById, id),
+            string.Format(CacheKey_User_SubmissionById, id)
+        );
     }
 
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
@@ -69,9 +83,15 @@ public class AdminSubmissionService : IAdminSubmissionService
 
     public async Task<AdminSubmissionReviewDto> GetSubmissionForReviewAsync(int id)
     {
+        if (_cache.TryGetValue(
+            string.Format(CacheKey_Admin_SubmissionById, id),
+            out AdminSubmissionReviewDto? cachedDto))
+        {
+            return cachedDto!;
+        }
         var submission = await _repository.GetByIdAsync(id) ?? throw new SubmissionNotFoundException(id);
 
-        return new AdminSubmissionReviewDto
+        var dto = new AdminSubmissionReviewDto
         (
             submission.Id,            
             submission.Challenge.Title,
@@ -81,6 +101,17 @@ public class AdminSubmissionService : IAdminSubmissionService
             submission.SolutionCode,
             submission.SubmittedAt
         );
+
+        _cache.Set(
+            string.Format(CacheKey_Admin_SubmissionById, id),
+            dto,
+            new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(CacheDuration_SubmissionById_Minutes)
+            }
+        );
+
+        return dto;
     }
 
     public async Task RejectAsync(int id, string? feedback = null)
@@ -99,5 +130,21 @@ public class AdminSubmissionService : IAdminSubmissionService
         submission.Feedback = feedback;
 
         await _repository.UpdateAsync(submission);
+
+        InvalidateCache(
+            CacheKey_PendingSubmissions,
+            CacheKey_SubmissionsAll,
+            string.Format(CacheKey_Admin_SubmissionById, id),
+            string.Format(CacheKey_User_SubmissionById, id)
+        );
+    }
+
+    private void InvalidateCache(params string[] keys)
+    {
+        if (!keys.Any()) return;
+        foreach (var key in keys)
+        {
+            _cache.Remove(key);
+        }
     }
 }
