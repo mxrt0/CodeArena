@@ -52,6 +52,7 @@ public class SubmissionService : ISubmissionService
 
         InvalidateCache(
             string.Format(CacheKey_User_SubmissionById, submission.Id),
+            string.Format(CacheKey_UserStats_ByUserId, userId),
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll
        );
@@ -85,7 +86,8 @@ public class SubmissionService : ISubmissionService
 
         InvalidateCache(
             CacheKey_PendingSubmissions,
-            CacheKey_SubmissionsAll
+            CacheKey_SubmissionsAll,
+            string.Format(CacheKey_UserStats_ByUserId, userId)
        );
     }
 

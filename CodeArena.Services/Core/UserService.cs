@@ -11,6 +11,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using static CodeArena.Common.ApplicationConstants;
 
 namespace CodeArena.Services.Core;
 
@@ -18,19 +20,29 @@ public class UserService : IUserService
 {
     private readonly ISubmissionRepository _submissionRepository;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IMemoryCache _cache;
 
     public UserService(
         ISubmissionRepository repository,
-        UserManager<ApplicationUser> userManager
+        UserManager<ApplicationUser> userManager,
+        IMemoryCache cache
     )
     {
         _submissionRepository = repository;
         _userManager = userManager;
+        _cache = cache;
     }
 
     public async Task<UserStatsDto> GetUserStatsAsync(ClaimsPrincipal user)
     {
         var userId = _userManager.GetUserId(user);
+
+        if (_cache.TryGetValue(
+            string.Format(CacheKey_UserStats_ByUserId, userId),
+            out UserStatsDto? cachedStats))
+        {
+            return cachedStats!;
+        }
 
         var submissions = _submissionRepository.GetAll()
             .Where(s => s.UserId == userId);
@@ -40,7 +52,7 @@ public class UserService : IUserService
             .Include(s => s.Challenge)
             .ToListAsync();
 
-        return new UserStatsDto(
+        var dto = new UserStatsDto(
             solved.Count,
             solved.Count(s => s.Challenge.Difficulty == Difficulty.Easy),
             solved.Count(s => s.Challenge.Difficulty == Difficulty.Medium),
@@ -48,5 +60,16 @@ public class UserService : IUserService
             await submissions.CountAsync(s => s.Status == SubmissionStatus.Pending),
             await submissions.CountAsync(s => s.Status == SubmissionStatus.Rejected)
         );
+
+        _cache.Set(
+            string.Format(CacheKey_UserStats_ByUserId, userId),
+            dto,
+            new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(CacheDuration_UserStats_Minutes)
+            }
+        );
+
+        return dto;
     }
 }

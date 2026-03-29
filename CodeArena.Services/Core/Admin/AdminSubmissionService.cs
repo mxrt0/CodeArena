@@ -50,7 +50,8 @@ public class AdminSubmissionService : IAdminSubmissionService
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_Admin_SubmissionById, id),
-            string.Format(CacheKey_User_SubmissionById, id)
+            string.Format(CacheKey_User_SubmissionById, id),
+            string.Format(CacheKey_UserStats_ByUserId, submission.UserId)
         );
     }
 
@@ -135,7 +136,8 @@ public class AdminSubmissionService : IAdminSubmissionService
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_Admin_SubmissionById, id),
-            string.Format(CacheKey_User_SubmissionById, id)
+            string.Format(CacheKey_User_SubmissionById, id),
+            string.Format(CacheKey_UserStats_ByUserId, submission.UserId)
         );
     }
 
