@@ -78,6 +78,27 @@ public static class WebApplicationBuilderExtensions
             options.AccessDeniedPath = cookie.GetValue("AccessDeniedPath", "/Home/Error/403");
             options.ExpireTimeSpan = TimeSpan.FromMinutes(cookie.GetValue("ExpireTimeSpan", 60));
             options.SlidingExpiration = cookie.GetValue("SlidingExpiration", true);
+            options.Cookie.HttpOnly = true;
+        });
+
+        return builder;
+    }
+
+    /// <summary>
+    /// Defines application cookie lifetime, configures paths and sets security flags based on the "Cookie" section of appsettings.json.
+    /// </summary>
+    public static WebApplicationBuilder AddAuthCookie(this WebApplicationBuilder builder)
+    {
+        var cookie = builder.Configuration.GetSection("Cookie");
+
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.LoginPath = cookie.GetValue("LoginPath", "/Identity/Account/Login");
+            options.LogoutPath = cookie.GetValue("LogoutPath", "/Identity/Account/Logout");
+            options.AccessDeniedPath = cookie.GetValue("AccessDeniedPath", "/Home/Error/403");
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(cookie.GetValue("ExpireTimeSpan", 60));
+            options.SlidingExpiration = cookie.GetValue("SlidingExpiration", true);
+            options.Cookie.HttpOnly = true;
         });
 
         return builder;
@@ -88,9 +109,6 @@ public static class WebApplicationBuilderExtensions
     /// classes that implement an interface whose name matches the pattern I{Name} → {Name},
     /// and registers them as Scoped. Restricts discovery to the provided interface
     /// base types so unrelated interfaces are ignored.
-    ///
-    /// Usage:
-    ///   builder.AddRepositories&lt;IChallengeRepository&gt;("CodeArena.Data.Repositories");
     /// </summary>
     public static WebApplicationBuilder AddRepositories<TMarker>(
         this WebApplicationBuilder builder,
