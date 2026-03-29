@@ -4,8 +4,10 @@ using CodeArena.Data.Repositories;
 using CodeArena.Services.Core;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -19,33 +21,37 @@ namespace CodeArena.Services.Tests;
 [TestFixture]
 public class UserServiceTests
 {
-    private Mock<UserManager<ApplicationUser>> _userManagerMock;
     private string _sampleUserId = "user-123";
+    private Mock<UserManager<ApplicationUser>> _userManagerMock;
+    private Mock<IMemoryCache> _cacheMock;
 
     [SetUp]
-    public void UserManagerSetup()
+    public void Setup()
     {
-        var store = new Mock<IUserStore<ApplicationUser>>();
-        var options = new Mock<IOptions<IdentityOptions>>();
-        var passwordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
-        var userValidators = new List<IUserValidator<ApplicationUser>>();
-        var passwordValidators = new List<IPasswordValidator<ApplicationUser>>();
-        var normalizer = new Mock<ILookupNormalizer>();
-        var logger = new Mock<ILogger<UserManager<ApplicationUser>>>();
-        var errorDescriber = new Mock<IdentityErrorDescriber>();
-        var serviceProvider = new Mock<IServiceProvider>();
+        var cacheEntry = new Mock<ICacheEntry>();
+        cacheEntry.SetupGet(e => e.ExpirationTokens).Returns(new List<IChangeToken>());
+        cacheEntry.SetupGet(e => e.PostEvictionCallbacks).Returns(new List<PostEvictionCallbackRegistration>());
 
+        _cacheMock = new Mock<IMemoryCache>();
+        _cacheMock
+            .Setup(c => c.TryGetValue(It.IsAny<object>(), out It.Ref<object?>.IsAny))
+            .Returns(false);
+        _cacheMock
+            .Setup(c => c.CreateEntry(It.IsAny<object>()))
+            .Returns(cacheEntry.Object);
+
+        var store = new Mock<IUserStore<ApplicationUser>>();
         _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-                store.Object,
-                options.Object,
-                passwordHasher.Object,
-                userValidators,
-                passwordValidators,
-                normalizer.Object,
-                errorDescriber.Object,
-                serviceProvider.Object,
-                logger.Object
-            );
+            store.Object,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!
+        );
     }
     [Test]
     public async Task GetUserStatsAsync_ReturnsCorrectCounts()
@@ -61,7 +67,7 @@ public class UserServiceTests
         .Setup(um => um.GetUserId(claimsPrincipal))
         .Returns(_sampleUserId);
 
-        var service = new UserService(repo, _userManagerMock.Object);
+        var service = new UserService(repo, _userManagerMock.Object, _cacheMock.Object);
 
         var stats = await service.GetUserStatsAsync(claimsPrincipal);
 
@@ -85,7 +91,7 @@ public class UserServiceTests
         .Setup(um => um.GetUserId(claimsPrincipal))
         .Returns(_sampleUserId);
 
-        var service = new UserService(repo, _userManagerMock.Object);
+        var service = new UserService(repo, _userManagerMock.Object, _cacheMock.Object);
 
         var stats = await service.GetUserStatsAsync(claimsPrincipal);
 
@@ -96,7 +102,7 @@ public class UserServiceTests
         Assert.That(stats.PendingSubmissions, Is.EqualTo(0));
         Assert.That(stats.RejectedSubmissions, Is.EqualTo(0));
     }
-
+    
     private List<Submission> CreateSampleData()
     {
         return new List<Submission>

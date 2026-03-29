@@ -3,11 +3,14 @@ using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories;
 using CodeArena.Data.Repositories.Contracts;
-using CodeArena.Services.DTOs.Admin;
 using CodeArena.Services.Core.Admin;
+using CodeArena.Services.DTOs.Admin;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -21,7 +24,22 @@ public class AdminChallengeServiceTests
 {
     private List<Challenge> _sampleData;
     private Challenge _exampleChallenge;
+    private Mock<IMemoryCache> _cacheMock;
+    [SetUp]
+    public void CacheSetup()
+    {
+        var cacheEntry = new Mock<ICacheEntry>();
+        cacheEntry.SetupGet(e => e.ExpirationTokens).Returns(new List<IChangeToken>());
+        cacheEntry.SetupGet(e => e.PostEvictionCallbacks).Returns(new List<PostEvictionCallbackRegistration>());
 
+        _cacheMock = new Mock<IMemoryCache>();
+        _cacheMock
+            .Setup(c => c.TryGetValue(It.IsAny<object>(), out It.Ref<object?>.IsAny))
+            .Returns(false);
+        _cacheMock
+            .Setup(c => c.CreateEntry(It.IsAny<object>()))
+            .Returns(cacheEntry.Object);
+    }
     [OneTimeSetUp]
     public void Setup()
     {
@@ -50,7 +68,8 @@ public class AdminChallengeServiceTests
     {
         var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+ 
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         var dto = new CreateChallengeDto
         {
@@ -74,7 +93,8 @@ public class AdminChallengeServiceTests
     {
         var context = DbContextFactory.Create();
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+ 
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         var dto = new CreateChallengeDto
         {
@@ -104,7 +124,8 @@ public class AdminChallengeServiceTests
 
         var context = await DbContextFactory.CreateWithDataAsync(new List<Challenge> { existing });
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         var dto = new CreateChallengeDto { 
             Title = "Test",
@@ -126,7 +147,8 @@ public class AdminChallengeServiceTests
     {
         var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+ 
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         await service.DeleteChallengeAsync(1);
 
@@ -141,7 +163,8 @@ public class AdminChallengeServiceTests
         {
             var context = DbContextFactory.Create();
             var repo = new ChallengeRepository(context);
-            var service = new AdminChallengeService(repo);
+ 
+            var service = new AdminChallengeService(repo, _cacheMock.Object);
 
             await service.DeleteChallengeAsync(123);
         });
@@ -162,7 +185,8 @@ public class AdminChallengeServiceTests
             };
             var context = await DbContextFactory.CreateWithDataAsync(new List<Challenge> { deletedChallenge });
             var repo = new ChallengeRepository(context);
-            var service = new AdminChallengeService(repo);
+
+            var service = new AdminChallengeService(repo, _cacheMock.Object);
 
             await service.DeleteChallengeAsync(1);
         });
@@ -173,7 +197,8 @@ public class AdminChallengeServiceTests
     {
         var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         var dto = await service.GetChallengeByIdAsync(1);
 
@@ -188,7 +213,8 @@ public class AdminChallengeServiceTests
         {
             var context = DbContextFactory.Create();
             var repo = new ChallengeRepository(context);
-            var service = new AdminChallengeService(repo);
+ 
+            var service = new AdminChallengeService(repo, _cacheMock.Object);
 
             await service.GetChallengeByIdAsync(123);
         });
@@ -199,7 +225,8 @@ public class AdminChallengeServiceTests
     {
         var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         var challenges = await service.GetChallengesAsync();
 
@@ -221,7 +248,8 @@ public class AdminChallengeServiceTests
         };
         var context = await DbContextFactory.CreateWithDataAsync(new List<Challenge> { deleted });
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         await service.RestoreChallengeAsync(1);
 
@@ -236,7 +264,8 @@ public class AdminChallengeServiceTests
         {
             var context = DbContextFactory.Create();
             var repo = new ChallengeRepository(context);
-            var service = new AdminChallengeService(repo);
+
+            var service = new AdminChallengeService(repo, _cacheMock.Object);
 
             await service.RestoreChallengeAsync(1);
         });
@@ -257,7 +286,8 @@ public class AdminChallengeServiceTests
             };
             var context = await DbContextFactory.CreateWithDataAsync(new List<Challenge> { active });
             var repo = new ChallengeRepository(context);
-            var service = new AdminChallengeService(repo);
+ 
+            var service = new AdminChallengeService(repo, _cacheMock.Object);
 
             await service.RestoreChallengeAsync(1);
         });
@@ -268,7 +298,8 @@ public class AdminChallengeServiceTests
     {
         var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
         var repo = new ChallengeRepository(context);
-        var service = new AdminChallengeService(repo);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
 
         var editDto = new EditChallengeDto
         (
@@ -295,7 +326,8 @@ public class AdminChallengeServiceTests
         {
             var context = await DbContextFactory.CreateWithDataAsync(new List<Challenge>());
             var repo = new ChallengeRepository(context);
-            var service = new AdminChallengeService(repo);
+ 
+            var service = new AdminChallengeService(repo, _cacheMock.Object);
 
             await service.UpdateChallengeAsync(new EditChallengeDto( Id: 123, "", "", Difficulty.Easy, "" ));
         });

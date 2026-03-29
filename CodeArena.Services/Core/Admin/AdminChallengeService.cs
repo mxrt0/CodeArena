@@ -1,4 +1,5 @@
-﻿using CodeArena.Common.Exceptions;
+﻿using CodeArena.Common;
+using CodeArena.Common.Exceptions;
 using CodeArena.Common.Utilities;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories;
@@ -7,6 +8,8 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using static CodeArena.Common.ApplicationConstants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +21,15 @@ namespace CodeArena.Services.Core.Admin;
 public class AdminChallengeService : IAdminChallengeService
 {
     private readonly IChallengeRepository _repository;
+    private readonly IMemoryCache _cache;
 
-    public AdminChallengeService(IChallengeRepository repository)
+    public AdminChallengeService(
+        IChallengeRepository repository,
+        IMemoryCache cache
+    )
     {
         _repository = repository;
+        _cache = cache;
     }
 
     public async Task CreateChallengeAsync(CreateChallengeDto dto)
@@ -38,6 +46,8 @@ public class AdminChallengeService : IAdminChallengeService
         };
 
         await _repository.AddAsync(challenge);
+
+        InvalidateCache(CacheKey_ChallengesAll);
     }
 
     public async Task DeleteChallengeAsync(int id)
@@ -47,6 +57,11 @@ public class AdminChallengeService : IAdminChallengeService
         if (challenge.IsDeleted) throw new ChallengeAlreadyDeletedException(id);
 
         await _repository.DeleteAsync(challenge);
+
+        InvalidateCache(
+            CacheKey_ChallengesAll,
+            string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
+        );
     }
 
     public async Task<ChallengeDisplayDto> GetChallengeByIdAsync(int id)
@@ -71,9 +86,14 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
     {
+        if (_cache.TryGetValue(CacheKey_ChallengesAll,
+            out List<ChallengeDisplayDto>? cachedList))
+        {
+            return cachedList!;
+        }
         var challenges = _repository.GetAll(includeDeleted: true);
 
-        return await challenges.Select(c => new ChallengeDisplayDto(
+        var dtos = await challenges.Select(c => new ChallengeDisplayDto(
                 c.Id,
                 c.Slug,
                 c.Title,
@@ -85,6 +105,14 @@ public class AdminChallengeService : IAdminChallengeService
                 c.Submissions.Count,
                 c.IsDeleted
         )).ToListAsync();
+
+        _cache.Set(
+            CacheKey_ChallengesAll,
+            dtos,
+            TimeSpan.FromMinutes(CacheDuration_ChallengesAll_Minutes)
+        );
+
+        return dtos;
     }
 
     public async Task RestoreChallengeAsync(int id)
@@ -95,6 +123,11 @@ public class AdminChallengeService : IAdminChallengeService
         if (!challenge.IsDeleted) throw new ChallengeAlreadyActiveException(id);
 
         await _repository.RestoreAsync(challenge);
+
+        InvalidateCache(
+            CacheKey_ChallengesAll,
+            string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
+        );
     }
 
     public async Task UpdateChallengeAsync(EditChallengeDto editDto)
@@ -108,5 +141,18 @@ public class AdminChallengeService : IAdminChallengeService
         challenge.Tags = editDto.Tags;
 
         await _repository.UpdateAsync(challenge);
+
+        InvalidateCache(
+            CacheKey_ChallengesAll,
+            string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
+        );
+    }
+    private void InvalidateCache(params string[] keys)
+    {
+        if (!keys.Any()) return;
+        foreach (var key in keys)
+        {
+            _cache.Remove(key);
+        }
     }
 }

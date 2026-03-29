@@ -10,9 +10,9 @@ using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
-// TODO: Implement slugs for challenges
 // TODO: Unique Check on Username
 // TODO: Extension methods for DI and possibly other
+// TODO: Optimize performance of queries and data retrieval
 namespace CodeArena.Web
 {
     public class Program
@@ -24,6 +24,8 @@ namespace CodeArena.Web
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
                 ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+
+            builder.Services.AddMemoryCache();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString, options => options.MigrationsAssembly("CodeArena.Data")));

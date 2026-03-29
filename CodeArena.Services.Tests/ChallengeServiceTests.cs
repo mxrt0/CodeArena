@@ -6,8 +6,10 @@ using CodeArena.Services.Core;
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Moq;
 using System.Data;
 using System.Security.Claims;
@@ -17,33 +19,41 @@ namespace CodeArena.Services.Tests;
 [TestFixture]
 public class ChallengeServiceTests
 {
-    private UserManager<ApplicationUser> _userManager;
+    private Mock<UserManager<ApplicationUser>> _userManagerMock;
     private Challenge _exampleChallenge;
     private List<Challenge> _sampleData;
-    [OneTimeSetUp]
+    private Mock<IMemoryCache> _cacheMock;
+    private Mock<ISubmissionService> _submissionServiceMock;
+    [SetUp]
     public void Setup()
     {
-        var store = new Mock<IUserStore<ApplicationUser>>();
-        var options = new Mock<IOptions<IdentityOptions>>();
-        var passwordHasher = new Mock<IPasswordHasher<ApplicationUser>>();
-        var userValidators = new List<IUserValidator<ApplicationUser>>();
-        var passwordValidators = new List<IPasswordValidator<ApplicationUser>>();
-        var normalizer = new Mock<ILookupNormalizer>();
-        var logger = new Mock<ILogger<UserManager<ApplicationUser>>>();
-        var errorDescriber = new Mock<IdentityErrorDescriber>();
-        var serviceProvider = new Mock<IServiceProvider>();
+        _submissionServiceMock = new Mock<ISubmissionService>();
 
-        _userManager = new UserManager<ApplicationUser>(
-                store.Object,
-                options.Object,
-                passwordHasher.Object,
-                userValidators,
-                passwordValidators,
-                normalizer.Object,
-                errorDescriber.Object,
-                serviceProvider.Object,
-                logger.Object
-            );
+        var cacheEntry = new Mock<ICacheEntry>();
+        cacheEntry.SetupGet(e => e.ExpirationTokens).Returns(new List<IChangeToken>());
+        cacheEntry.SetupGet(e => e.PostEvictionCallbacks).Returns(new List<PostEvictionCallbackRegistration>());
+
+        _cacheMock = new Mock<IMemoryCache>();
+        _cacheMock
+            .Setup(c => c.TryGetValue(It.IsAny<object>(), out It.Ref<object?>.IsAny))
+            .Returns(false);
+        _cacheMock
+            .Setup(c => c.CreateEntry(It.IsAny<object>()))
+            .Returns(cacheEntry.Object);
+
+        var store = new Mock<IUserStore<ApplicationUser>>();
+        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
+            store.Object,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!,
+            null!
+        );
+
         _exampleChallenge = new Challenge
         {
             Id = 1,
@@ -65,17 +75,11 @@ public class ChallengeServiceTests
             Description = "desc2", Slug = "slug2"}
         };
     }
-    [OneTimeTearDown]
-    public void Dispose()
-    {
-        _userManager.Dispose();
-    }
 
     [Test]
     public async Task GetChallengeByIdAsync_WhenNoUser_ReturnsFailResult()
     {
         var challengeRepositoryMock = new Mock<IChallengeRepository>();
-        var submissionServiceMock = new Mock<ISubmissionService>();
 
         challengeRepositoryMock
             .Setup(cr => cr.GetByIdAsync(It.IsAny<int>(), false))
@@ -83,8 +87,9 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManager,
-            submissionServiceMock.Object
+            _userManagerMock.Object,
+            _submissionServiceMock.Object,
+            _cacheMock.Object
             );
 
         var result = await service.GetChallengeByIdAsync(123);
@@ -96,7 +101,6 @@ public class ChallengeServiceTests
     public async Task GetChallengeByIdAsync_WhenExistentId_ReturnsSuccessResult()
     {
         var challengeRepositoryMock = new Mock<IChallengeRepository>();
-        var submissionServiceMock = new Mock<ISubmissionService>();
         int id = 1;
 
         challengeRepositoryMock
@@ -105,8 +109,9 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManager,
-            submissionServiceMock.Object
+            _userManagerMock.Object,
+            _submissionServiceMock.Object,
+            _cacheMock.Object
             );
 
         var result = await service.GetChallengeByIdAsync(id);
@@ -117,7 +122,6 @@ public class ChallengeServiceTests
     public async Task GetChallengeBySlugAsync_WhenNonExistentSlug_ReturnsFailResult()
     {
         var challengeRepositoryMock = new Mock<IChallengeRepository>();
-        var submissionServiceMock = new Mock<ISubmissionService>();
 
         challengeRepositoryMock
             .Setup(cr => cr.GetBySlugAsync(It.IsAny<string>()))
@@ -125,8 +129,9 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManager,
-            submissionServiceMock.Object
+            _userManagerMock.Object,
+            _submissionServiceMock.Object,
+            _cacheMock.Object
             );
 
         var result = await service.GetChallengeBySlugAsync("slug");
@@ -138,7 +143,6 @@ public class ChallengeServiceTests
     public async Task GetChallengeBySlugAsync_WhenExistentSlug_ReturnsSuccessResult()
     {
         var challengeRepositoryMock = new Mock<IChallengeRepository>();
-        var submissionServiceMock = new Mock<ISubmissionService>();
         string slug = "validSlug";
 
         challengeRepositoryMock
@@ -147,8 +151,9 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManager,
-            submissionServiceMock.Object
+            _userManagerMock.Object,
+            _submissionServiceMock.Object,
+            _cacheMock.Object
             );
 
         var result = await service.GetChallengeBySlugAsync(slug);
@@ -161,17 +166,19 @@ public class ChallengeServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
 
         var repo = new ChallengeRepository(context);
-        var submissionServiceMock = new Mock<ISubmissionService>();
 
-        submissionServiceMock
+        _submissionServiceMock
             .Setup(s => s.HasPendingSubmissionAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(false);
 
-        submissionServiceMock
+        _submissionServiceMock
             .Setup(s => s.HasApprovedSubmissionAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(false);
 
-        var service = new ChallengeService(repo, _userManager, submissionServiceMock.Object);
+        var service = new ChallengeService(
+            repo, _userManagerMock.Object, 
+            _submissionServiceMock.Object, _cacheMock.Object
+        );
 
         var (result, count) = await service.GetChallengesAsync();
 
@@ -185,9 +192,8 @@ public class ChallengeServiceTests
 
         var repo = new ChallengeRepository(context);
 
-        var submissionServiceMock = new Mock<ISubmissionService>();
-
-        var service = new ChallengeService(repo, _userManager, submissionServiceMock.Object);
+        var service = new ChallengeService(repo, _userManagerMock.Object,
+            _submissionServiceMock.Object, _cacheMock.Object);
 
         var user = new ClaimsPrincipal();
 
@@ -216,9 +222,8 @@ public class ChallengeServiceTests
 
         var repo = new ChallengeRepository(context);
 
-        var submissionServiceMock = new Mock<ISubmissionService>();
-
-        var service = new ChallengeService(repo, _userManager, submissionServiceMock.Object);
+        var service = new ChallengeService(repo, _userManagerMock.Object,
+            _submissionServiceMock.Object, _cacheMock.Object);
 
         var (result, count) = await service.GetChallengesAsync(page: 2, pageSize: 5);
 
@@ -232,17 +237,16 @@ public class ChallengeServiceTests
 
         var repo = new ChallengeRepository(context);
 
-        var submissionServiceMock = new Mock<ISubmissionService>();
-
-        submissionServiceMock
+        _submissionServiceMock
             .Setup(s => s.HasPendingSubmissionAsync(1, It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(true);
 
-        submissionServiceMock
+        _submissionServiceMock
             .Setup(s => s.HasApprovedSubmissionAsync(1, It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(true);
 
-        var service = new ChallengeService(repo, _userManager, submissionServiceMock.Object);
+        var service = new ChallengeService(repo, _userManagerMock.Object,
+            _submissionServiceMock.Object, _cacheMock.Object);
 
         var user = new ClaimsPrincipal();
 

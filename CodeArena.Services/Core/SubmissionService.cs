@@ -7,6 +7,7 @@ using CodeArena.Services.DTOs.Submission;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CodeArena.Services.Results;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CodeArena.Services.Core;
 
@@ -21,14 +23,17 @@ public class SubmissionService : ISubmissionService
 {
     private readonly ISubmissionRepository _repository;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IMemoryCache _cache;
 
     public SubmissionService(
         ISubmissionRepository repository,
-        UserManager<ApplicationUser> userManager
+        UserManager<ApplicationUser> userManager,
+        IMemoryCache cache
         )
     {
         _repository = repository;
         _userManager = userManager;
+        _cache = cache;
     }
 
     public async Task CancelPendingAsync(int challengeId, ClaimsPrincipal user)
@@ -45,7 +50,14 @@ public class SubmissionService : ISubmissionService
             return;
         }
 
-        await _repository.RemoveAsync(submission);
+        InvalidateCache(
+            string.Format(CacheKey_User_SubmissionById, submission.Id),
+            string.Format(CacheKey_UserStats_ByUserId, userId),
+            CacheKey_PendingSubmissions,
+            CacheKey_SubmissionsAll
+       );
+
+        await _repository.RemoveAsync(submission);     
     }
 
     public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user)
@@ -69,7 +81,14 @@ public class SubmissionService : ISubmissionService
             UserId = userId,
             Status = SubmissionStatus.Pending
         };
+
         await _repository.AddAsync(submission);
+
+        InvalidateCache(
+            CacheKey_PendingSubmissions,
+            CacheKey_SubmissionsAll,
+            string.Format(CacheKey_UserStats_ByUserId, userId)
+       );
     }
 
     public async Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user)
@@ -88,6 +107,13 @@ public class SubmissionService : ISubmissionService
             return ServiceResult<SubmissionDetailsDto>.Fail(string.Format(UnauthorizedActionMessage, userId));
         }
 
+        if (_cache.TryGetValue(
+            string.Format(CacheKey_User_SubmissionById, id),
+            out SubmissionDetailsDto? cachedDto))
+        {
+            return ServiceResult<SubmissionDetailsDto>.Ok(cachedDto!);
+        }
+
         var dto = await _repository.GetAll()
             .Where(s => s.Id == id && s.UserId == userId)
             .Include(s => s.Challenge)
@@ -102,6 +128,15 @@ public class SubmissionService : ISubmissionService
                 s.SubmittedAt
             ))
             .FirstAsync();
+
+        _cache.Set(
+            string.Format(CacheKey_User_SubmissionById, id),
+            dto,
+            new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(CacheDuration_SubmissionById_Minutes)
+            }
+        );
 
         return ServiceResult<SubmissionDetailsDto>.Ok(dto);
     }
@@ -157,5 +192,13 @@ public class SubmissionService : ISubmissionService
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
             s.Status == SubmissionStatus.Pending);
+    }
+    private void InvalidateCache(params string[] keys)
+    {
+        if (!keys.Any()) return;
+        foreach (var key in keys)
+        {
+            _cache.Remove(key);
+        }
     }
 }

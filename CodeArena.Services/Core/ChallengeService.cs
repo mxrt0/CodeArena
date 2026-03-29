@@ -8,6 +8,7 @@ using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.Results;
 using Microsoft.AspNetCore.Identity;
 using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CodeArena.Services.Core;
 
@@ -23,16 +25,19 @@ public class ChallengeService : IChallengeService
     private readonly IChallengeRepository _repository;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISubmissionService _submissionService;
+    private readonly IMemoryCache _cache;
 
     public ChallengeService(
         IChallengeRepository repository,
         UserManager<ApplicationUser> userManager,
-        ISubmissionService submissionService
+        ISubmissionService submissionService,
+        IMemoryCache cache
     )
     {
         _repository = repository;
         _userManager = userManager;
         _submissionService = submissionService;
+        _cache = cache;
     }
 
     public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null)
@@ -67,6 +72,12 @@ public class ChallengeService : IChallengeService
 
     public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null)
     {
+        if (_cache.TryGetValue(
+            string.Format(CacheKey_ChallengeBySlug, slug),
+            out ChallengeDisplayDto? cachedDto))
+        {
+            return ServiceResult<ChallengeDisplayDto>.Ok(cachedDto!);
+        }
         var challenge = await _repository.GetBySlugAsync(slug);
         if (challenge is null)
         {
@@ -92,6 +103,15 @@ public class ChallengeService : IChallengeService
                         ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user)
                         : false;
 
+        _cache.Set(
+            string.Format(CacheKey_ChallengeBySlug, slug),
+            dto,
+            new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(CacheDuration_ChallengeBySlug_Minutes)
+            }
+        );
+
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
     }
 
@@ -103,7 +123,8 @@ public class ChallengeService : IChallengeService
         ClaimsPrincipal? user = null
     )
     {
-        var challenges = _repository.GetAll();
+       var challenges = _repository.GetAll();
+
         if (statusFilter != ChallengeStatus.All && user is not null)
         {
             challenges = statusFilter switch
@@ -155,4 +176,5 @@ public class ChallengeService : IChallengeService
 
         return (dtos, totalCount);
     }
+
 }
