@@ -106,7 +106,10 @@ public class ChallengeService : IChallengeService
         _cache.Set(
             string.Format(CacheKey_ChallengeBySlug, slug),
             dto,
-            TimeSpan.FromMinutes(CacheDuration_ChallengeBySlug_Minutes)
+            new MemoryCacheEntryOptions
+            {
+                SlidingExpiration = TimeSpan.FromMinutes(CacheDuration_ChallengeBySlug_Minutes)
+            }
         );
 
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
