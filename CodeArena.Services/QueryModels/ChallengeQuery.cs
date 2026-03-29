@@ -18,4 +18,5 @@ public class ChallengeQuery
 
     public List<string>? Tags { get; set; }
     public string? Search { get; set; }
+    public string? SortBy { get; set; }
 }
