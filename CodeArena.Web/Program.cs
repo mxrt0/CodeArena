@@ -12,7 +12,6 @@ using static CodeArena.Common.ApplicationConstants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
-// TODO: Extension methods for DI and possibly other
 // TODO: Optimize performance of queries and data retrieval
 namespace CodeArena.Web;
 
