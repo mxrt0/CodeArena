@@ -2,6 +2,11 @@
 
 public static class ApplicationConstants
 {
+    public const string DataAssemblyName = "CodeArena.Data";
+    public const string ServicesNamespace = "CodeArena.Services.Core";
+    public const string RepositoriesNamespace = "CodeArena.Data.Repositories";
+
+    public const string DefaultConnectionStringName = "DefaultConnection";
     public const string DefaultDateFormat = "dd/MM/yyyy HH:mm";
 
     public const string ErrorTempDataKey = "ErrorMessage";

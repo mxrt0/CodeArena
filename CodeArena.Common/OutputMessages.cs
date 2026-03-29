@@ -8,6 +8,7 @@ namespace CodeArena.Common;
 
 public static class OutputMessages
 {
+    public const string DefaultConnectionStringNotFoundMessage = "Connection string 'DefaultConnection' not found.";
     public const string NoFeedbackMessage = "No feedback available.";
 
     public const string LanguageNotSelectedMessage = "Please select a language.";
