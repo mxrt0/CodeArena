@@ -16,4 +16,11 @@ public static class ApplicationConstants
     public const string CacheKey_SubmissionsByUserId = "Cache_Submissions_User_{0}";
     public const string CacheKey_PendingSubmissions = "Cache_Submissions_Pending";
     public const string CacheKey_SubmissionById = "Cache_Submission_{0}";
+
+    public const int CacheDuration_ChallengesAll_Minutes = 60;
+    public const int CacheDuration_ChallengeBySlug_Minutes = 60;
+    public const int CacheDuration_SubmissionsAll_Minutes = 2;
+    public const int CacheDuration_SubmissionsByUserId_Minutes = 5;
+    public const int CacheDuration_PendingSubmissions_Minutes = 1;
+    public const int CacheDuration_SubmissionById_Minutes = 5;
 }
