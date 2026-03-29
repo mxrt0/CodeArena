@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 // TODO: Implement slugs for challenges
 // TODO: Unique Check on Username
 // TODO: Extension methods for DI and possibly other
+// TODO: Optimize performance of queries and data retrieval
 namespace CodeArena.Web
 {
     public class Program
