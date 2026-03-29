@@ -1,10 +1,15 @@
 ﻿using CodeArena.Common.Exceptions;
+using CodeArena.Data;
 using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories;
 using CodeArena.Services.Core.Admin;
 using CodeArena.Services.Tests.Infrastructure;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
+using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -16,16 +21,35 @@ namespace CodeArena.Services.Tests;
 [TestFixture]
 public class AdminSubmissionServiceTests
 {
+    private Mock<IMemoryCache> _cacheMock;
+    private ApplicationDbContext _context;
+    private SubmissionRepository _repo;
+    [SetUp]
+    public async Task Setup()
+    {
+        _context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
+        _repo = new SubmissionRepository(_context);
+
+        var cacheEntry = new Mock<ICacheEntry>();
+        cacheEntry.SetupGet(e => e.ExpirationTokens).Returns(new List<IChangeToken>());
+        cacheEntry.SetupGet(e => e.PostEvictionCallbacks).Returns(new List<PostEvictionCallbackRegistration>());
+
+        _cacheMock = new Mock<IMemoryCache>();
+        _cacheMock
+            .Setup(c => c.TryGetValue(It.IsAny<object>(), out It.Ref<object?>.IsAny))
+            .Returns(false);
+        _cacheMock
+            .Setup(c => c.CreateEntry(It.IsAny<object>()))
+            .Returns(cacheEntry.Object);
+    }
     [Test]
     public async Task ApproveAsync_WhenPendingSubmission_ApprovesSuccessfully()
     {
-        var context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
-        var repo = new SubmissionRepository(context);
-        var service = new AdminSubmissionService(repo);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
         await service.ApproveAsync(1, "Good job");
 
-        var updated = await context.Submissions.FindAsync(1);
+        var updated = await _context.Submissions.FindAsync(1);
         Assert.That(updated?.Status, Is.EqualTo(SubmissionStatus.Approved));
         Assert.That(updated.Feedback, Is.EqualTo("Good job"));
     }
@@ -35,11 +59,9 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionNotFoundException>(async () =>
         {
-            var context = DbContextFactory.Create();
-            var repo = new SubmissionRepository(context);
-            var service = new AdminSubmissionService(repo);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
-            await service.ApproveAsync(123);
+            await service.ApproveAsync(12345);
         });
     }
 
@@ -48,9 +70,7 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionAlreadyApprovedException>(async () =>
         {
-            var context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
-            var repo = new SubmissionRepository(context);
-            var service = new AdminSubmissionService(repo);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
             await service.ApproveAsync(2);
         });
@@ -59,13 +79,11 @@ public class AdminSubmissionServiceTests
     [Test]
     public async Task RejectAsync_WhenPendingSubmission_RejectsSuccessfully()
     {
-        var context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
-        var repo = new SubmissionRepository(context);
-        var service = new AdminSubmissionService(repo);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
         await service.RejectAsync(1, "Bad solution");
 
-        var updated = await context.Submissions.FindAsync(1);
+        var updated = await _context.Submissions.FindAsync(1);
         Assert.That(updated?.Status, Is.EqualTo(SubmissionStatus.Rejected));
         Assert.That(updated.Feedback, Is.EqualTo("Bad solution"));
     }
@@ -75,9 +93,7 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionAlreadyApprovedException>(async () =>
         {
-            var context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
-            var repo = new SubmissionRepository(context);
-            var service = new AdminSubmissionService(repo);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
             await service.RejectAsync(2);
         });
@@ -86,9 +102,7 @@ public class AdminSubmissionServiceTests
     [Test]
     public async Task GetPendingSubmissionsAsync_WhenCalled_ReturnsOnlyPending()
     {
-        var context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
-        var repo = new SubmissionRepository(context);
-        var service = new AdminSubmissionService(repo);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
         var (result, count) = await service.GetPendingSubmissionsAsync();
 
@@ -122,7 +136,8 @@ public class AdminSubmissionServiceTests
 
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
-        var service = new AdminSubmissionService(repo);
+ 
+        var service = new AdminSubmissionService(repo, _cacheMock.Object);
 
         var (result, count) = await service.GetPendingSubmissionsAsync(page: 2, pageSize: 5);
 
@@ -133,9 +148,7 @@ public class AdminSubmissionServiceTests
     [Test]
     public async Task GetSubmissionForReviewAsync_WhenExists_ReturnsDto()
     {
-        var context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
-        var repo = new SubmissionRepository(context);
-        var service = new AdminSubmissionService(repo);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
         var dto = await service.GetSubmissionForReviewAsync(1);
 
@@ -149,11 +162,9 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionNotFoundException>(async () =>
         {
-            var context = DbContextFactory.Create();
-            var repo = new SubmissionRepository(context);
-            var service = new AdminSubmissionService(repo);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
 
-            await service.GetSubmissionForReviewAsync(123);
+            await service.GetSubmissionForReviewAsync(12345);
         });
     }
 
