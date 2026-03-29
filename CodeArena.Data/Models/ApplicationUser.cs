@@ -13,6 +13,8 @@ public class ApplicationUser : IdentityUser
 {
     [MaxLength(DisplayNameMaxLength)]
     public string DisplayName { get; set; } = null!;
+    [MaxLength(DisplayNameMaxLength)]
+    public string NormalizedDisplayName { get; set; } = null!;
 
     public int XP { get; set; } = 0;
     public int Level { get; set; } = 1;
