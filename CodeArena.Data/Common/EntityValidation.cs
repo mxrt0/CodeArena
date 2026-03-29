@@ -26,7 +26,8 @@ public static class EntityValidation
 
     public static class ApplicationUser
     {
-        public const int DisplayNameMaxLength = 50;
+        public const int DisplayNameMaxLength = 25;
+        public const int DisplayNameMinLength = 3;
     }
 }
 
