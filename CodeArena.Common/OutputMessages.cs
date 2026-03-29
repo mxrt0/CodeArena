@@ -51,4 +51,5 @@ public static class OutputMessages
     public const string Admin_ChallengeAlreadyActiveMessage = "This challenge is already active.";
 
     public const string InvalidDisplayNameMessage = "Display name can only contain letters, numbers, dots, and underscores.";
+    public const string DisplayNameAlreadyExistsMessage = "Display name '{0}' is already taken.";
 }
