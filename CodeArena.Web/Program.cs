@@ -10,7 +10,6 @@ using CodeArena.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 // TODO: Extract filters into separate query wrapper class
-// TODO: Unique Check on Username
 // TODO: Extension methods for DI and possibly other
 // TODO: Optimize performance of queries and data retrieval
 namespace CodeArena.Web
