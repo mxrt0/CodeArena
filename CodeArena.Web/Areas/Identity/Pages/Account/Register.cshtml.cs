@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using CodeArena.Data.Models;
 using static CodeArena.Data.Common.EntityValidation.ApplicationUser;
 using static CodeArena.Common.OutputMessages;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeArena.Web.Areas.Identity.Pages.Account;
 
@@ -118,7 +119,17 @@ public class RegisterModel : PageModel
         if (ModelState.IsValid)
         {
             var user = CreateUser();
-            user.DisplayName = Input.DisplayName;
+
+            var normalizedDisplayName = Input.DisplayName.ToUpper();
+            if (await _userManager.Users
+                .AnyAsync(u => u.NormalizedDisplayName == normalizedDisplayName))
+            {
+                ModelState.AddModelError("DisplayName", string.Format(DisplayNameAlreadyExistsMessage, Input.DisplayName));
+                return Page();
+            }
+
+            user.DisplayName = Input.DisplayName.Trim();
+            user.NormalizedDisplayName = Input.DisplayName.Trim().ToUpper();
 
             await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
             await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
