@@ -8,6 +8,7 @@ using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.Results;
 using Microsoft.AspNetCore.Identity;
 using static CodeArena.Common.OutputMessages;
+using static CodeArena.Common.ApplicationConstants;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,7 @@ public class ChallengeService : IChallengeService
     public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null)
     {
         if (_cache.TryGetValue(
-            string.Format(ApplicationConstants.CacheKey_ChallengeBySlug, slug),
+            string.Format(CacheKey_ChallengeBySlug, slug),
             out ChallengeDisplayDto? cachedDto))
         {
             return ServiceResult<ChallengeDisplayDto>.Ok(cachedDto!);
@@ -103,9 +104,9 @@ public class ChallengeService : IChallengeService
                         : false;
 
         _cache.Set(
-            string.Format(ApplicationConstants.CacheKey_ChallengeBySlug, slug),
+            string.Format(CacheKey_ChallengeBySlug, slug),
             dto,
-            TimeSpan.FromMinutes(ApplicationConstants.CacheDuration_ChallengeBySlug_Minutes)
+            TimeSpan.FromMinutes(CacheDuration_ChallengeBySlug_Minutes)
         );
 
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);

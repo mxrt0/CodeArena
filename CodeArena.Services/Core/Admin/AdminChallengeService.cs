@@ -9,6 +9,7 @@ using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using static CodeArena.Common.ApplicationConstants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.AddAsync(challenge);
 
-        InvalidateCache(ApplicationConstants.CacheKey_ChallengesAll);
+        InvalidateCache(CacheKey_ChallengesAll);
     }
 
     public async Task DeleteChallengeAsync(int id)
@@ -58,8 +59,8 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.DeleteAsync(challenge);
 
         InvalidateCache(
-            ApplicationConstants.CacheKey_ChallengesAll,
-            string.Format(ApplicationConstants.CacheKey_ChallengeBySlug, challenge.Slug)
+            CacheKey_ChallengesAll,
+            string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
 
@@ -85,7 +86,7 @@ public class AdminChallengeService : IAdminChallengeService
 
     public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
     {
-        if (_cache.TryGetValue(ApplicationConstants.CacheKey_ChallengesAll,
+        if (_cache.TryGetValue(CacheKey_ChallengesAll,
             out List<ChallengeDisplayDto>? cachedList))
         {
             return cachedList!;
@@ -106,9 +107,9 @@ public class AdminChallengeService : IAdminChallengeService
         )).ToListAsync();
 
         _cache.Set(
-            ApplicationConstants.CacheKey_ChallengesAll,
+            CacheKey_ChallengesAll,
             dtos,
-            TimeSpan.FromMinutes(ApplicationConstants.CacheDuration_ChallengesAll_Minutes)
+            TimeSpan.FromMinutes(CacheDuration_ChallengesAll_Minutes)
         );
 
         return dtos;
@@ -124,8 +125,8 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.RestoreAsync(challenge);
 
         InvalidateCache(
-            ApplicationConstants.CacheKey_ChallengesAll,
-            string.Format(ApplicationConstants.CacheKey_ChallengeBySlug, challenge.Slug)
+            CacheKey_ChallengesAll,
+            string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
 
@@ -142,8 +143,8 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.UpdateAsync(challenge);
 
         InvalidateCache(
-            ApplicationConstants.CacheKey_ChallengesAll,
-            string.Format(ApplicationConstants.CacheKey_ChallengeBySlug, challenge.Slug)
+            CacheKey_ChallengesAll,
+            string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
     private void InvalidateCache(params string[] keys)
