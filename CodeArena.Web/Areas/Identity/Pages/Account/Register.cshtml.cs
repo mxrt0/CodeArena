@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using CodeArena.Data.Models;
 using static CodeArena.Data.Common.EntityValidation.ApplicationUser;
+using static CodeArena.Common.OutputMessages;
 
 namespace CodeArena.Web.Areas.Identity.Pages.Account;
 
@@ -70,8 +71,9 @@ public class RegisterModel : PageModel
     public class InputModel
     {
         [Required]
-        [MaxLength(DisplayNameMaxLength)]
+        [StringLength(DisplayNameMaxLength, MinimumLength = DisplayNameMinLength)]
         [Display(Name = "Display Name")]
+        [RegularExpression(@"^[a-zA-Z0-9._]+$", ErrorMessage = InvalidDisplayNameMessage)]
         public string DisplayName { get; set; }
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
