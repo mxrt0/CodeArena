@@ -125,6 +125,17 @@ body.dark-mode .navbar-toggler-icon {
     border-color: #ffffff !important;
 }
 
-.login-card label:not([for='rememberMeCheck']) {
+.login-card label:not([for='rememberMeCheck']):focus {
+    color: #212529;
+}
+
+body.dark-mode input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #f8f9fa inset;
+    -webkit-text-fill-color: #212529;
+    transition: background-color 5000s ease-in-out;
+}
+
+body.dark-mode input:-webkit-autofill + label,
+body.dark-mode input:-webkit-autofill ~ label {
     color: #212529;
 }
