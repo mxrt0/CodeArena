@@ -122,7 +122,7 @@ public class AdminSubmissionServiceTests
                 SolutionCode = "code",
                 SubmittedAt = DateTime.UtcNow.AddMinutes(-i),
                 UserId = $"user{i}",
-                User = new ApplicationUser { Id = $"user{i}", DisplayName = $"User {i}" },
+                User = new ApplicationUser { Id = $"user{i}", DisplayName = $"User {i}", NormalizedDisplayName = $"USER{i}" },
                 Challenge = new Challenge
                 {
                     Id = i,
@@ -179,7 +179,7 @@ public class AdminSubmissionServiceTests
                 SolutionCode = "code1",
                 SubmittedAt = DateTime.UtcNow,
                 UserId = "user1",
-                User = new ApplicationUser { Id = "user1", DisplayName = "User One" },
+                User = new ApplicationUser { Id = "user1", DisplayName = "User One", NormalizedDisplayName = "USERONE" },
                 Challenge = new Challenge
                 {
                     Id = 1,
@@ -197,7 +197,7 @@ public class AdminSubmissionServiceTests
                 SolutionCode = "code2",
                 SubmittedAt = DateTime.UtcNow.AddDays(-1),
                 UserId = "user2",
-                User = new ApplicationUser { Id = "user2", DisplayName = "User Two" },
+                User = new ApplicationUser { Id = "user2", DisplayName = "User Two", NormalizedDisplayName = "USERTWO" },
                 Challenge = new Challenge
                 {
                     Id = 2,
