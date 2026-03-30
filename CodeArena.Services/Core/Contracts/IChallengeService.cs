@@ -18,9 +18,11 @@ public interface IChallengeService
         int pageSize = 10,
         ChallengeStatus? statusFilter = ChallengeStatus.All,
         Difficulty? difficultyFilter = null,
+        IEnumerable<string>? tagsFilter = null,
+        string? search = null,
         ClaimsPrincipal? user = null
     );
-
+    Task<IEnumerable<string>> GetAllTagsAsync();
     Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null);
     Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null);
 }

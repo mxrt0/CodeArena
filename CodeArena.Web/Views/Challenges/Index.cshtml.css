@@ -69,3 +69,117 @@ body.dark-mode .btn-outline-danger:active {
     background-color: transparent; /* maintain outline look */
     box-shadow: none; /* remove focus glow if any */
 }
+
+.challenge-filter-bar {
+    padding: 12px;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+}
+
+body.dark-mode .challenge-filter-bar {
+    background: #1e1e1e;
+    border-color: #2c2c2c;
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+    .tag-chip input {
+        display: none;
+    }
+
+    .tag-chip:hover {
+        background: #f1f5f9;
+    }
+
+    .tag-chip.active {
+        background: #0d6efd;
+        color: white;
+        border-color: #0d6efd;
+    }
+
+body.dark-mode .tag-chip {
+    border-color: #3a3a3a;
+    color: #ddd;
+}
+
+    body.dark-mode .tag-chip:hover {
+        background: #2c2c2c;
+    }
+
+    body.dark-mode .tag-chip.active {
+        background: #0d6efd;
+        color: white;
+    }
+.tag-chip {
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+}
+
+    .tag-chip input[type="checkbox"] {
+        display: none;
+    }
+
+    .tag-chip span {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 2px solid #ccc;
+        background-color: #f5f5f5;
+        color: #555;
+        transition: all 0.2s ease;
+    }
+
+    .tag-chip:hover span {
+        border-color: #007bff;
+        color: #007bff;
+    }
+
+    /* ✅ Checked state — lights up with glow */
+    .tag-chip input[type="checkbox"]:checked + span {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #fff;
+        box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        font-weight: 500;
+    }
+
+.tag-chip {
+    outline: none;
+    -webkit-tap-highlight-color: transparent; /* mobile */
+}
+
+    .tag-chip:hover, .tag-chip:focus {
+        outline: none;
+        background: none;
+        border: none;
+    }
+
+/* Dark mode */
+body.dark-mode .tag-chip span {
+    background-color: #2a2a2a;
+    border-color: #555;
+    color: #aaa;
+}
+
+body.dark-mode .tag-chip:hover span {
+    border-color: #0d6efd;
+    color: #0d6efd;
+}
+
+body.dark-mode .tag-chip input[type="checkbox"]:checked + span {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.35);
+    font-weight: 600;
+}

@@ -41,7 +41,12 @@ public class AdminChallengeService : IAdminChallengeService
             Title = dto.Title,
             Description = dto.Description,
             Difficulty = dto.Difficulty,
-            Tags = dto.Tags ?? string.Empty,
+            Tags = dto.Tags is not null 
+            ? string.Join(",",
+                dto.Tags
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(t => t.Trim().ToLowerInvariant())) 
+            : string.Empty,
             Slug = SlugGenerator.GenerateUnique(dto.Title, slugSet)
         };
 
