@@ -141,20 +141,19 @@ public class ChallengeService : IChallengeService
         ClaimsPrincipal? user = null
     )
     {
-       var challenges = _repository.GetAll();
+        var challenges = _repository.GetAll();
 
         if (statusFilter != ChallengeStatus.All && user is not null)
         {
+            var userId = _userManager.GetUserId(user);
             challenges = statusFilter switch
             {
                 ChallengeStatus.Solved => challenges
-                                          .Include(c => c.Submissions)
                                           .Where(c => c.Submissions.Any(s => s.Status == SubmissionStatus.Approved
-                                                    && s.UserId == _userManager.GetUserId(user))),
+                                                    && s.UserId == userId)),
                ChallengeStatus.Unsolved => challenges
-                                          .Include(c => c.Submissions)
                                           .Where(c => !c.Submissions.Any(s => s.Status == SubmissionStatus.Approved
-                                                    && s.UserId == _userManager.GetUserId(user))),
+                                                    && s.UserId == userId)),
                _ => challenges
             };
         }
