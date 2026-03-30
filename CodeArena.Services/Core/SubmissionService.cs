@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using CodeArena.Services.Results;
 using Microsoft.Extensions.Caching.Memory;
+using CodeArena.Services.Extensions;
+using CodeArena.Services.QueryModels;
 
 namespace CodeArena.Services.Core;
 
@@ -144,12 +146,22 @@ public class SubmissionService : ISubmissionService
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(
         ClaimsPrincipal user,
         int page = 1,
-        int pageSize = 10
+        int pageSize = 10,
+        SubmissionLanguage? languageFilter = null,
+        SubmissionStatus? statusFilter = null
     )
     {
         var userId = _userManager.GetUserId(user);
+        var query = new SubmissionQuery
+        {
+            Page = page,
+            PageSize = pageSize,
+            Language = languageFilter,
+            Status = statusFilter
+        };
         var submissions = _repository.GetAll()
                               .Where(s => s.UserId == userId)
+                              .ApplyFiltering(query)
                               .Include(s => s.Challenge);
 
         var totalCount = await submissions.CountAsync();

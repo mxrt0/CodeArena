@@ -28,18 +28,22 @@ public class SubmissionsController : BaseController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index(SubmissionsIndexViewModel inputVm, int page = 1)
     {
         var (submissions, count) = await _submissionService.GetUserSubmissionsAsync(
                 User,
                 Math.Max(1, page),
-                PageSize
+                PageSize,
+                inputVm.Language,
+                inputVm.Status
             );
         var vm = new SubmissionsIndexViewModel
         {
             Submissions = submissions,
             CurrentPage = Math.Max(1, page),
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize)
+            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+            Language = inputVm.Language,
+            Status = inputVm.Status
         };
         return View(vm);
     }
