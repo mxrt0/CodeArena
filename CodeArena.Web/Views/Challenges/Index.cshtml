@@ -23,11 +23,11 @@
                 {
                     if (Model.SelectedDifficulty == d)
                     {
-                        <option value="@d" selected>@d</option>
+                        <option value="@d.ToString().ToLower()" selected>@d</option>
                     }
                     else
                     {
-                    <option value="@d">@d</option>
+                    <option value="@d.ToString().ToLower()">@d</option>
                     }
                 }
             </select>
@@ -40,11 +40,11 @@
 
                     if (Model.StatusFilter == d)
                     {
-                        <option value="@d" selected>@d</option>
+                        <option value="@d.ToString().ToLower()" selected>@d</option>
                     }
                     else
                     {
-                        <option value="@d">@d</option>
+                        <option value="@d.ToString().ToLower()">@d</option>
                     }
                 }
             </select>
