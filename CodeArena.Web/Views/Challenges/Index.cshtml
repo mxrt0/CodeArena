@@ -5,7 +5,7 @@
 
 <div class="container mt-4 challenge-page">
 
-    <form method="get" class="challenge-filter-bar mb-4">
+    <form id="filter-form" method="get" class="challenge-filter-bar mb-4">
 
         <div class="d-flex flex-wrap align-items-center gap-2">
 
@@ -19,21 +19,35 @@
 
             <select name="selectedDifficulty" class="form-select w-auto">
                 <option value="">All Difficulties</option>
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                @foreach (var d in Enum.GetValues<Difficulty>())
+                {
+                    if (Model.SelectedDifficulty == d)
+                    {
+                        <option value="@d" selected>@d</option>
+                    }
+                    else
+                    {
+                    <option value="@d">@d</option>
+                    }
+                }
             </select>
 
             <select name="statusFilter" class="form-select w-auto">
                 <option value="">All Challenges</option>
-                <option value="unsolved">Unsolved</option>
-                <option value="solved">Solved</option>
-            </select>
+                @foreach (var d in Enum.GetValues<ChallengeStatus>())
+                {
+                    if (d == ChallengeStatus.All) continue;
 
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-funnel"></i>
-                <span class="d-none d-sm-inline ms-1">Apply</span>
-            </button>
+                    if (Model.StatusFilter == d)
+                    {
+                        <option value="@d" selected>@d</option>
+                    }
+                    else
+                    {
+                        <option value="@d">@d</option>
+                    }
+                }
+            </select>
 
             <a asp-action="Index" class="btn btn-outline-danger">
                 <i class="bi bi-x-lg"></i>

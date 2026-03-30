@@ -31,3 +31,18 @@ toggleBtn?.addEventListener("click", () => {
         icon.classList.toggle("bi-sun");
     }
 });
+
+document.querySelectorAll('#filter-form select').forEach(el => {
+    el.addEventListener('change', () => document.getElementById('filter-form')?.submit());
+});
+
+document.querySelectorAll('.tag-chip input[type="checkbox"]').forEach(el => {
+    el.addEventListener('change', () => document.getElementById('filter-form')?.submit());
+});
+
+const searchInput = document.querySelector('#filter-form input[type="text"]');
+let debounceTimer;
+searchInput?.addEventListener('input', () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => document.getElementById('filter-form')?.submit(), 400);
+});
