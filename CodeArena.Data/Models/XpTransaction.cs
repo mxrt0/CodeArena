@@ -18,6 +18,10 @@ public class XpTransaction
     public string UserId { get; set; } = null!;
     public ApplicationUser User { get; set; } = null!;
 
+    [ForeignKey(nameof(Challenge))]
+    public int? ChallengeId { get; set; }
+    public Challenge? Challenge { get; set; }
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
 
