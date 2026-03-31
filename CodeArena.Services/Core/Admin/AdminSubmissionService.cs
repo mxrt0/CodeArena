@@ -14,21 +14,25 @@ using static CodeArena.Common.ApplicationConstants;
 using Microsoft.Extensions.Caching.Memory;
 using CodeArena.Services.QueryModels;
 using CodeArena.Services.Extensions;
+using CodeArena.Services.Core.Contracts;
 
 namespace CodeArena.Services.Core.Admin;
 
 public class AdminSubmissionService : IAdminSubmissionService
 {
     private readonly ISubmissionRepository _repository;
+    private readonly IXpService _xpService;
     private readonly IMemoryCache _cache;
 
     public AdminSubmissionService(
         ISubmissionRepository repository,
-        IMemoryCache cache
+        IMemoryCache cache,
+        IXpService xpService
     )
     {
         _repository = repository;
         _cache = cache;
+        _xpService = xpService;
     }
 
     public async Task ApproveAsync(int id, string? feedback = null)
@@ -47,6 +51,9 @@ public class AdminSubmissionService : IAdminSubmissionService
         submission.Feedback = feedback;
 
         await _repository.UpdateAsync(submission);
+
+        await _xpService.AwardXpAsync(submission.UserId, submission.ChallengeId,
+            submission.Challenge.Difficulty);
 
         InvalidateCache(
             CacheKey_PendingSubmissions,
