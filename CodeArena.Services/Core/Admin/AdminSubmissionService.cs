@@ -12,6 +12,8 @@ using CodeArena.Common.Exceptions;
 using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
 using Microsoft.Extensions.Caching.Memory;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.Extensions;
 
 namespace CodeArena.Services.Core.Admin;
 
@@ -57,12 +59,19 @@ public class AdminSubmissionService : IAdminSubmissionService
 
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
        int page = 1,
-       int pageSize = 10
+       int pageSize = 10,
+       SubmissionLanguage? languageFilter = null
     )
     {
-        var submissions = _repository.GetAll()
-            .Where(s => s.Status == SubmissionStatus.Pending);
+        var query = new SubmissionQuery
+        {
+            Language = languageFilter
+        };
 
+        var submissions = _repository.GetAll()
+            .Where(s => s.Status == SubmissionStatus.Pending)
+            .ApplyFiltering(query);
+        
         var totalCount = await submissions.CountAsync();
 
         var dtos = await submissions

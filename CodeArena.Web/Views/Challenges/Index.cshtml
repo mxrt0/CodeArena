@@ -5,26 +5,73 @@
 
 <div class="container mt-4 challenge-page">
 
-    <form method="get" class="mb-4 d-flex align-items-center gap-2 flex-wrap">
-        <select asp-for="SelectedDifficulty" class="form-select w-auto">
-            <option value="">All Difficulties</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
-        </select>
+    <form id="filter-form" method="get" class="challenge-filter-bar mb-4">
 
-        <select asp-for="StatusFilter" class="form-select w-auto">
-            <option value="">All Challenges</option>
-            <option value="Unsolved">Unsolved</option>
-            <option value="Solved">Solved</option>
-        </select>
+        <div class="d-flex flex-wrap align-items-center gap-2">
 
-        <button type="submit" class="btn btn-primary">
-            <i class="bi bi-funnel"></i> <span class="d-none d-sm-inline ms-sm-1">Filter</span>
-        </button>
-        <a asp-action="Index" class="btn btn-outline-danger ms-1">
-            <i class="bi bi-x-lg"></i> <span class="d-none d-sm-inline ms-sm-1">Clear</span>
-        </a>
+            <div class="flex-grow-1" style="min-width: 200px;">
+                <input type="text"
+                       name="search"
+                       value="@Model.Search"
+                       class="form-control"
+                       placeholder="Search challenges..." />
+            </div>
+
+            <select name="selectedDifficulty" class="form-select w-auto">
+                <option value="">All Difficulties</option>
+                @foreach (var d in Enum.GetValues<Difficulty>())
+                {
+                    if (Model.SelectedDifficulty == d)
+                    {
+                        <option value="@d.ToString().ToLower()" selected>@d</option>
+                    }
+                    else
+                    {
+                    <option value="@d.ToString().ToLower()">@d</option>
+                    }
+                }
+            </select>
+
+            <select name="statusFilter" class="form-select w-auto">
+                <option value="">All Challenges</option>
+                @foreach (var d in Enum.GetValues<ChallengeStatus>())
+                {
+                    if (d == ChallengeStatus.All) continue;
+
+                    if (Model.StatusFilter == d)
+                    {
+                        <option value="@d.ToString().ToLower()" selected>@d</option>
+                    }
+                    else
+                    {
+                        <option value="@d.ToString().ToLower()">@d</option>
+                    }
+                }
+            </select>
+
+            <a asp-action="Index" class="btn btn-outline-danger">
+                <i class="bi bi-x-lg"></i>
+            </a>
+
+        </div>
+
+        <div class="tag-filter mt-3 d-flex flex-wrap gap-2">
+
+            @foreach (var tag in Model.AvailableTags)
+            {
+                var isSelected = Model.Tags.Contains(tag);
+
+                <label class="tag-chip @(isSelected ? "active" : "")">
+                    <input type="checkbox"
+                           name="tags"
+                           value="@tag"
+                    @(isSelected ? "checked" : "") />
+                    <span>@tag</span>
+                </label>
+            }
+
+        </div>
+
     </form>
 
     @if (!Model.Challenges.Any())
@@ -115,26 +162,49 @@
             }
         </div>
 
+            var baseRoute = new Dictionary<string, string?>();
+            baseRoute["selectedDifficulty"] = Model.SelectedDifficulty?.ToString().ToLower();
+            baseRoute["statusFilter"] = Model.StatusFilter.ToString().ToLower();
+            baseRoute["search"] = Model.Search?.ToLower();
+            baseRoute["page"] = Model.CurrentPage.ToString();
+
+        var prevRoute = new Dictionary<string, string?>(baseRoute)
+                {
+                    ["page"] = (Model.CurrentPage - 1).ToString()
+                };
+        var nextRoute = new Dictionary<string, string?>(baseRoute)
+        {
+            ["page"] = (Model.CurrentPage - 1).ToString()
+        };
+        if (Model.Tags is not null && Model.Tags.Any())
+            {
+                var tagsArray = Model.Tags.ToArray();
+                for (int i = 0; i < tagsArray.Length; i++)
+                {
+                    baseRoute[$"tags[{i}]"] = tagsArray[i];
+                }
+            }
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                     <a class="page-link"
                            asp-action="Index"
-                           asp-route-page="@(Model.CurrentPage - 1)"
-                           asp-route-selectedDifficulty="@Model.SelectedDifficulty"
-                           asp-route-statusFilter="@Model.StatusFilter">
+                           asp-all-route-data="@prevRoute">
                         &laquo; Previous
                     </a>
                 </li>
 
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
+                    var pageRoute = new Dictionary<string, string?>(baseRoute)
+                    {
+                        ["page"] = i.ToString()
+                    };
                     <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
                         <a class="page-link"
                                asp-action="Index"
                                asp-route-page="@i"
-                               asp-route-selectedDifficulty="@Model.SelectedDifficulty"
-                               asp-route-statusFilter="@Model.StatusFilter">
+                               asp-all-route-data="@pageRoute">
                             @i
                         </a>
                     </li>
@@ -144,8 +214,7 @@
                     <a class="page-link"
                            asp-action="Index"
                            asp-route-page="@(Model.CurrentPage + 1)"
-                           asp-route-selectedDifficulty="@Model.SelectedDifficulty"
-                           asp-route-statusFilter="@Model.StatusFilter">
+                           asp-all-route-data="@nextRoute">
                         Next &raquo;
                     </a>
                 </li>

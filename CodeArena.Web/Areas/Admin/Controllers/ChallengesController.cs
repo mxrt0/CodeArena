@@ -11,6 +11,7 @@ namespace CodeArena.Web.Areas.Admin.Controllers;
 
 public class ChallengesController : BaseAdminController
 {
+    const int PageSize = 12;
     private readonly IAdminChallengeService _challengeService;
     private readonly ILogger<ChallengesController> _logger;
 
@@ -21,11 +22,22 @@ public class ChallengesController : BaseAdminController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(ChallengesIndexViewModel inputVm, int page = 1)
     {
+        var (challenges, count) = await _challengeService.GetChallengesAsync(
+            Math.Max(1, page),
+            PageSize,
+            inputVm.State,
+            inputVm.Search
+        );
+
         var vm = new ChallengesIndexViewModel
         {
-            Challenges = await _challengeService.GetChallengesAsync()
+            Challenges = challenges,
+            CurrentPage = Math.Max(1, page),
+            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+            Search = inputVm.Search,
+            State = inputVm.State
         };
         ViewData["ActivePage"] = "Challenges";
         return View(vm);

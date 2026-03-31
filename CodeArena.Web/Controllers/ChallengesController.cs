@@ -33,6 +33,8 @@ public class ChallengesController : BaseController
             pageSize: PageSize,
             statusFilter: inputVm.StatusFilter,
             difficultyFilter: inputVm.SelectedDifficulty,
+            tagsFilter: inputVm.Tags,
+            search: inputVm.Search,
             user: User?.Identity?.IsAuthenticated ?? false
                     ? User
                     : null);
@@ -43,7 +45,10 @@ public class ChallengesController : BaseController
            SelectedDifficulty = inputVm.SelectedDifficulty,
            StatusFilter = inputVm.StatusFilter,
            CurrentPage = Math.Max(1, page),
-           TotalPages = (int)Math.Ceiling(count / (double)PageSize)
+           TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+           Tags = inputVm.Tags,
+           AvailableTags = await _service.GetAllTagsAsync(),
+           Search = inputVm.Search,
         };
         return View(vm);
     }

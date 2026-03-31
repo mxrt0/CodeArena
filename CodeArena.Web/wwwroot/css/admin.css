@@ -208,3 +208,10 @@ body.dark-mode .btn-close {
 body.dark-mode .modal-backdrop.show {
     opacity: 0.6;
 }
+
+body.dark-mode .form-control,
+body.dark-mode .form-select {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-color: #2c2c2c;
+}

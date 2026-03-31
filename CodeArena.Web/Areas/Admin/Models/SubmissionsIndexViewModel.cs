@@ -1,4 +1,5 @@
-﻿using CodeArena.Services.DTOs.Admin.Submission;
+﻿using CodeArena.Data.Common.Enums;
+using CodeArena.Services.DTOs.Admin.Submission;
 
 namespace CodeArena.Web.Areas.Admin.Models;
 
@@ -8,4 +9,5 @@ public class SubmissionsIndexViewModel
         = new List<SubmissionDisplayDto>();
     public int CurrentPage { get; set; }
     public int TotalPages { get; set; }
+    public SubmissionLanguage? Language { get; set; }
 }

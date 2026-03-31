@@ -17,6 +17,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.Extensions;
 
 namespace CodeArena.Services.Core;
 
@@ -38,6 +40,20 @@ public class ChallengeService : IChallengeService
         _userManager = userManager;
         _submissionService = submissionService;
         _cache = cache;
+    }
+
+    public async Task<IEnumerable<string>> GetAllTagsAsync()
+    {
+        var rawTags = await _repository.GetAll()
+        .Select(c => c.Tags)
+        .ToListAsync();
+
+        return rawTags
+            .SelectMany(tags => tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(t => t.Trim()))
+            .Distinct()
+            .OrderBy(t => t)
+            .ToList();
     }
 
     public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null)
@@ -120,31 +136,37 @@ public class ChallengeService : IChallengeService
         int pageSize = 10,
         ChallengeStatus? statusFilter = ChallengeStatus.All,
         Difficulty? difficultyFilter = null,
+        IEnumerable<string>? tagsFilter = null,
+        string? search = null,
         ClaimsPrincipal? user = null
     )
     {
-       var challenges = _repository.GetAll();
+        var challenges = _repository.GetAll();
 
         if (statusFilter != ChallengeStatus.All && user is not null)
         {
+            var userId = _userManager.GetUserId(user);
             challenges = statusFilter switch
             {
                 ChallengeStatus.Solved => challenges
-                                          .Include(c => c.Submissions)
                                           .Where(c => c.Submissions.Any(s => s.Status == SubmissionStatus.Approved
-                                                    && s.UserId == _userManager.GetUserId(user))),
+                                                    && s.UserId == userId)),
                ChallengeStatus.Unsolved => challenges
-                                          .Include(c => c.Submissions)
                                           .Where(c => !c.Submissions.Any(s => s.Status == SubmissionStatus.Approved
-                                                    && s.UserId == _userManager.GetUserId(user))),
+                                                    && s.UserId == userId)),
                _ => challenges
             };
         }
-
-        if (difficultyFilter is not null && user is not null)
+        var query = new ChallengeQuery
         {
-            challenges = challenges.Where(c => c.Difficulty == difficultyFilter);
-        }
+            Page = page,
+            PageSize = pageSize,
+            Difficulty = difficultyFilter,
+            Search = search,
+            Tags = tagsFilter?.ToList()
+        };
+
+        challenges = challenges.ApplyFiltering(query);
 
         var totalCount = await challenges.CountAsync();
 
