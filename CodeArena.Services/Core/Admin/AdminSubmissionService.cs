@@ -56,6 +56,7 @@ public class AdminSubmissionService : IAdminSubmissionService
             submission.Challenge.Difficulty);
 
         InvalidateCache(
+            CacheKey_Leaderboard,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_Admin_SubmissionById, id),
