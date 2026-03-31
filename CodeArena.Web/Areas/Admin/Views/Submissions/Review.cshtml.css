@@ -322,7 +322,6 @@ body.dark-mode {
 
 /* Meta badges */
 .meta-row .badge {
-    color: black !important;
     padding: 0.5em 0.75em;
     font-size: 0.85rem;
 }
