@@ -10,7 +10,7 @@ namespace CodeArena.Web.Areas.Admin.Controllers;
 
 public class SubmissionsController : BaseAdminController
 {
-    const int PageSize = 5;
+    const int PageSize = 12;
     private readonly IAdminSubmissionService _submissionService;
     private readonly ILogger<SubmissionsController> _logger;
     public SubmissionsController(IAdminSubmissionService submissionService,
