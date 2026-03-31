@@ -139,3 +139,18 @@ body.dark-mode input:-webkit-autofill + label,
 body.dark-mode input:-webkit-autofill ~ label {
     color: #212529;
 }
+
+.leaderboard-link span {
+    color: #0d6efd; 
+    transition: all 0.2s ease-in-out;
+}
+
+.leaderboard-link:hover span {
+    color: #0a58ca;
+    transform: scale(1.02);
+}
+
+body.dark-mode .leaderboard-link span {
+    color: #ffc107;
+}
+

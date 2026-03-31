@@ -40,7 +40,7 @@
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?
                                             .ToString()?.ToLower() == "challenges" ? "active fw-bold" : "")" 
                             asp-controller="Challenges" asp-action="Index">
-                                <i class="bi bi-trophy me-1"></i> Challenges
+                                <i class="bi bi-journal-check me-1"></i> Challenges
                             </a>
                         </li>
 
@@ -54,6 +54,15 @@
                                 </a>
                             </li>
                         }
+                        <li class="nav-item">
+                            <a class="nav-link leaderboard-link @(ViewContext.RouteData.Values["controller"]?
+                                        .ToString()?.ToLower() == "leaderboard" ? "active fw-bold" : "")"
+                                   asp-controller="Leaderboard" asp-action="Index">
+                                <span class="d-flex align-items-center gap-1 px-2 py-1 rounded">
+                                    <i class="bi bi-trophy-fill"></i> Leaderboard
+                                </span>
+                            </a>
+                        </li>
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-center">
