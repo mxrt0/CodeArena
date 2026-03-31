@@ -167,23 +167,23 @@
             baseRoute["statusFilter"] = Model.StatusFilter.ToString().ToLower();
             baseRoute["search"] = Model.Search?.ToLower();
             baseRoute["page"] = Model.CurrentPage.ToString();
-
+        if (Model.Tags is not null && Model.Tags.Any())
+        {
+            var tagsArray = Model.Tags.ToArray();
+            for (int i = 0; i < tagsArray.Length; i++)
+            {
+                baseRoute[$"tags[{i}]"] = tagsArray[i];
+            }
+        }
         var prevRoute = new Dictionary<string, string?>(baseRoute)
                 {
                     ["page"] = (Model.CurrentPage - 1).ToString()
                 };
         var nextRoute = new Dictionary<string, string?>(baseRoute)
         {
-            ["page"] = (Model.CurrentPage - 1).ToString()
+            ["page"] = (Model.CurrentPage + 1).ToString()
         };
-        if (Model.Tags is not null && Model.Tags.Any())
-            {
-                var tagsArray = Model.Tags.ToArray();
-                for (int i = 0; i < tagsArray.Length; i++)
-                {
-                    baseRoute[$"tags[{i}]"] = tagsArray[i];
-                }
-            }
+        
         <nav class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
