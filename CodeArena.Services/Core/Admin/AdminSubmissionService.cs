@@ -52,11 +52,11 @@ public class AdminSubmissionService : IAdminSubmissionService
 
         await _repository.UpdateAsync(submission);
 
-        await _xpService.AwardXpAsync(submission.UserId, submission.ChallengeId,
+        var xpAwarded = await _xpService.AwardXpAsync(submission.UserId, submission.ChallengeId,
             submission.Challenge.Difficulty);
 
         InvalidateCache(
-            CacheKey_Leaderboard,
+            xpAwarded.Success ? CacheKey_Leaderboard : string.Empty,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_Admin_SubmissionById, id),
