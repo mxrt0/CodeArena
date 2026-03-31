@@ -1,4 +1,5 @@
 ﻿using CodeArena.Common;
+using CodeArena.Common.Enums;
 using CodeArena.Common.Exceptions;
 using CodeArena.Common.Utilities;
 using CodeArena.Data.Models;
@@ -7,14 +8,17 @@ using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
+using CodeArena.Services.Extensions;
+using CodeArena.Services.QueryModels.Admin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using static CodeArena.Common.ApplicationConstants;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static CodeArena.Common.ApplicationConstants;
 
 namespace CodeArena.Services.Core.Admin;
 
@@ -51,8 +55,6 @@ public class AdminChallengeService : IAdminChallengeService
         };
 
         await _repository.AddAsync(challenge);
-
-        InvalidateCache(CacheKey_ChallengesAll);
     }
 
     public async Task DeleteChallengeAsync(int id)
@@ -64,7 +66,6 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.DeleteAsync(challenge);
 
         InvalidateCache(
-            CacheKey_ChallengesAll,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
@@ -89,16 +90,26 @@ public class AdminChallengeService : IAdminChallengeService
     }
 
 
-    public async Task<IEnumerable<ChallengeDisplayDto>> GetChallengesAsync()
+    public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
+        int page = 1,
+        int pageSize = 10,
+        ChallengeState? stateFilter = null,
+        string? search = null)
     {
-        if (_cache.TryGetValue(CacheKey_ChallengesAll,
-            out List<ChallengeDisplayDto>? cachedList))
+        var query = new AdminChallengeQuery
         {
-            return cachedList!;
-        }
-        var challenges = _repository.GetAll(includeDeleted: true);
+            State = stateFilter,
+            Search = search
+        };
+        var challenges = _repository.GetAll(includeDeleted: true)
+                                     .ApplyFiltering(query);
 
-        var dtos = await challenges.Select(c => new ChallengeDisplayDto(
+        var totalCount = await challenges.CountAsync();
+
+        var dtos = await challenges
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(c => new ChallengeDisplayDto(
                 c.Id,
                 c.Slug,
                 c.Title,
@@ -111,13 +122,7 @@ public class AdminChallengeService : IAdminChallengeService
                 c.IsDeleted
         )).ToListAsync();
 
-        _cache.Set(
-            CacheKey_ChallengesAll,
-            dtos,
-            TimeSpan.FromMinutes(CacheDuration_ChallengesAll_Minutes)
-        );
-
-        return dtos;
+        return (dtos, totalCount);
     }
 
     public async Task RestoreChallengeAsync(int id)
@@ -130,7 +135,6 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.RestoreAsync(challenge);
 
         InvalidateCache(
-            CacheKey_ChallengesAll,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
@@ -148,7 +152,6 @@ public class AdminChallengeService : IAdminChallengeService
         await _repository.UpdateAsync(challenge);
 
         InvalidateCache(
-            CacheKey_ChallengesAll,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }

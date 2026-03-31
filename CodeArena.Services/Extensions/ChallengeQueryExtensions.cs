@@ -1,5 +1,7 @@
-﻿using CodeArena.Data.Models;
+﻿using CodeArena.Common.Enums;
+using CodeArena.Data.Models;
 using CodeArena.Services.QueryModels;
+using CodeArena.Services.QueryModels.Admin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,6 +42,19 @@ public static class ChallengeQueryExtensions
         {
             var search = filter.Search;
             query = query.Where(c => c.Title.Contains(search));
+        }
+        
+        if (filter is AdminChallengeQuery { State: not null } adminFilter)
+        {
+            switch (adminFilter.State)
+            {
+                case ChallengeState.Active:
+                    query = query.Where(c => !c.IsDeleted);
+                    break;
+                case ChallengeState.Deleted:
+                    query = query.Where(c => c.IsDeleted);
+                    break;
+            }
         }
 
         return query;
