@@ -8,7 +8,7 @@ namespace CodeArena.Data.Common.Enums;
 
 public enum XpReason
 {
-    SubmissionApproved,
-    DailyStreak
+    ChallengeSolved,
+    StreakBonus,
+    FirstSolve
 }
-
