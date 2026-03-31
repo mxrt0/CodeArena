@@ -11,6 +11,6 @@ namespace CodeArena.Services.Core.Contracts;
 
 public interface IXpService
 {
-    Task<ServiceResult<bool>> AwardXPAsync(ClaimsPrincipal user, int challengeId, Difficulty difficulty);
-    Task<ServiceResult<int>> GetTotalXPAsync(ClaimsPrincipal user);
+    Task<ServiceResult<bool>> AwardXpAsync(string userId, int challengeId, Difficulty difficulty);
+    Task<ServiceResult<int>> GetTotalXpAsync(string userId);
 }

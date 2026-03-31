@@ -19,20 +19,15 @@ public class XpService : IXpService
 {
     private const int Multiplier = 50;
     private readonly IXpTransactionRepository _repository;
-    private readonly UserManager<ApplicationUser> _userManager;
     public XpService(
-        IXpTransactionRepository repository,
-        UserManager<ApplicationUser> userManager
+        IXpTransactionRepository repository
     )
     {
         _repository = repository;
-        _userManager = userManager;
     }
 
-    public async Task<ServiceResult<bool>> AwardXPAsync(ClaimsPrincipal user, int challengeId, Difficulty difficulty)
+    public async Task<ServiceResult<bool>> AwardXpAsync(string userId, int challengeId, Difficulty difficulty)
     {
-        var userId = _userManager.GetUserId(user)!;  
-
         bool alreadyAwarded = await _repository
             .AnyAsync(x => x.UserId == userId && x.ChallengeId == challengeId);
 
@@ -62,10 +57,8 @@ public class XpService : IXpService
         return ServiceResult<bool>.Ok(true);
     }
 
-    public async Task<ServiceResult<int>> GetTotalXPAsync(ClaimsPrincipal user)
+    public async Task<ServiceResult<int>> GetTotalXpAsync(string userId)
     {
-        var userId = _userManager.GetUserId(user)!;
-
         int totalXp = await _repository.GetAll()
             .Where(x => x.UserId == userId)
             .SumAsync(x => x.XpAmount);    
