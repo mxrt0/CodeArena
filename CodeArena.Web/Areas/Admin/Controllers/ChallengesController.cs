@@ -11,7 +11,7 @@ namespace CodeArena.Web.Areas.Admin.Controllers;
 
 public class ChallengesController : BaseAdminController
 {
-    const int PageSize = 2;
+    const int PageSize = 12;
     private readonly IAdminChallengeService _challengeService;
     private readonly ILogger<ChallengesController> _logger;
 
