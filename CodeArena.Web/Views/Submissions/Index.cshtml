@@ -192,7 +192,9 @@
             <li class="page-item @(Model.CurrentPage == 1 ? "disabled" : "")">
                 <a class="page-link"
                        asp-action="Index"
-                       asp-route-page="@(Model.CurrentPage - 1)">
+                       asp-route-page="@(Model.CurrentPage - 1)"
+                       asp-route-status="@(Model.Status?.ToString().ToLower())"
+                       asp-route-language="@(Model.Language?.ToString().ToLower())">
                     &laquo; Previous
                 </a>
             </li>
@@ -202,7 +204,9 @@
                 <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
                     <a class="page-link"
                            asp-action="Index"
-                           asp-route-page="@i">
+                           asp-route-page="@i"
+                           asp-route-status="@(Model.Status?.ToString().ToLower())"
+                           asp-route-language="@(Model.Language?.ToString().ToLower())">
                         @i
                     </a>
                 </li>
@@ -211,7 +215,9 @@
             <li class="page-item @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
                 <a class="page-link"
                        asp-action="Index"
-                       asp-route-page="@(Model.CurrentPage + 1)">
+                       asp-route-page="@(Model.CurrentPage + 1)"
+                       asp-route-status="@(Model.Status?.ToString().ToLower())"
+                       asp-route-language="@(Model.Language?.ToString().ToLower())">
                     Next &raquo;
                 </a>
             </li>
