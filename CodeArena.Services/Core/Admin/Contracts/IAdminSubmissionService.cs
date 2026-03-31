@@ -1,4 +1,5 @@
-﻿using CodeArena.Services.DTOs.Admin.Submission;
+﻿using CodeArena.Data.Common.Enums;
+using CodeArena.Services.DTOs.Admin.Submission;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,8 @@ public interface IAdminSubmissionService
 {
     Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
         int page = 1,
-        int pageSize = 10
+        int pageSize = 10,
+        SubmissionLanguage? languageFilter = null
     );
     Task<AdminSubmissionReviewDto> GetSubmissionForReviewAsync(int id);
     Task ApproveAsync(int id, string? feedback = null);

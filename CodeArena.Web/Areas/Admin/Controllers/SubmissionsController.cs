@@ -20,18 +20,20 @@ public class SubmissionsController : BaseAdminController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(int page = 1)
+    public async Task<IActionResult> Index(SubmissionsIndexViewModel inputVm, int page = 1)
     {
         var (submissions, count) = await _submissionService.GetPendingSubmissionsAsync(
             Math.Max(1, page),
-            PageSize
+            PageSize,
+            inputVm.Language
         );
 
         var vm = new SubmissionsIndexViewModel
         {
             Submissions = submissions,
             CurrentPage = Math.Max(1, page),
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize)
+            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+            Language = inputVm.Language
         };
 
         ViewData["ActivePage"] = "Submissions";
