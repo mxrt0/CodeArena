@@ -1,0 +1,7 @@
+﻿body.dark-mode .progress {
+    background-color: #2a2a2a;
+}
+
+body.dark-mode .progress-bar {
+    color: #000;
+}
