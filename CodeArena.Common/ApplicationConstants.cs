@@ -14,6 +14,8 @@ public static class ApplicationConstants
     public const string InfoTempDataKey = "InfoMessage";
     public const string SuccessTempDataKey = "SuccessMessage";
 
+    public const string SignalR_LeaderboardUpdated = "LeaderboardUpdated";
+
     public const string CacheKey_ChallengeBySlug = "Cache_Challenge_{0}";
 
     public const string CacheKey_SubmissionsAll = "Cache_Submissions_All";

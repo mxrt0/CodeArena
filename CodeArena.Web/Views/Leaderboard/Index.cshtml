@@ -47,3 +47,11 @@
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        const currentUserId = '@(Model.CurrentUserId)';
+    </script>
+    <script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/js/leaderboard.js"></script>
+ }
