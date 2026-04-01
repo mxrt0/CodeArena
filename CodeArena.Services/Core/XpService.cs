@@ -1,4 +1,5 @@
-﻿using CodeArena.Data.Common.Enums;
+﻿using CodeArena.Common.Utilities;
+using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core.Contracts;
@@ -19,11 +20,14 @@ public class XpService : IXpService
 {
     private const int Multiplier = 50;
     private readonly IXpTransactionRepository _repository;
+    private readonly UserManager<ApplicationUser> _userManager;
     public XpService(
-        IXpTransactionRepository repository
+        IXpTransactionRepository repository,
+        UserManager<ApplicationUser> userManager
     )
     {
         _repository = repository;
+        _userManager = userManager;
     }
 
     public async Task<ServiceResult<bool>> AwardXpAsync(string userId, int challengeId, Difficulty difficulty)
@@ -54,6 +58,13 @@ public class XpService : IXpService
 
         await _repository.AddAsync(transaction);
 
+        var user = (await _userManager.FindByIdAsync(userId))!;
+
+        user.XP += amount;
+        user.Level = LevelCalculator.CalculateLevel(user.XP);
+
+        await _userManager.UpdateAsync(user);
+
         return ServiceResult<bool>.Ok(true);
     }
 
@@ -65,4 +76,5 @@ public class XpService : IXpService
 
         return ServiceResult<int>.Ok(totalXp);
     }
+
 }
