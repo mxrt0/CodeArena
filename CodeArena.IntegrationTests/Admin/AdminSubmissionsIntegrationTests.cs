@@ -47,7 +47,8 @@ public class AdminSubmissionsIntegrationTests
             Id = "test-user-id",
             UserName = "test-user",
             Email = "test@test.com",
-            DisplayName = "ImTestUser"
+            DisplayName = "ImTestUser",
+            NormalizedDisplayName = "IMTESTUSER"
         });
         db.SaveChanges();
 

@@ -3,6 +3,7 @@ using CodeArena.Data.Common.Enums;
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.DTOs.Submission;
+using CodeArena.Services.QueryModels;
 using CodeArena.Services.Results;
 using CodeArena.Web.Controllers;
 using CodeArena.Web.Models.Challenge;
@@ -59,10 +60,11 @@ public class SubmissionsControllerTests
     public async Task Index_WhenPageIsZero_AdjustsPageToOne()
     {
         _submissionServiceMock
-            .Setup(s => s.GetUserSubmissionsAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync((Enumerable.Empty<SubmissionDisplayDto>(), 0));
+            .Setup(s => s.GetUserSubmissionsAsync(It.IsAny<SubmissionQuery>(), It.IsAny<string>()))
+            .ReturnsAsync(new PagedResult<SubmissionDisplayDto>(Enumerable.Empty<SubmissionDisplayDto>(), 0));
 
-        var result = await _controller.Index(0) as ViewResult;
+        var result = await _controller.Index(new SubmissionQuery { Page = 0 }) as ViewResult;
+
 
         Assert.That(result, Is.Not.Null);
         var model = result!.Model as SubmissionsIndexViewModel;
@@ -76,7 +78,7 @@ public class SubmissionsControllerTests
 
         var dto = new SubmissionCreateDto { ChallengeId = 123 };
         _challengeServiceMock
-            .Setup(s => s.GetChallengeByIdAsync(dto.ChallengeId, It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.GetChallengeByIdAsync(dto.ChallengeId, It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<ChallengeDisplayDto>.Fail("Not found"));
 
         var result = await _controller.Create(dto);
@@ -94,7 +96,7 @@ public class SubmissionsControllerTests
             1, "slug", "Test", "Desc", "Easy", Array.Empty<string>(), 0, false);
 
         _challengeServiceMock
-            .Setup(s => s.GetChallengeByIdAsync(dto.ChallengeId, It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.GetChallengeByIdAsync(dto.ChallengeId, It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<ChallengeDisplayDto>.Ok(challengeDto));
 
         var result = await _controller.Create(dto) as ViewResult;
@@ -109,14 +111,14 @@ public class SubmissionsControllerTests
     public async Task Create_WhenModelStateValid_CreatesSubmission_AndRedirects()
     {
         _submissionServiceMock
-        .Setup(s => s.CreateSubmissionAsync(It.IsAny<SubmissionCreateDto>(), It.IsAny<ClaimsPrincipal>()))
+        .Setup(s => s.CreateSubmissionAsync(It.IsAny<SubmissionCreateDto>(), It.IsAny<string>()))
         .Returns(Task.CompletedTask);
 
         var dto = new SubmissionCreateDto { ChallengeId = 1, SolutionCode = "code", Language = SubmissionLanguage.CSharp };
 
         var result = await _controller.Create(dto) as RedirectToActionResult;
 
-        _submissionServiceMock.Verify(s => s.CreateSubmissionAsync(dto, It.IsAny<ClaimsPrincipal>()), Times.Once);
+        _submissionServiceMock.Verify(s => s.CreateSubmissionAsync(dto, It.IsAny<string>()), Times.Once);
         Assert.That(result!.ActionName, Is.EqualTo("Index"));
     }
 
@@ -124,7 +126,7 @@ public class SubmissionsControllerTests
     public async Task Cancel_SetsTempData_AndRedirectsCorrectly()
     {
         _submissionServiceMock
-        .Setup(s => s.CancelPendingAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+        .Setup(s => s.CancelPendingAsync(It.IsAny<int>(), It.IsAny<string>()))
         .Returns(Task.CompletedTask);
 
         var result = await _controller.Cancel(1, redirectToSubmissions: true) as RedirectToActionResult;
@@ -147,11 +149,11 @@ public class SubmissionsControllerTests
     public async Task Details_WhenServiceFails_ReturnsNotFound_AndLogs()
     {
         _submissionServiceMock
-            .Setup(s => s.GetUserSubmissionsAsync(It.IsAny<ClaimsPrincipal>(), It.IsAny<int>(), It.IsAny<int>()))
-            .ReturnsAsync((Enumerable.Empty<SubmissionDisplayDto>(), 0));
+            .Setup(s => s.GetUserSubmissionsAsync(It.IsAny<SubmissionQuery>(), It.IsAny<string>()))
+            .ReturnsAsync(new PagedResult<SubmissionDisplayDto>(Enumerable.Empty<SubmissionDisplayDto>(), 0));
 
         _submissionServiceMock
-            .Setup(s => s.GetSubmissionDetailsAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.GetSubmissionDetailsAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<SubmissionDetailsDto>.Fail("Not found"));
 
         var result = await _controller.Details(1) as NotFoundResult;
@@ -171,7 +173,7 @@ public class SubmissionsControllerTests
     {
         var dto = new SubmissionDetailsDto(1, "", "", "", "", "", "", DateTime.UtcNow);
         _submissionServiceMock
-            .Setup(s => s.GetSubmissionDetailsAsync(1, It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.GetSubmissionDetailsAsync(1, It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<SubmissionDetailsDto>.Ok(dto));
 
         var result = await _controller.Details(1) as ViewResult;

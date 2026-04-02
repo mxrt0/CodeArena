@@ -3,6 +3,8 @@ using CodeArena.Data.Common.Enums;
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
+using CodeArena.Services.QueryModels.Admin;
+using CodeArena.Services.Results;
 using CodeArena.Web.Areas.Admin.Controllers;
 using CodeArena.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Http;
@@ -46,10 +48,10 @@ public class AdminChallengesControllerTests
     public async Task Index_ReturnsViewWithChallenges()
     {
         _challengeServiceMock
-            .Setup(s => s.GetChallengesAsync())
-            .ReturnsAsync(Enumerable.Empty<ChallengeDisplayDto>());
+            .Setup(s => s.GetChallengesAsync(It.IsAny<AdminChallengeQuery>()))
+            .ReturnsAsync(new PagedResult<ChallengeDisplayDto>(Enumerable.Empty<ChallengeDisplayDto>(), 0));
 
-        var result = await _controller.Index() as ViewResult;
+        var result = await _controller.Index(new()) as ViewResult;
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.Model, Is.InstanceOf<ChallengesIndexViewModel>());

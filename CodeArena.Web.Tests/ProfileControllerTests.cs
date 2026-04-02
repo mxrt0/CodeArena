@@ -44,10 +44,10 @@ public class ProfileControllerTests
     [Test]
     public async Task Stats_ReturnsViewWithUserStatsViewModel()
     {
-        var dummyStats = new UserStatsDto(10, 5, 3, 2, 1, 2);
+        var dummyStats = new UserStatsDto(10, 5, 3, 2, 1, 2, 0, 1, 0, 50);
 
         _userServiceMock
-            .Setup(s => s.GetUserStatsAsync(It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.GetUserStatsAsync(It.IsAny<string>()))
             .ReturnsAsync(dummyStats);
 
         var result = await _controller.Stats() as ViewResult;
@@ -58,6 +58,6 @@ public class ProfileControllerTests
         var model = result.Model as UserStatsViewModel;
         Assert.That(model!.Stats, Is.EqualTo(dummyStats));
 
-        _userServiceMock.Verify(s => s.GetUserStatsAsync(_controller.User), Times.Once);
+        _userServiceMock.Verify(s => s.GetUserStatsAsync("test-user-id"), Times.Once);
     }
 }

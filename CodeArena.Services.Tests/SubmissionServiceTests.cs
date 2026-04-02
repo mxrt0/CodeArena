@@ -26,7 +26,6 @@ namespace CodeArena.Services.Tests;
 public class SubmissionServiceTests
 {
     private string _sampleUserId = "user-123";
-    private Mock<UserManager<ApplicationUser>> _userManagerMock;
     private Mock<IMemoryCache> _cacheMock;
 
     [SetUp]
@@ -43,31 +42,16 @@ public class SubmissionServiceTests
         _cacheMock
             .Setup(c => c.CreateEntry(It.IsAny<object>()))
             .Returns(cacheEntry.Object);
-
-        var store = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            store.Object,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!
-        );
     }
     [Test]
     public async Task GetSubmissionDetailsAsync_WhenNoUser_ReturnsFailResult()
     {
         var repoMock = new Mock<ISubmissionRepository>();
- 
-        var claimsPrincipal = new ClaimsPrincipal();
 
-        var service = new SubmissionService(repoMock.Object, _userManagerMock.Object,
+        var service = new SubmissionService(repoMock.Object,
             _cacheMock.Object);
 
-        var result = await service.GetSubmissionDetailsAsync(123, claimsPrincipal);
+        var result = await service.GetSubmissionDetailsAsync(123, _sampleUserId);
 
         Assert.That(result.Success, Is.False);
     }
@@ -80,16 +64,10 @@ public class SubmissionServiceTests
             .Setup(r => r.AnyAsync(s => s.Id == 1))
             .ReturnsAsync(false);
 
-        var claimsPrincipal = new ClaimsPrincipal(
-        new ClaimsIdentity(new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, _sampleUserId)
-        }));
-
-        var service = new SubmissionService(repoMock.Object, _userManagerMock.Object,
+        var service = new SubmissionService(repoMock.Object,
             _cacheMock.Object);
 
-        var result = await service.GetSubmissionDetailsAsync(1, claimsPrincipal);
+        var result = await service.GetSubmissionDetailsAsync(1, _sampleUserId);
 
         Assert.That(result.Success, Is.False);
     }
@@ -106,41 +84,25 @@ public class SubmissionServiceTests
             .Setup(r => r.AnyAsync(s => s.Id == 1 && s.UserId == _sampleUserId))
             .ReturnsAsync(false);
 
-        var claimsPrincipal = new ClaimsPrincipal(
-        new ClaimsIdentity(new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, _sampleUserId)
-        }));
-
-        var service = new SubmissionService(repoMock.Object, _userManagerMock.Object,
+        var service = new SubmissionService(repoMock.Object,
             _cacheMock.Object);
 
-        var result = await service.GetSubmissionDetailsAsync(1, claimsPrincipal);
+        var result = await service.GetSubmissionDetailsAsync(1, _sampleUserId);
 
         Assert.That(result.Success, Is.False);
     }
     [Test]
     public async Task GetSubmissionDetailsAsync_WhenValidInput_CorrectlyReturnsSuccessResult()
     {
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[]
-            {
-            new Claim(ClaimTypes.NameIdentifier, _sampleUserId)
-            }));
-
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
         var data = CreateSampleData(_sampleUserId);
 
         var context = await DbContextFactory.CreateWithDataAsync(data);
 
         var repo = new SubmissionRepository(context);
 
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
-        var result = await service.GetSubmissionDetailsAsync(1, claimsPrincipal);
+        var result = await service.GetSubmissionDetailsAsync(1, _sampleUserId);
 
         Assert.That(result.Success, Is.True);
     }
@@ -150,21 +112,14 @@ public class SubmissionServiceTests
         var data = CreateSampleData(_sampleUserId);
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
- 
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
 
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
+        var result = await service.GetUserSubmissionsAsync(new(), _sampleUserId);
 
-        var (dtos, count) = await service.GetUserSubmissionsAsync(claimsPrincipal, page: 1, pageSize: 10);
-
-        Assert.That(count, Is.EqualTo(2));
-        Assert.That(dtos.Count(), Is.EqualTo(2));
-        Assert.That(dtos.All(d => d.ChallengeId != 3));
+        Assert.That(result.TotalCount, Is.EqualTo(2));
+        Assert.That(result.Items.Count(), Is.EqualTo(2));
+        Assert.That(result.Items.All(d => d.ChallengeId is not 3));
     }
     [Test]
     public async Task HasApprovedSubmissionAsync_ReturnsCorrectly()
@@ -173,18 +128,11 @@ public class SubmissionServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
   
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
-
-        var result1 = await service.HasApprovedSubmissionAsync(1, claimsPrincipal);
-        var result2 = await service.HasApprovedSubmissionAsync(2, claimsPrincipal);
-        var result3 = await service.HasApprovedSubmissionAsync(3, claimsPrincipal);
+        var result1 = await service.HasApprovedSubmissionAsync(1, _sampleUserId);
+        var result2 = await service.HasApprovedSubmissionAsync(2, _sampleUserId);
+        var result3 = await service.HasApprovedSubmissionAsync(3, _sampleUserId);
 
         Assert.That(result1, Is.True);
         Assert.That(result2, Is.False);
@@ -197,18 +145,11 @@ public class SubmissionServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
  
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
-
-        var result1 = await service.HasPendingSubmissionAsync(1, claimsPrincipal);
-        var result2 = await service.HasPendingSubmissionAsync(2, claimsPrincipal);
-        var result3 = await service.HasPendingSubmissionAsync(3, claimsPrincipal);
+        var result1 = await service.HasPendingSubmissionAsync(1, _sampleUserId);
+        var result2 = await service.HasPendingSubmissionAsync(2, _sampleUserId);
+        var result3 = await service.HasPendingSubmissionAsync(3, _sampleUserId);
 
         Assert.That(result1, Is.False);
         Assert.That(result2, Is.True);
@@ -220,15 +161,8 @@ public class SubmissionServiceTests
         var data = CreateSampleData(_sampleUserId);
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
-   
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
-
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
+ 
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
         Expression<Func<Submission, bool>> predicateToCheck = (s) =>
             s.ChallengeId == 2 && s.UserId == _sampleUserId && s.Status == SubmissionStatus.Pending;
@@ -236,7 +170,7 @@ public class SubmissionServiceTests
         var pendingBefore = await repo.AnyAsync(predicateToCheck);
         Assert.That(pendingBefore, Is.True);
 
-        await service.CancelPendingAsync(2, claimsPrincipal);
+        await service.CancelPendingAsync(2, _sampleUserId);
 
         var pendingAfter = await repo.AnyAsync(predicateToCheck);
         Assert.That(pendingAfter, Is.False);
@@ -249,16 +183,9 @@ public class SubmissionServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
  
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
-
-        await service.CancelPendingAsync(1, claimsPrincipal);
+        await service.CancelPendingAsync(1, _sampleUserId);
 
         var exists = await repo.AnyAsync(s =>
             s.ChallengeId == 1 && s.UserId == _sampleUserId && s.Status == SubmissionStatus.Approved);
@@ -272,14 +199,7 @@ public class SubmissionServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
 
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
-
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
         var createDto = new SubmissionCreateDto
         {
@@ -288,7 +208,7 @@ public class SubmissionServiceTests
             Language = SubmissionLanguage.CSharp
         };
 
-        await service.CreateSubmissionAsync(createDto, claimsPrincipal);
+        await service.CreateSubmissionAsync(createDto, _sampleUserId);
 
         var added = await repo.FirstOrDefaultAsync(s =>
             s.ChallengeId == 3 && s.UserId == _sampleUserId && s.Status == SubmissionStatus.Pending);
@@ -303,13 +223,7 @@ public class SubmissionServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
  
-        var claimsPrincipal = new ClaimsPrincipal();
-
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns((string?)null);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
         var createDto = new SubmissionCreateDto
         {
@@ -319,7 +233,7 @@ public class SubmissionServiceTests
         };
 
         Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await service.CreateSubmissionAsync(createDto, claimsPrincipal),
+            async () => await service.CreateSubmissionAsync(createDto, null),
             OutputMessages.UnauthenticatedUserSubmissionAttemptMessage
         );
     }
@@ -330,13 +244,7 @@ public class SubmissionServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
 
-        var claimsPrincipal = new ClaimsPrincipal();
-
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new SubmissionService(repo, _userManagerMock.Object, _cacheMock.Object);
+        var service = new SubmissionService(repo, _cacheMock.Object);
 
         var createDto = new SubmissionCreateDto
         {
@@ -346,7 +254,7 @@ public class SubmissionServiceTests
         };
 
         Assert.ThrowsAsync<InvalidOperationException>(
-            async () => await service.CreateSubmissionAsync(createDto, claimsPrincipal),
+            async () => await service.CreateSubmissionAsync(createDto, _sampleUserId),
             OutputMessages.UserAlreadyHasPendingSubmissionMessage
         );
     }

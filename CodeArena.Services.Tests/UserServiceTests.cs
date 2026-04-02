@@ -2,6 +2,8 @@
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories;
 using CodeArena.Services.Core;
+using CodeArena.Services.Core.Contracts;
+using CodeArena.Services.Results;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
@@ -22,12 +24,17 @@ namespace CodeArena.Services.Tests;
 public class UserServiceTests
 {
     private string _sampleUserId = "user-123";
-    private Mock<UserManager<ApplicationUser>> _userManagerMock;
     private Mock<IMemoryCache> _cacheMock;
+    private Mock<IXpService> _xpServiceMock;
 
     [SetUp]
     public void Setup()
     {
+        _xpServiceMock = new Mock<IXpService>();
+        _xpServiceMock
+            .Setup(xp => xp.GetTotalXpAsync(It.IsAny<string>()))
+            .ReturnsAsync(ServiceResult<int>.Ok(0));
+
         var cacheEntry = new Mock<ICacheEntry>();
         cacheEntry.SetupGet(e => e.ExpirationTokens).Returns(new List<IChangeToken>());
         cacheEntry.SetupGet(e => e.PostEvictionCallbacks).Returns(new List<PostEvictionCallbackRegistration>());
@@ -39,19 +46,6 @@ public class UserServiceTests
         _cacheMock
             .Setup(c => c.CreateEntry(It.IsAny<object>()))
             .Returns(cacheEntry.Object);
-
-        var store = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            store.Object,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!
-        );
     }
     [Test]
     public async Task GetUserStatsAsync_ReturnsCorrectCounts()
@@ -60,16 +54,9 @@ public class UserServiceTests
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
 
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
+        var service = new UserService(repo, _cacheMock.Object, _xpServiceMock.Object);
 
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new UserService(repo, _userManagerMock.Object, _cacheMock.Object);
-
-        var stats = await service.GetUserStatsAsync(claimsPrincipal);
+        var stats = await service.GetUserStatsAsync(_sampleUserId);
 
         Assert.That(stats.SolvedTotal, Is.EqualTo(2));
         Assert.That(stats.EasySolved, Is.EqualTo(1));
@@ -77,6 +64,7 @@ public class UserServiceTests
         Assert.That(stats.HardSolved, Is.EqualTo(0));
         Assert.That(stats.PendingSubmissions, Is.EqualTo(1));
         Assert.That(stats.RejectedSubmissions, Is.EqualTo(1));
+        Assert.That(stats.TotalXp, Is.EqualTo(0));
     }
     [Test]
     public async Task GetUserStatsAsync_WhenNoSubmissionsExist_ReturnsZero()
@@ -84,16 +72,9 @@ public class UserServiceTests
         var context = DbContextFactory.Create();
         var repo = new SubmissionRepository(context);
 
-        var claimsPrincipal = new ClaimsPrincipal(
-            new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, _sampleUserId) }));
+        var service = new UserService(repo, _cacheMock.Object, _xpServiceMock.Object);
 
-        _userManagerMock
-        .Setup(um => um.GetUserId(claimsPrincipal))
-        .Returns(_sampleUserId);
-
-        var service = new UserService(repo, _userManagerMock.Object, _cacheMock.Object);
-
-        var stats = await service.GetUserStatsAsync(claimsPrincipal);
+        var stats = await service.GetUserStatsAsync(_sampleUserId);
 
         Assert.That(stats.SolvedTotal, Is.EqualTo(0));
         Assert.That(stats.EasySolved, Is.EqualTo(0));

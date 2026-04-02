@@ -2,10 +2,13 @@
 using CodeArena.Common.Exceptions;
 using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Submission;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.Results;
 using CodeArena.Web.Areas.Admin.Controllers;
 using CodeArena.Web.Areas.Admin.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -35,6 +38,9 @@ public class AdminSubmissionsControllerTests
             new DefaultHttpContext(),
             Mock.Of<ITempDataProvider>()
         );
+        //_controller.ViewData = new ViewDataDictionary(
+        //    Mock.Of<IModelMetadataProvider>(),
+        //    new ModelStateDictionary());
     }
     [TearDown]
     public void ControllerCleanup()
@@ -46,10 +52,10 @@ public class AdminSubmissionsControllerTests
     {
 
         _submissionServiceMock
-            .Setup(s => s.GetPendingSubmissionsAsync(1, 5))
-            .ReturnsAsync((Enumerable.Empty<SubmissionDisplayDto>(), 10));
+            .Setup(s => s.GetPendingSubmissionsAsync(It.IsAny<SubmissionQuery>()))
+            .ReturnsAsync(new PagedResult<SubmissionDisplayDto>(Enumerable.Empty<SubmissionDisplayDto>(), 20));
 
-        var result = await _controller.Index(1) as ViewResult;
+        var result = await _controller.Index(new()) as ViewResult;
 
         Assert.That(result, Is.Not.Null);
 

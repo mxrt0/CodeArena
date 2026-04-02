@@ -28,7 +28,6 @@ public class AdminDashboardServiceTests
             .Setup(r => r.CountAsync(It.IsAny<Expression<Func<Challenge, bool>>?>()))
             .ReturnsAsync(3);
 
-        // IMPORTANT: sequence for ALL submission calls
         submissionRepoMock
             .SetupSequence(r => r.CountAsync(It.IsAny<Expression<Func<Submission, bool>>?>()))
             .ReturnsAsync(10) // TotalSubmissions (null)

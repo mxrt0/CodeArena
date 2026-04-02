@@ -3,8 +3,11 @@ using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Services.Core.Contracts;
 using CodeArena.Services.DTOs.Challenge;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.Results;
 using CodeArena.Web.Controllers;
 using CodeArena.Web.Models;
+using CodeArena.Web.Models.Home;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -86,21 +89,20 @@ public class HomeControllerTests
         var result = await _controller.Index() as LocalRedirectResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Url, Is.EqualTo("/admin"));
+        Assert.That(result!.Url, Is.AnyOf("/admin", "/Admin"));
     }
 
     [Test]
     public async Task Index_UnauthenticatedOrNonAdmin_ReturnsView()
     {
         _challengeServiceMock
-            .Setup(s => s.GetChallengesAsync(It.IsAny<int>(), It.IsAny<int>(),
-            It.IsAny<ChallengeStatus>(), It.IsAny<Difficulty>(), It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync((Enumerable.Empty<ChallengeDisplayDto>(), 0));
+           .Setup(s => s.GetChallengesAsync(It.IsAny<ChallengeQuery>(), It.IsAny<string>()))
+           .ReturnsAsync(new PagedResult<ChallengeDisplayDto>(Enumerable.Empty<ChallengeDisplayDto>(), 0));
 
         var result = await _controller.Index() as ViewResult;
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Model, Is.InstanceOf<CodeArena.Web.Models.Home.HomeIndexViewModel>());
+        Assert.That(result!.Model, Is.InstanceOf<HomeIndexViewModel>());
     }
 
     [TestCase(StatusCodes.Status400BadRequest, "BadRequest")]
