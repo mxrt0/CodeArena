@@ -20,18 +20,15 @@ namespace CodeArena.Services.Core;
 public class UserService : IUserService
 {
     private readonly ISubmissionRepository _submissionRepository;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMemoryCache _cache;
     private readonly IXpService _xpService;
 
     public UserService(
         ISubmissionRepository repository,
-        UserManager<ApplicationUser> userManager,
         IMemoryCache cache,
         IXpService xpService)
     {
         _submissionRepository = repository;
-        _userManager = userManager;
         _cache = cache;
         _xpService = xpService;
     }

@@ -25,17 +25,14 @@ namespace CodeArena.Services.Core;
 public class SubmissionService : ISubmissionService
 {
     private readonly ISubmissionRepository _repository;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMemoryCache _cache;
 
     public SubmissionService(
         ISubmissionRepository repository,
-        UserManager<ApplicationUser> userManager,
         IMemoryCache cache
         )
     {
         _repository = repository;
-        _userManager = userManager;
         _cache = cache;
     }
 

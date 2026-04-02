@@ -26,19 +26,16 @@ namespace CodeArena.Services.Core;
 public class ChallengeService : IChallengeService
 {
     private readonly IChallengeRepository _repository;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISubmissionService _submissionService;
     private readonly IMemoryCache _cache;
 
     public ChallengeService(
         IChallengeRepository repository,
-        UserManager<ApplicationUser> userManager,
         ISubmissionService submissionService,
         IMemoryCache cache
     )
     {
         _repository = repository;
-        _userManager = userManager;
         _submissionService = submissionService;
         _cache = cache;
     }
