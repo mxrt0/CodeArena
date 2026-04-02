@@ -1,6 +1,7 @@
 ﻿using CodeArena.Data.Models;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Data.Seeding;
+using CodeArena.Web.Hubs;
 using Microsoft.AspNetCore.Identity;
 
 namespace CodeArena.Web.Infrastructure.Extensions;
@@ -74,6 +75,16 @@ public static class WebApplicationExtensions
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
         app.MapRazorPages();
+
+        return app;
+    }
+
+    /// <summary>
+    /// Maps SignalR Hubs used by the app.
+    /// </summary>
+    public static WebApplication MapHubs(this WebApplication app)
+    {
+        app.MapHub<LeaderboardHub>("/hubs/leaderboard");
 
         return app;
     }

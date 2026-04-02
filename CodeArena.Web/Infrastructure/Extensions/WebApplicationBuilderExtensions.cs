@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using static CodeArena.Common.ApplicationConstants;
 using static CodeArena.Common.OutputMessages;
 using System.Reflection;
+using CodeArena.Services.Core.Contracts;
+using CodeArena.Web.Infrastructure.Services;
 
 namespace CodeArena.Web.Infrastructure.Extensions;
 
@@ -13,6 +15,7 @@ public static class WebApplicationBuilderExtensions
     /// <summary>
     /// Registers the database context and ASP.NET Identity with configuration
     /// driven identity options from appsettings.json ("Identity" section).
+    /// Also configures SignalR and in-memory caching support.
     /// </summary>
     public static WebApplicationBuilder AddInfrastructure(this WebApplicationBuilder builder)
     {
@@ -26,6 +29,7 @@ public static class WebApplicationBuilderExtensions
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         builder.Services.AddMemoryCache();
+        builder.Services.AddSignalR();
 
         return builder;
     }
@@ -126,6 +130,7 @@ public static class WebApplicationBuilderExtensions
     /// <summary>
     /// Scans the assembly containing <typeparamref name="TMarker"/> for all concrete
     /// service classes and registers them as Scoped by convention.
+    /// Manually registers SignalR-related notification service.
     /// </summary>
     public static WebApplicationBuilder AddAppServices<TMarker>(
         this WebApplicationBuilder builder,
@@ -136,6 +141,8 @@ public static class WebApplicationBuilderExtensions
             typeof(TMarker).Assembly,
             serviceNamespace,
             suffix: "Service");
+
+        builder.Services.AddScoped<INotificationService, NotificationService>();
 
         return builder;
     }

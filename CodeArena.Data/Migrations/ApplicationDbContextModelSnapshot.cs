@@ -160,7 +160,7 @@ namespace CodeArena.Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2026, 3, 29, 14, 48, 59, 485, DateTimeKind.Utc).AddTicks(4199),
+                            CreatedAt = new DateTime(2026, 3, 31, 15, 37, 43, 487, DateTimeKind.Utc).AddTicks(6277),
                             Description = "Write a function that takes two numbers and returns their sum. Example: Input: 3, 5 → Output: 8.",
                             Difficulty = "Easy",
                             IsDeleted = false,
@@ -171,7 +171,7 @@ namespace CodeArena.Data.Migrations
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2026, 3, 29, 14, 48, 59, 485, DateTimeKind.Utc).AddTicks(4205),
+                            CreatedAt = new DateTime(2026, 3, 31, 15, 37, 43, 487, DateTimeKind.Utc).AddTicks(6281),
                             Description = "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'.",
                             Difficulty = "Medium",
                             IsDeleted = false,
@@ -233,12 +233,18 @@ namespace CodeArena.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ChallengeId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Reason")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -249,7 +255,11 @@ namespace CodeArena.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ChallengeId");
+
+                    b.HasIndex("UserId", "ChallengeId", "Reason")
+                        .IsUnique()
+                        .HasFilter("[ChallengeId] IS NOT NULL");
 
                     b.ToTable("XpTransactions");
                 });
@@ -408,11 +418,17 @@ namespace CodeArena.Data.Migrations
 
             modelBuilder.Entity("CodeArena.Data.Models.XpTransaction", b =>
                 {
+                    b.HasOne("CodeArena.Data.Models.Challenge", "Challenge")
+                        .WithMany()
+                        .HasForeignKey("ChallengeId");
+
                     b.HasOne("CodeArena.Data.Models.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Challenge");
 
                     b.Navigation("User");
                 });

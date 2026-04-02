@@ -9,7 +9,33 @@
     <h2 class="mb-4 text-center fw-bold">
         <i class="bi bi-graph-up-arrow me-1"></i> My Progress
         </h2>
+    <div class="card shadow-sm stats-card mb-4">
+        <div class="card-body text-center">
 
+            <h5 class="fw-semibold mb-2">
+                <i class="bi bi-star-fill text-warning me-1"></i>
+                Level @Model.Stats.Level
+            </h5>
+
+            @{
+                var progressPercent = Model.Stats.NextLevelXp == 0
+                    ? 0
+                    : (Model.Stats.CurrentLevelXp * 100.0 / Model.Stats.NextLevelXp);
+            }
+            <div class="progress mb-2" style="height: 20px;">
+                <div class="progress-bar bg-info fw-semibold"
+                     role="progressbar"
+                     style="width:@($"{progressPercent}%")">
+                </div>
+            </div>
+
+            <small class="text-muted">
+                @Model.Stats.CurrentLevelXp / @Model.Stats.NextLevelXp XP
+            </small>
+
+        </div>
+    </div>
+    </div>
     <div class="row text-center mb-4 g-3">
 
         <div class="col-md-4">

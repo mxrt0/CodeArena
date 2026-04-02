@@ -15,6 +15,9 @@ public class XpTransactionConfiguration : IEntityTypeConfiguration<XpTransaction
     {
         builder.Property(x => x.Reason)
                .HasConversion<string>();
+
+        builder.HasIndex(x => new { x.UserId, x.ChallengeId, x.Reason })
+                .IsUnique();
     }
 }
 

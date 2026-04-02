@@ -14,21 +14,31 @@ using static CodeArena.Common.ApplicationConstants;
 using Microsoft.Extensions.Caching.Memory;
 using CodeArena.Services.QueryModels;
 using CodeArena.Services.Extensions;
+using CodeArena.Services.Core.Contracts;
+
 
 namespace CodeArena.Services.Core.Admin;
 
 public class AdminSubmissionService : IAdminSubmissionService
 {
     private readonly ISubmissionRepository _repository;
+    private readonly IXpService _xpService;
     private readonly IMemoryCache _cache;
+    private readonly ILeaderboardService _leaderboardService;
+    private readonly INotificationService _notificationService;
 
     public AdminSubmissionService(
         ISubmissionRepository repository,
-        IMemoryCache cache
-    )
+        IMemoryCache cache,
+        IXpService xpService,
+        ILeaderboardService leaderboardService,
+        INotificationService notificationService)
     {
         _repository = repository;
         _cache = cache;
+        _xpService = xpService;
+        _leaderboardService = leaderboardService;
+        _notificationService = notificationService;
     }
 
     public async Task ApproveAsync(int id, string? feedback = null)
@@ -48,13 +58,24 @@ public class AdminSubmissionService : IAdminSubmissionService
 
         await _repository.UpdateAsync(submission);
 
+        var xpAwarded = await _xpService.AwardXpAsync(submission.UserId, submission.ChallengeId,
+            submission.Challenge.Difficulty);
+
         InvalidateCache(
+            xpAwarded.Success ? CacheKey_Leaderboard : string.Empty,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_Admin_SubmissionById, id),
             string.Format(CacheKey_User_SubmissionById, id),
             string.Format(CacheKey_UserStats_ByUserId, submission.UserId)
         );
+
+        if (xpAwarded.Success)
+        {
+            var leaderboard = await _leaderboardService.GetLeaderboardAsync();
+            await _notificationService.SendMessageAsync(SignalR_LeaderboardUpdated, leaderboard.Data!);
+        }
+
     }
 
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(

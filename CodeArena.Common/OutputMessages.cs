@@ -53,4 +53,6 @@ public static class OutputMessages
 
     public const string InvalidDisplayNameMessage = "Display name can only contain letters, numbers, dots, and underscores.";
     public const string DisplayNameAlreadyExistsMessage = "Display name '{0}' is already taken.";
+
+    public const string XpAlreadyAwardedMessage = "XP has already been awarded to user '{0}' for challenge with identifier '{1}'";
 }

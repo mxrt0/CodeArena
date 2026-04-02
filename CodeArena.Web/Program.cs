@@ -34,6 +34,7 @@ public class Program
 
         app.UseStandardPipeline();
         app.MapAppRoutes();
+        app.MapHubs();
 
         app.Run();
     }

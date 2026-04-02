@@ -12,5 +12,9 @@ public sealed record UserStatsDto(
     int MediumSolved,
     int HardSolved,
     int PendingSubmissions,
-    int RejectedSubmissions
+    int RejectedSubmissions,
+    int TotalXp,
+    int Level,
+    int CurrentLevelXp, 
+    int NextLevelXp
 );
