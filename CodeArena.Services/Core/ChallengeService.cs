@@ -19,6 +19,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using CodeArena.Services.QueryModels;
 using CodeArena.Services.Extensions;
+using CodeArena.Services.Helpers;
 
 namespace CodeArena.Services.Core;
 
@@ -64,16 +65,7 @@ public class ChallengeService : IChallengeService
             return ServiceResult<ChallengeDisplayDto>.Fail(string.Format(ChallengeNotFoundMessage, id));
         }
 
-        var dto = new ChallengeDisplayDto(
-            challenge.Id,
-            challenge.Slug,
-            challenge.Title,
-            challenge.Description,
-            challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
-            challenge.Submissions.Count,
-            IsDeleted: false
-        );
+        var dto = ChallengeMapper.ToDto(challenge);
 
         dto.HasPendingSubmission = user is not null
                                     ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
@@ -100,16 +92,7 @@ public class ChallengeService : IChallengeService
             return ServiceResult<ChallengeDisplayDto>.Fail(string.Format(ChallengeNotFoundMessage, slug));
         }
 
-        var dto = new ChallengeDisplayDto(
-            challenge.Id,
-            challenge.Slug,
-            challenge.Title,
-            challenge.Description,
-            challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
-            challenge.Submissions.Count,
-            IsDeleted: false
-        );
+        var dto = ChallengeMapper.ToDto(challenge);
 
         dto.HasPendingSubmission = user is not null
                                     ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
@@ -170,20 +153,12 @@ public class ChallengeService : IChallengeService
 
         var totalCount = await challenges.CountAsync();
 
-        var dtos =  await challenges
+        var dtos = await challenges
             .OrderBy(c => c.Title)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(c => new ChallengeDisplayDto(
-                c.Id,
-                c.Slug,
-                c.Title,
-                c.Description,
-                c.Difficulty.ToString(),
-                c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray(),
-                c.Submissions.Count,
-                false
-        )).ToListAsync();
+            .Select(c => ChallengeMapper.ToDto(c))
+            .ToListAsync();
 
         foreach (var dto in dtos)
         {

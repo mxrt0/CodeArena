@@ -9,6 +9,7 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.Extensions;
+using CodeArena.Services.Helpers;
 using CodeArena.Services.QueryModels.Admin;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -75,18 +76,7 @@ public class AdminChallengeService : IAdminChallengeService
         var challenge = await _repository.GetByIdAsync(id, includeDeleted: true)
             ?? throw new ChallengeNotFoundException(id);
 
-        return new ChallengeDisplayDto(
-            challenge.Id,
-            challenge.Slug,
-            challenge.Title,
-            challenge.Description,
-            challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(t => t.Trim())
-            .ToArray(),
-            challenge.Submissions.Count,
-            challenge.IsDeleted
-        );
+        return ChallengeMapper.ToDto(challenge);
     }
 
 
@@ -109,18 +99,8 @@ public class AdminChallengeService : IAdminChallengeService
         var dtos = await challenges
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(c => new ChallengeDisplayDto(
-                c.Id,
-                c.Slug,
-                c.Title,
-                c.Description,
-                c.Difficulty.ToString(),
-                c.Tags
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .ToArray(),
-                c.Submissions.Count,
-                c.IsDeleted
-        )).ToListAsync();
+            .Select(c => ChallengeMapper.ToDto(c))
+            .ToListAsync();
 
         return (dtos, totalCount);
     }
