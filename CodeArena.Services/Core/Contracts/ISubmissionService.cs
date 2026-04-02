@@ -1,5 +1,6 @@
 ﻿using CodeArena.Data.Common.Enums;
 using CodeArena.Services.DTOs.Submission;
+using CodeArena.Services.QueryModels;
 using CodeArena.Services.Results;
 using System;
 using System.Collections.Generic;
@@ -17,11 +18,8 @@ public interface ISubmissionService
     Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user);
     Task CancelPendingAsync(int challengeId, ClaimsPrincipal user);
     Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(   
-        ClaimsPrincipal user,
-        int page = 1,
-        int pageSize = 10,
-        SubmissionLanguage? languageFilter = null,
-        SubmissionStatus? statusFilter = null
+        SubmissionQuery query,
+        ClaimsPrincipal user
     );
     Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user);
 }

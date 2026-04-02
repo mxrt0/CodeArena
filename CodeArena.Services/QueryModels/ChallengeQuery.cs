@@ -16,7 +16,6 @@ public class ChallengeQuery
     public ChallengeStatus Status { get; set; } = ChallengeStatus.All;
     public Difficulty? Difficulty { get; set; }
 
-    public List<string>? Tags { get; set; }
+    public IEnumerable<string> Tags { get; set; } = new List<string>();
     public string? Search { get; set; }
-    public string? SortBy { get; set; }
 }

@@ -8,6 +8,7 @@ using static CodeArena.Common.ApplicationConstants;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using CodeArena.Services.QueryModels;
 
 namespace CodeArena.Web.Controllers;
 
@@ -28,22 +29,22 @@ public class SubmissionsController : BaseController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(SubmissionsIndexViewModel inputVm, int page = 1)
+    public async Task<IActionResult> Index(SubmissionQuery query)
     {
+        query.Page = Math.Max(1, query.Page);
+        query.PageSize = PageSize;
+
         var (submissions, count) = await _submissionService.GetUserSubmissionsAsync(
-                User,
-                Math.Max(1, page),
-                PageSize,
-                inputVm.Language,
-                inputVm.Status
-            );
+                query,
+                User);
+
         var vm = new SubmissionsIndexViewModel
         {
             Submissions = submissions,
-            CurrentPage = Math.Max(1, page),
+            CurrentPage = query.Page,
             TotalPages = (int)Math.Ceiling(count / (double)PageSize),
-            Language = inputVm.Language,
-            Status = inputVm.Status
+            Language = query.Language,
+            Status = query.Status
         };
         return View(vm);
     }

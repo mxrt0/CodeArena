@@ -147,21 +147,11 @@ public class SubmissionService : ISubmissionService
     }
 
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(
-        ClaimsPrincipal user,
-        int page = 1,
-        int pageSize = 10,
-        SubmissionLanguage? languageFilter = null,
-        SubmissionStatus? statusFilter = null
+        SubmissionQuery query,
+        ClaimsPrincipal user
     )
     {
         var userId = _userManager.GetUserId(user);
-        var query = new SubmissionQuery
-        {
-            Page = page,
-            PageSize = pageSize,
-            Language = languageFilter,
-            Status = statusFilter
-        };
         var submissions = _repository.GetAll()
                               .Where(s => s.UserId == userId)
                               .ApplyFiltering(query)
@@ -171,8 +161,8 @@ public class SubmissionService : ISubmissionService
 
         var dtos = await submissions
             .OrderByDescending(s => s.SubmittedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(s => new SubmissionDisplayDto
             (
                 s.Id,

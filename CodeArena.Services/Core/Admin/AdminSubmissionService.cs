@@ -81,16 +81,9 @@ public class AdminSubmissionService : IAdminSubmissionService
     }
 
     public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
-       int page = 1,
-       int pageSize = 10,
-       SubmissionLanguage? languageFilter = null
+        SubmissionQuery query
     )
     {
-        var query = new SubmissionQuery
-        {
-            Language = languageFilter
-        };
-
         var submissions = _repository.GetAll()
             .Where(s => s.Status == SubmissionStatus.Pending)
             .ApplyFiltering(query);
@@ -99,8 +92,8 @@ public class AdminSubmissionService : IAdminSubmissionService
 
         var dtos = await submissions
         .OrderByDescending(s => s.SubmittedAt)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
+        .Skip((query.Page - 1) * query.PageSize)
+        .Take(query.PageSize)
         .Select(s => new SubmissionDisplayDto
         (
             s.Id,            

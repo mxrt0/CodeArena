@@ -82,24 +82,16 @@ public class AdminChallengeService : IAdminChallengeService
 
 
     public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
-        int page = 1,
-        int pageSize = 10,
-        ChallengeState? stateFilter = null,
-        string? search = null)
+        AdminChallengeQuery query)
     {
-        var query = new AdminChallengeQuery
-        {
-            State = stateFilter,
-            Search = search
-        };
         var challenges = _repository.GetAll(includeDeleted: true)
                                      .ApplyFiltering(query);
 
         var totalCount = await challenges.CountAsync();
 
         var dtos = await challenges
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(c => ChallengeMapper.ToDto(c))
             .ToListAsync();
 

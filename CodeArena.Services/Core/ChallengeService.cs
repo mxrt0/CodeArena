@@ -115,21 +115,16 @@ public class ChallengeService : IChallengeService
     }
 
     public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
-        int page = 1,
-        int pageSize = 10,
-        ChallengeStatus? statusFilter = ChallengeStatus.All,
-        Difficulty? difficultyFilter = null,
-        IEnumerable<string>? tagsFilter = null,
-        string? search = null,
+        ChallengeQuery query,
         ClaimsPrincipal? user = null
     )
     {
         var challenges = _repository.GetAll();
 
-        if (statusFilter != ChallengeStatus.All && user is not null)
+        if (query.Status is not ChallengeStatus.All && user is not null)
         {
             var userId = _userManager.GetUserId(user);
-            challenges = statusFilter switch
+            challenges = query.Status switch
             {
                 ChallengeStatus.Solved => challenges
                                           .Where(c => c.Submissions.Any(s => s.Status == SubmissionStatus.Approved
@@ -140,23 +135,15 @@ public class ChallengeService : IChallengeService
                _ => challenges
             };
         }
-        var query = new ChallengeQuery
-        {
-            Page = page,
-            PageSize = pageSize,
-            Difficulty = difficultyFilter,
-            Search = search,
-            Tags = tagsFilter?.ToList()
-        };
-
+       
         challenges = challenges.ApplyFiltering(query);
 
         var totalCount = await challenges.CountAsync();
 
         var dtos = await challenges
             .OrderBy(c => c.Title)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(c => ChallengeMapper.ToDto(c))
             .ToListAsync();
 
