@@ -8,4 +8,5 @@ namespace CodeArena.Web.Controllers;
 [AutoValidateAntiforgeryToken]
 public class BaseController : Controller
 {
+    protected string? UserId => User?.FindFirstValue(ClaimTypes.NameIdentifier);
 }
