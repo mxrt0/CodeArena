@@ -34,15 +34,13 @@ public class SubmissionsController : BaseController
         query.Page = Math.Max(1, query.Page);
         query.PageSize = PageSize;
 
-        var (submissions, count) = await _submissionService.GetUserSubmissionsAsync(
-                query,
-                User);
+        var result = await _submissionService.GetUserSubmissionsAsync(query, User);
 
         var vm = new SubmissionsIndexViewModel
         {
-            Submissions = submissions,
+            Submissions = result.Items,
             CurrentPage = query.Page,
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+            TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
             Language = query.Language,
             Status = query.Status
         };

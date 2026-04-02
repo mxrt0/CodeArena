@@ -17,7 +17,7 @@ public interface ISubmissionService
     Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user);
     Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user);
     Task CancelPendingAsync(int challengeId, ClaimsPrincipal user);
-    Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(   
+    Task<PagedResult<SubmissionDisplayDto>> GetUserSubmissionsAsync(   
         SubmissionQuery query,
         ClaimsPrincipal user
     );

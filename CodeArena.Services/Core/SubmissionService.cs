@@ -146,7 +146,7 @@ public class SubmissionService : ISubmissionService
         return ServiceResult<SubmissionDetailsDto>.Ok(dto);
     }
 
-    public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(
+    public async Task<PagedResult<SubmissionDisplayDto>> GetUserSubmissionsAsync(
         SubmissionQuery query,
         ClaimsPrincipal user
     )
@@ -178,7 +178,7 @@ public class SubmissionService : ISubmissionService
             ))
             .ToListAsync();
 
-        return (dtos, totalCount);
+        return new PagedResult<SubmissionDisplayDto>(dtos, totalCount);
     }
 
     public async Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user)

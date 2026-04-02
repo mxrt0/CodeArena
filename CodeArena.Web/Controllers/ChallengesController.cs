@@ -32,7 +32,7 @@ public class ChallengesController : BaseController
         query.Page = Math.Max(1, query.Page);
         query.PageSize = PageSize;
 
-        var (challenges, count) = await _service.GetChallengesAsync(
+        var result = await _service.GetChallengesAsync(
             query,
             user: User?.Identity?.IsAuthenticated ?? false
                     ? User
@@ -40,11 +40,11 @@ public class ChallengesController : BaseController
 
         var vm = new ChallengeIndexViewModel
         {
-           Challenges = challenges,
+           Challenges = result.Items,
            SelectedDifficulty = query.Difficulty,
            StatusFilter = query.Status,
            CurrentPage = query.Page,
-           TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+           TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
            Tags = query.Tags,
            AvailableTags = await _service.GetAllTagsAsync(),
            Search = query.Search,

@@ -28,16 +28,17 @@ public class ChallengesController : BaseAdminController
         query.Page = Math.Max(1, query.Page);
         query.PageSize = PageSize;
 
-        var (challenges, count) = await _challengeService.GetChallengesAsync(query);
+        var result = await _challengeService.GetChallengesAsync(query);
 
         var vm = new ChallengesIndexViewModel
         {
-            Challenges = challenges,
+            Challenges = result.Items,
             CurrentPage = query.Page,
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
+            TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
             Search = query.Search,
             State = query.State
         };
+
         ViewData["ActivePage"] = "Challenges";
         return View(vm);
     }

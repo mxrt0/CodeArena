@@ -11,6 +11,7 @@ using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.Extensions;
 using CodeArena.Services.Helpers;
 using CodeArena.Services.QueryModels.Admin;
+using CodeArena.Services.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Client;
@@ -81,7 +82,7 @@ public class AdminChallengeService : IAdminChallengeService
     }
 
 
-    public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
+    public async Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
         AdminChallengeQuery query)
     {
         var challenges = _repository.GetAll(includeDeleted: true)
@@ -95,7 +96,7 @@ public class AdminChallengeService : IAdminChallengeService
             .Select(c => ChallengeMapper.ToDto(c))
             .ToListAsync();
 
-        return (dtos, totalCount);
+        return new PagedResult<ChallengeDisplayDto>(dtos, totalCount);
     }
 
     public async Task RestoreChallengeAsync(int id)

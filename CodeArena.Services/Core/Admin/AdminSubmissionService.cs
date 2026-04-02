@@ -7,6 +7,7 @@ using CodeArena.Services.DTOs.Admin.Submission;
 using CodeArena.Services.Extensions;
 using CodeArena.Services.Helpers;
 using CodeArena.Services.QueryModels;
+using CodeArena.Services.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -80,7 +81,7 @@ public class AdminSubmissionService : IAdminSubmissionService
 
     }
 
-    public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
+    public async Task<PagedResult<SubmissionDisplayDto>> GetPendingSubmissionsAsync(
         SubmissionQuery query
     )
     {
@@ -104,7 +105,7 @@ public class AdminSubmissionService : IAdminSubmissionService
         ))
         .ToListAsync();
 
-        return (dtos, totalCount);
+        return new PagedResult<SubmissionDisplayDto>(dtos, totalCount);
     }
 
     public async Task<AdminSubmissionReviewDto> GetSubmissionForReviewAsync(int id)

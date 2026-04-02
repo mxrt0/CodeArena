@@ -114,7 +114,7 @@ public class ChallengeService : IChallengeService
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
     }
 
-    public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
+    public async Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
         ChallengeQuery query,
         ClaimsPrincipal? user = null
     )
@@ -158,7 +158,7 @@ public class ChallengeService : IChallengeService
                             : false;
         }
 
-        return (dtos, totalCount);
+        return new PagedResult<ChallengeDisplayDto>(dtos, totalCount);
     }
 
 }
