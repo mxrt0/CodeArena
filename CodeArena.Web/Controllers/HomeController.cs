@@ -30,7 +30,6 @@ namespace CodeArena.Web.Controllers
                     return LocalRedirect("/admin");
                 }
             }
-            var challenges = await _challengeService.GetChallengesAsync();
             var vm = new HomeIndexViewModel
             {
             };
