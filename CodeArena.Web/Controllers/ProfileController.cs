@@ -17,7 +17,7 @@ public class ProfileController : BaseController
 
     public async Task<IActionResult> Stats()
     {
-        var stats = await _userService.GetUserStatsAsync(User);
+        var stats = await _userService.GetUserStatsAsync(UserId!);
 
         var vm = new UserStatsViewModel
         {

@@ -57,7 +57,7 @@ public class ChallengeService : IChallengeService
             .ToList();
     }
 
-    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null)
+    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, string? userId)
     {
         var challenge = await _repository.GetByIdAsync(id);
         if (challenge is null)
@@ -67,18 +67,19 @@ public class ChallengeService : IChallengeService
 
         var dto = ChallengeMapper.ToDto(challenge);
 
-        dto.HasPendingSubmission = user is not null
-                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+        dto.HasPendingSubmission = userId is not null
+                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, userId)
                                     : false;
 
-        dto.IsSolved = user is not null 
-                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user) 
+        dto.IsSolved = userId is not null 
+                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, userId) 
                         : false;
 
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
     }
 
-    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null)
+    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug,
+        string? userId)
     {
         if (_cache.TryGetValue(
             string.Format(CacheKey_ChallengeBySlug, slug),
@@ -94,12 +95,12 @@ public class ChallengeService : IChallengeService
 
         var dto = ChallengeMapper.ToDto(challenge);
 
-        dto.HasPendingSubmission = user is not null
-                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+        dto.HasPendingSubmission = userId is not null
+                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, userId)
                                     : false;
 
-        dto.IsSolved = user is not null
-                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user)
+        dto.IsSolved = userId is not null
+                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, userId)
                         : false;
 
         _cache.Set(
@@ -116,14 +117,13 @@ public class ChallengeService : IChallengeService
 
     public async Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
         ChallengeQuery query,
-        ClaimsPrincipal? user = null
+        string? userId
     )
     {
         var challenges = _repository.GetAll();
 
-        if (query.Status is not ChallengeStatus.All && user is not null)
+        if (query.Status is not ChallengeStatus.All && userId is not null)
         {
-            var userId = _userManager.GetUserId(user);
             challenges = query.Status switch
             {
                 ChallengeStatus.Solved => challenges
@@ -149,12 +149,12 @@ public class ChallengeService : IChallengeService
 
         foreach (var dto in dtos)
         {
-            dto.HasPendingSubmission = user is not null
-                                        ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+            dto.HasPendingSubmission = userId is not null
+                                        ? await _submissionService.HasPendingSubmissionAsync(dto.Id, userId)
                                         : false;
 
-            dto.IsSolved = user is not null
-                            ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user)
+            dto.IsSolved = userId is not null
+                            ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, userId)
                             : false;
         }
 

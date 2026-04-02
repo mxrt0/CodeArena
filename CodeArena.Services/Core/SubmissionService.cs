@@ -39,10 +39,8 @@ public class SubmissionService : ISubmissionService
         _cache = cache;
     }
 
-    public async Task CancelPendingAsync(int challengeId, ClaimsPrincipal user)
+    public async Task CancelPendingAsync(int challengeId, string userId)
     {
-        var userId = _userManager.GetUserId(user);
-
         var submission = await _repository.FirstOrDefaultAsync(s =>
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
@@ -64,15 +62,13 @@ public class SubmissionService : ISubmissionService
         await _repository.RemoveAsync(submission);     
     }
 
-    public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user)
+    public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, string userId)
     {
-        var userId = _userManager.GetUserId(user);
-
         if (userId is null)
         {
             throw new InvalidOperationException(UnauthenticatedUserSubmissionAttemptMessage);
         }
-        if (await HasPendingSubmissionAsync(createDto.ChallengeId, user))
+        if (await HasPendingSubmissionAsync(createDto.ChallengeId, userId))
         {
             throw new InvalidOperationException(UserAlreadyHasPendingSubmissionMessage);
         }
@@ -96,9 +92,8 @@ public class SubmissionService : ISubmissionService
        );
     }
 
-    public async Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user)
+    public async Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         if (userId is null)
         {
             return ServiceResult<SubmissionDetailsDto>.Fail(UnauthenticatedActionMessage);
@@ -148,10 +143,9 @@ public class SubmissionService : ISubmissionService
 
     public async Task<PagedResult<SubmissionDisplayDto>> GetUserSubmissionsAsync(
         SubmissionQuery query,
-        ClaimsPrincipal user
+        string userId
     )
     {
-        var userId = _userManager.GetUserId(user);
         var submissions = _repository.GetAll()
                               .Where(s => s.UserId == userId)
                               .ApplyFiltering(query)
@@ -181,18 +175,16 @@ public class SubmissionService : ISubmissionService
         return new PagedResult<SubmissionDisplayDto>(dtos, totalCount);
     }
 
-    public async Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    public async Task<bool> HasApprovedSubmissionAsync(int challengeId, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         return await _repository.AnyAsync(s =>
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
             s.Status == SubmissionStatus.Approved);
     }
 
-    public async Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    public async Task<bool> HasPendingSubmissionAsync(int challengeId, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         return await _repository.AnyAsync(s => 
             s.ChallengeId == challengeId &&
             s.UserId == userId &&

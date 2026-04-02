@@ -13,13 +13,13 @@ namespace CodeArena.Services.Core.Contracts;
 
 public interface ISubmissionService
 {
-    Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user);
-    Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user);
-    Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user);
-    Task CancelPendingAsync(int challengeId, ClaimsPrincipal user);
+    Task CreateSubmissionAsync(SubmissionCreateDto createDto, string userId);
+    Task<bool> HasPendingSubmissionAsync(int challengeId, string userId);
+    Task<bool> HasApprovedSubmissionAsync(int challengeId, string userId);
+    Task CancelPendingAsync(int challengeId, string userId);
     Task<PagedResult<SubmissionDisplayDto>> GetUserSubmissionsAsync(   
         SubmissionQuery query,
-        ClaimsPrincipal user
+        string userId
     );
-    Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user);
+    Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, string userId);
 }

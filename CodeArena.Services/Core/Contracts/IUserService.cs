@@ -10,5 +10,5 @@ namespace CodeArena.Services.Core.Contracts;
 
 public interface IUserService
 {
-    Task<UserStatsDto> GetUserStatsAsync(ClaimsPrincipal user); 
+    Task<UserStatsDto> GetUserStatsAsync(string userId); 
 }

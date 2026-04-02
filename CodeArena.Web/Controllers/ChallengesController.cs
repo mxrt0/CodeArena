@@ -32,11 +32,7 @@ public class ChallengesController : BaseController
         query.Page = Math.Max(1, query.Page);
         query.PageSize = PageSize;
 
-        var result = await _service.GetChallengesAsync(
-            query,
-            user: User?.Identity?.IsAuthenticated ?? false
-                    ? User
-                    : null);
+        var result = await _service.GetChallengesAsync(query, UserId);
 
         var vm = new ChallengeIndexViewModel
         {
@@ -60,11 +56,7 @@ public class ChallengesController : BaseController
             return BadRequest();
         }
 
-        var result = await _service.GetChallengeBySlugAsync(
-            slug,
-          user: User?.Identity?.IsAuthenticated ?? false
-                    ? User
-                    : null);
+        var result = await _service.GetChallengeBySlugAsync(slug, UserId);
 
         if (!result.Success)
         {

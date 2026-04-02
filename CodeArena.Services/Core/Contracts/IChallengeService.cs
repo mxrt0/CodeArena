@@ -16,9 +16,9 @@ public interface IChallengeService
 {
     Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
         ChallengeQuery query,
-        ClaimsPrincipal? user = null
+        string? userId
     );
     Task<IEnumerable<string>> GetAllTagsAsync();
-    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null);
-    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null);
+    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, string? userId);
+    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, string? userId);
 }

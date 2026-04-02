@@ -36,10 +36,8 @@ public class UserService : IUserService
         _xpService = xpService;
     }
 
-    public async Task<UserStatsDto> GetUserStatsAsync(ClaimsPrincipal user)
+    public async Task<UserStatsDto> GetUserStatsAsync(string userId)
     {
-        var userId = _userManager.GetUserId(user)!;
-
         if (_cache.TryGetValue(
             string.Format(CacheKey_UserStats_ByUserId, userId),
             out UserStatsDto? cachedStats))

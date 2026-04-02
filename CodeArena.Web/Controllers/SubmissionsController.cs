@@ -34,7 +34,7 @@ public class SubmissionsController : BaseController
         query.Page = Math.Max(1, query.Page);
         query.PageSize = PageSize;
 
-        var result = await _submissionService.GetUserSubmissionsAsync(query, User);
+        var result = await _submissionService.GetUserSubmissionsAsync(query, UserId!);
 
         var vm = new SubmissionsIndexViewModel
         {
@@ -51,7 +51,9 @@ public class SubmissionsController : BaseController
     {
         if (!ModelState.IsValid)
         {
-            var result = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId);
+            var result = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId, 
+                userId: null);
+
             if (!result.Success)
             {
                 return NotFound();
@@ -66,7 +68,7 @@ public class SubmissionsController : BaseController
 
             return View("~/Views/Challenges/Details.cshtml", vm);
         }
-        await _submissionService.CreateSubmissionAsync(createDto, User);
+        await _submissionService.CreateSubmissionAsync(createDto, UserId!);
         TempData[SuccessTempDataKey] = SubmissionCreatedMessage;
         return RedirectToAction(nameof(Index));
     }
@@ -74,7 +76,8 @@ public class SubmissionsController : BaseController
     [HttpPost]
     public async Task<IActionResult> Cancel(int challengeId, bool redirectToSubmissions)
     {
-        await _submissionService.CancelPendingAsync(challengeId, User);
+        await _submissionService.CancelPendingAsync(challengeId, UserId!);
+
         TempData[InfoTempDataKey] = SubmissionCancelledMessage; 
         return redirectToSubmissions 
             ? RedirectToAction(nameof(Index))
@@ -88,7 +91,7 @@ public class SubmissionsController : BaseController
             return BadRequest();
         }
 
-        var result = await _submissionService.GetSubmissionDetailsAsync(id, User);
+        var result = await _submissionService.GetSubmissionDetailsAsync(id, UserId!);
         if (!result.Success)
         {
             _logger.LogInformation(result.ErrorMessage);
