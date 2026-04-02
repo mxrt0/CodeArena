@@ -18,6 +18,7 @@ using CodeArena.Services.Results;
 using Microsoft.Extensions.Caching.Memory;
 using CodeArena.Services.Extensions;
 using CodeArena.Services.QueryModels;
+using CodeArena.Services.Helpers;
 
 namespace CodeArena.Services.Core;
 
@@ -52,7 +53,8 @@ public class SubmissionService : ISubmissionService
             return;
         }
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_User_SubmissionById, submission.Id),
             string.Format(CacheKey_UserStats_ByUserId, userId),
             CacheKey_PendingSubmissions,
@@ -86,7 +88,8 @@ public class SubmissionService : ISubmissionService
 
         await _repository.AddAsync(submission);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_UserStats_ByUserId, userId)
@@ -204,13 +207,5 @@ public class SubmissionService : ISubmissionService
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
             s.Status == SubmissionStatus.Pending);
-    }
-    private void InvalidateCache(params string[] keys)
-    {
-        if (!keys.Any()) return;
-        foreach (var key in keys)
-        {
-            _cache.Remove(key);
-        }
     }
 }

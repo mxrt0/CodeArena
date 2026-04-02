@@ -66,7 +66,8 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.DeleteAsync(challenge);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
@@ -114,7 +115,8 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.RestoreAsync(challenge);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
@@ -131,16 +133,9 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.UpdateAsync(challenge);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
-    }
-    private void InvalidateCache(params string[] keys)
-    {
-        if (!keys.Any()) return;
-        foreach (var key in keys)
-        {
-            _cache.Remove(key);
-        }
     }
 }
