@@ -99,9 +99,9 @@
                         <tr>
                             <th>Challenge</th>
                             <th>Language</th>
-                            <th>Submitted</th>
+                            <th class="d-none d-md-table-cell">Submitted</th>
                             <th>Status</th>
-                            <th>Feedback</th>
+                            <th class="d-none d-sm-table-cell">Feedback</th>
                             <th class="text-end">Actions</th>
                         </tr>
                     </thead>
@@ -121,7 +121,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                <td class="d-none d-md-table-cell">
                                     @s.SubmittedAt.ToString(ApplicationConstants.DefaultDateFormat,
                                     CultureInfo.InvariantCulture)
                                 </td>
@@ -135,8 +135,8 @@
                                     </span>
                                 </td>
 
-                                <td title="@s.Feedback">
-                                    @(s.Feedback?.Length > 50
+                                <td title="@s.Feedback" class="d-none d-md-table-cell">
+                                    @(s.Feedback is not null && s.Feedback.Length > 50
                                         ? s.Feedback.Substring(0, 50) + "..."
                                         : s.Feedback)
                                 </td>
@@ -144,16 +144,18 @@
                                 <td class="text-end">
                                     <a asp-action="Details"
                                            asp-route-id="@s.SubmissionId"
-                                           class="btn btn-sm btn-outline-primary me-1">
-                                        <i class="bi bi-eye me-1"></i>
-                                        <span class="d-none d-md-inline">View</span>
+                                           class="btn btn-sm btn-outline-primary me-1 mb-sm-2 mb-lg-0"
+                                    title="View">
+                                        <i class="bi bi-eye"></i>
+                                        <span class="d-none d-md-inline ms-md-1">View</span>
                                     </a>
 
                                     <a asp-route="challengeSlugs"
                                            asp-route-slug="@s.ChallengeSlug"
-                                           class="btn btn-sm btn-outline-secondary me-1">
-                                        <i class="bi bi-box-arrow-up-right me-1"></i>
-                                        <span class="d-none d-md-inline">Challenge</span>
+                                           class="btn btn-sm btn-outline-secondary me-1"
+                                    title="Challenge">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                        <span class="d-none d-md-inline ms-md-1">Challenge</span>
                                     </a>
 
                                     @if (s.Status == "Pending")

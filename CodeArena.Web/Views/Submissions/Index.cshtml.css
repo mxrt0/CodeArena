@@ -1,0 +1,13 @@
+﻿.pagination {
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 575px) {
+    .submissions-table .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 0.25rem;
+    }
+}
