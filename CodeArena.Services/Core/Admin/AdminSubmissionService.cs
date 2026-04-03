@@ -1,20 +1,22 @@
-﻿using CodeArena.Data.Repositories.Contracts;
-using CodeArena.Services.Core.Admin.Contracts;
-using CodeArena.Services.DTOs.Admin.Submission;
+﻿using CodeArena.Common.Exceptions;
 using CodeArena.Data.Common.Enums;
+using CodeArena.Data.Repositories.Contracts;
+using CodeArena.Services.Core.Admin.Contracts;
+using CodeArena.Services.Core.Contracts;
+using CodeArena.Services.DTOs.Admin.Submission;
+using CodeArena.Services.Extensions;
+using CodeArena.Services.Helpers;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.Results;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using CodeArena.Common.Exceptions;
-using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
-using Microsoft.Extensions.Caching.Memory;
-using CodeArena.Services.QueryModels;
-using CodeArena.Services.Extensions;
-using CodeArena.Services.Core.Contracts;
+using static CodeArena.Common.OutputMessages;
 
 
 namespace CodeArena.Services.Core.Admin;
@@ -61,7 +63,8 @@ public class AdminSubmissionService : IAdminSubmissionService
         var xpAwarded = await _xpService.AwardXpAsync(submission.UserId, submission.ChallengeId,
             submission.Challenge.Difficulty);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             xpAwarded.Success ? CacheKey_Leaderboard : string.Empty,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
@@ -78,17 +81,10 @@ public class AdminSubmissionService : IAdminSubmissionService
 
     }
 
-    public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetPendingSubmissionsAsync(
-       int page = 1,
-       int pageSize = 10,
-       SubmissionLanguage? languageFilter = null
+    public async Task<PagedResult<SubmissionDisplayDto>> GetPendingSubmissionsAsync(
+        SubmissionQuery query
     )
     {
-        var query = new SubmissionQuery
-        {
-            Language = languageFilter
-        };
-
         var submissions = _repository.GetAll()
             .Where(s => s.Status == SubmissionStatus.Pending)
             .ApplyFiltering(query);
@@ -97,8 +93,8 @@ public class AdminSubmissionService : IAdminSubmissionService
 
         var dtos = await submissions
         .OrderByDescending(s => s.SubmittedAt)
-        .Skip((page - 1) * pageSize)
-        .Take(pageSize)
+        .Skip((query.Page - 1) * query.PageSize)
+        .Take(query.PageSize)
         .Select(s => new SubmissionDisplayDto
         (
             s.Id,            
@@ -109,7 +105,7 @@ public class AdminSubmissionService : IAdminSubmissionService
         ))
         .ToListAsync();
 
-        return (dtos, totalCount);
+        return new PagedResult<SubmissionDisplayDto>(dtos, totalCount);
     }
 
     public async Task<AdminSubmissionReviewDto> GetSubmissionForReviewAsync(int id)
@@ -162,21 +158,13 @@ public class AdminSubmissionService : IAdminSubmissionService
 
         await _repository.UpdateAsync(submission);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_Admin_SubmissionById, id),
             string.Format(CacheKey_User_SubmissionById, id),
             string.Format(CacheKey_UserStats_ByUserId, submission.UserId)
         );
-    }
-
-    private void InvalidateCache(params string[] keys)
-    {
-        if (!keys.Any()) return;
-        foreach (var key in keys)
-        {
-            _cache.Remove(key);
-        }
     }
 }

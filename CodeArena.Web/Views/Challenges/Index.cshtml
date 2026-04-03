@@ -17,7 +17,7 @@
                        placeholder="Search challenges..." />
             </div>
 
-            <select name="selectedDifficulty" class="form-select w-auto">
+            <select name="difficulty" class="form-select w-auto">
                 <option value="">All Difficulties</option>
                 @foreach (var d in Enum.GetValues<Difficulty>())
                 {
@@ -32,8 +32,8 @@
                 }
             </select>
 
-            <select name="statusFilter" class="form-select w-auto">
-                <option value="">All Challenges</option>
+            <select name="status" class="form-select w-auto">
+                <option value="all">All Challenges</option>
                 @foreach (var d in Enum.GetValues<ChallengeStatus>())
                 {
                     if (d == ChallengeStatus.All) continue;
@@ -163,8 +163,8 @@
         </div>
 
             var baseRoute = new Dictionary<string, string?>();
-            baseRoute["selectedDifficulty"] = Model.SelectedDifficulty?.ToString().ToLower();
-            baseRoute["statusFilter"] = Model.StatusFilter.ToString().ToLower();
+            baseRoute["difficulty"] = Model.SelectedDifficulty?.ToString().ToLower();
+            baseRoute["status"] = Model.StatusFilter.ToString().ToLower();
             baseRoute["search"] = Model.Search?.ToLower();
             baseRoute["page"] = Model.CurrentPage.ToString();
         if (Model.Tags is not null && Model.Tags.Any())

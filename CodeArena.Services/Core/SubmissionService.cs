@@ -18,30 +18,26 @@ using CodeArena.Services.Results;
 using Microsoft.Extensions.Caching.Memory;
 using CodeArena.Services.Extensions;
 using CodeArena.Services.QueryModels;
+using CodeArena.Services.Helpers;
 
 namespace CodeArena.Services.Core;
 
 public class SubmissionService : ISubmissionService
 {
     private readonly ISubmissionRepository _repository;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly IMemoryCache _cache;
 
     public SubmissionService(
         ISubmissionRepository repository,
-        UserManager<ApplicationUser> userManager,
         IMemoryCache cache
         )
     {
         _repository = repository;
-        _userManager = userManager;
         _cache = cache;
     }
 
-    public async Task CancelPendingAsync(int challengeId, ClaimsPrincipal user)
+    public async Task CancelPendingAsync(int challengeId, string userId)
     {
-        var userId = _userManager.GetUserId(user);
-
         var submission = await _repository.FirstOrDefaultAsync(s =>
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
@@ -52,7 +48,8 @@ public class SubmissionService : ISubmissionService
             return;
         }
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_User_SubmissionById, submission.Id),
             string.Format(CacheKey_UserStats_ByUserId, userId),
             CacheKey_PendingSubmissions,
@@ -62,15 +59,13 @@ public class SubmissionService : ISubmissionService
         await _repository.RemoveAsync(submission);     
     }
 
-    public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, ClaimsPrincipal user)
+    public async Task CreateSubmissionAsync(SubmissionCreateDto createDto, string userId)
     {
-        var userId = _userManager.GetUserId(user);
-
         if (userId is null)
         {
             throw new InvalidOperationException(UnauthenticatedUserSubmissionAttemptMessage);
         }
-        if (await HasPendingSubmissionAsync(createDto.ChallengeId, user))
+        if (await HasPendingSubmissionAsync(createDto.ChallengeId, userId))
         {
             throw new InvalidOperationException(UserAlreadyHasPendingSubmissionMessage);
         }
@@ -86,16 +81,16 @@ public class SubmissionService : ISubmissionService
 
         await _repository.AddAsync(submission);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             CacheKey_PendingSubmissions,
             CacheKey_SubmissionsAll,
             string.Format(CacheKey_UserStats_ByUserId, userId)
        );
     }
 
-    public async Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, ClaimsPrincipal user)
+    public async Task<ServiceResult<SubmissionDetailsDto>> GetSubmissionDetailsAsync(int id, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         if (userId is null)
         {
             return ServiceResult<SubmissionDetailsDto>.Fail(UnauthenticatedActionMessage);
@@ -143,22 +138,11 @@ public class SubmissionService : ISubmissionService
         return ServiceResult<SubmissionDetailsDto>.Ok(dto);
     }
 
-    public async Task<(IEnumerable<SubmissionDisplayDto>, int count)> GetUserSubmissionsAsync(
-        ClaimsPrincipal user,
-        int page = 1,
-        int pageSize = 10,
-        SubmissionLanguage? languageFilter = null,
-        SubmissionStatus? statusFilter = null
+    public async Task<PagedResult<SubmissionDisplayDto>> GetUserSubmissionsAsync(
+        SubmissionQuery query,
+        string userId
     )
     {
-        var userId = _userManager.GetUserId(user);
-        var query = new SubmissionQuery
-        {
-            Page = page,
-            PageSize = pageSize,
-            Language = languageFilter,
-            Status = statusFilter
-        };
         var submissions = _repository.GetAll()
                               .Where(s => s.UserId == userId)
                               .ApplyFiltering(query)
@@ -168,8 +152,8 @@ public class SubmissionService : ISubmissionService
 
         var dtos = await submissions
             .OrderByDescending(s => s.SubmittedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(s => new SubmissionDisplayDto
             (
                 s.Id,
@@ -185,32 +169,22 @@ public class SubmissionService : ISubmissionService
             ))
             .ToListAsync();
 
-        return (dtos, totalCount);
+        return new PagedResult<SubmissionDisplayDto>(dtos, totalCount);
     }
 
-    public async Task<bool> HasApprovedSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    public async Task<bool> HasApprovedSubmissionAsync(int challengeId, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         return await _repository.AnyAsync(s =>
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
             s.Status == SubmissionStatus.Approved);
     }
 
-    public async Task<bool> HasPendingSubmissionAsync(int challengeId, ClaimsPrincipal user)
+    public async Task<bool> HasPendingSubmissionAsync(int challengeId, string userId)
     {
-        var userId = _userManager.GetUserId(user);
         return await _repository.AnyAsync(s => 
             s.ChallengeId == challengeId &&
             s.UserId == userId &&
             s.Status == SubmissionStatus.Pending);
-    }
-    private void InvalidateCache(params string[] keys)
-    {
-        if (!keys.Any()) return;
-        foreach (var key in keys)
-        {
-            _cache.Remove(key);
-        }
     }
 }

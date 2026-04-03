@@ -12,7 +12,12 @@ public static class LevelCalculator
     private const double Multiplier = 50;
     public static int CalculateLevel(int totalXp)
     {
-        return (int)Math.Floor(1 + Math.Pow(totalXp / Multiplier, 0.6));
+        int level = 1;
+
+        while (GetXpForLevel(level + 1) <= totalXp)
+            level++;
+
+        return level;
     }
     public static int GetXpForLevel(int level)
     {
@@ -32,7 +37,7 @@ public static class LevelCalculator
         var level = CalculateLevel(totalXp);
         var (currentLevelXp, nextLevelXp) = GetXpBounds(level);
 
-        var currentXp = totalXp - currentLevelXp;
+        var currentXp = Math.Max(0, totalXp - currentLevelXp);
         var neededXp = nextLevelXp - currentLevelXp;
 
         return (currentXp, neededXp);

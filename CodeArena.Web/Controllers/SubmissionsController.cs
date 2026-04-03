@@ -8,6 +8,7 @@ using static CodeArena.Common.ApplicationConstants;
 using Humanizer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using CodeArena.Services.QueryModels;
 
 namespace CodeArena.Web.Controllers;
 
@@ -28,22 +29,20 @@ public class SubmissionsController : BaseController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(SubmissionsIndexViewModel inputVm, int page = 1)
+    public async Task<IActionResult> Index(SubmissionQuery query)
     {
-        var (submissions, count) = await _submissionService.GetUserSubmissionsAsync(
-                User,
-                Math.Max(1, page),
-                PageSize,
-                inputVm.Language,
-                inputVm.Status
-            );
+        query.Page = Math.Max(1, query.Page);
+        query.PageSize = PageSize;
+
+        var result = await _submissionService.GetUserSubmissionsAsync(query, UserId!);
+
         var vm = new SubmissionsIndexViewModel
         {
-            Submissions = submissions,
-            CurrentPage = Math.Max(1, page),
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
-            Language = inputVm.Language,
-            Status = inputVm.Status
+            Submissions = result.Items,
+            CurrentPage = query.Page,
+            TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
+            Language = query.Language,
+            Status = query.Status
         };
         return View(vm);
     }
@@ -52,7 +51,9 @@ public class SubmissionsController : BaseController
     {
         if (!ModelState.IsValid)
         {
-            var result = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId);
+            var result = await _challengeService.GetChallengeByIdAsync(createDto.ChallengeId, 
+                userId: null);
+
             if (!result.Success)
             {
                 return NotFound();
@@ -67,7 +68,7 @@ public class SubmissionsController : BaseController
 
             return View("~/Views/Challenges/Details.cshtml", vm);
         }
-        await _submissionService.CreateSubmissionAsync(createDto, User);
+        await _submissionService.CreateSubmissionAsync(createDto, UserId!);
         TempData[SuccessTempDataKey] = SubmissionCreatedMessage;
         return RedirectToAction(nameof(Index));
     }
@@ -75,7 +76,8 @@ public class SubmissionsController : BaseController
     [HttpPost]
     public async Task<IActionResult> Cancel(int challengeId, bool redirectToSubmissions)
     {
-        await _submissionService.CancelPendingAsync(challengeId, User);
+        await _submissionService.CancelPendingAsync(challengeId, UserId!);
+
         TempData[InfoTempDataKey] = SubmissionCancelledMessage; 
         return redirectToSubmissions 
             ? RedirectToAction(nameof(Index))
@@ -89,7 +91,7 @@ public class SubmissionsController : BaseController
             return BadRequest();
         }
 
-        var result = await _submissionService.GetSubmissionDetailsAsync(id, User);
+        var result = await _submissionService.GetSubmissionDetailsAsync(id, UserId!);
         if (!result.Success)
         {
             _logger.LogInformation(result.ErrorMessage);

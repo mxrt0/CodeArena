@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using static CodeArena.Common.OutputMessages;
 using static CodeArena.Common.ApplicationConstants;
 using CodeArena.Common.Exceptions;
+using CodeArena.Services.QueryModels.Admin;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
 
@@ -22,23 +23,22 @@ public class ChallengesController : BaseAdminController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(ChallengesIndexViewModel inputVm, int page = 1)
+    public async Task<IActionResult> Index(AdminChallengeQuery query)
     {
-        var (challenges, count) = await _challengeService.GetChallengesAsync(
-            Math.Max(1, page),
-            PageSize,
-            inputVm.State,
-            inputVm.Search
-        );
+        query.Page = Math.Max(1, query.Page);
+        query.PageSize = PageSize;
+
+        var result = await _challengeService.GetChallengesAsync(query);
 
         var vm = new ChallengesIndexViewModel
         {
-            Challenges = challenges,
-            CurrentPage = Math.Max(1, page),
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
-            Search = inputVm.Search,
-            State = inputVm.State
+            Challenges = result.Items,
+            CurrentPage = query.Page,
+            TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
+            Search = query.Search,
+            State = query.State
         };
+
         ViewData["ActivePage"] = "Challenges";
         return View(vm);
     }

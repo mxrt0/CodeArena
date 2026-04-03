@@ -4,6 +4,7 @@ using CodeArena.Data.Repositories;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Services.Core;
 using CodeArena.Services.Core.Contracts;
+using CodeArena.Services.QueryModels;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Memory;
@@ -19,7 +20,6 @@ namespace CodeArena.Services.Tests;
 [TestFixture]
 public class ChallengeServiceTests
 {
-    private Mock<UserManager<ApplicationUser>> _userManagerMock;
     private Challenge _exampleChallenge;
     private List<Challenge> _sampleData;
     private Mock<IMemoryCache> _cacheMock;
@@ -40,19 +40,6 @@ public class ChallengeServiceTests
         _cacheMock
             .Setup(c => c.CreateEntry(It.IsAny<object>()))
             .Returns(cacheEntry.Object);
-
-        var store = new Mock<IUserStore<ApplicationUser>>();
-        _userManagerMock = new Mock<UserManager<ApplicationUser>>(
-            store.Object,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!,
-            null!
-        );
 
         _exampleChallenge = new Challenge
         {
@@ -77,7 +64,7 @@ public class ChallengeServiceTests
     }
 
     [Test]
-    public async Task GetChallengeByIdAsync_WhenNoUser_ReturnsFailResult()
+    public async Task GetChallengeByIdAsync_WhenNonExistentId_ReturnsFailResult()
     {
         var challengeRepositoryMock = new Mock<IChallengeRepository>();
 
@@ -87,12 +74,11 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManagerMock.Object,
             _submissionServiceMock.Object,
             _cacheMock.Object
             );
 
-        var result = await service.GetChallengeByIdAsync(123);
+        var result = await service.GetChallengeByIdAsync(123, null);
 
         Assert.That(result.Success, Is.EqualTo(false));
     }
@@ -109,12 +95,11 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManagerMock.Object,
             _submissionServiceMock.Object,
             _cacheMock.Object
             );
 
-        var result = await service.GetChallengeByIdAsync(id);
+        var result = await service.GetChallengeByIdAsync(id, null);
 
         Assert.That(result.Success, Is.True);
     }
@@ -129,12 +114,11 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManagerMock.Object,
             _submissionServiceMock.Object,
             _cacheMock.Object
             );
 
-        var result = await service.GetChallengeBySlugAsync("slug");
+        var result = await service.GetChallengeBySlugAsync("slug", null);
 
         Assert.That(result.Success, Is.False);
     }
@@ -151,12 +135,11 @@ public class ChallengeServiceTests
 
         var service = new ChallengeService(
             challengeRepositoryMock.Object,
-            _userManagerMock.Object,
             _submissionServiceMock.Object,
             _cacheMock.Object
             );
 
-        var result = await service.GetChallengeBySlugAsync(slug);
+        var result = await service.GetChallengeBySlugAsync(slug, null);
 
         Assert.That(result.Success, Is.EqualTo(true));
     }
@@ -168,22 +151,22 @@ public class ChallengeServiceTests
         var repo = new ChallengeRepository(context);
 
         _submissionServiceMock
-            .Setup(s => s.HasPendingSubmissionAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.HasPendingSubmissionAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(false);
 
         _submissionServiceMock
-            .Setup(s => s.HasApprovedSubmissionAsync(It.IsAny<int>(), It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.HasApprovedSubmissionAsync(It.IsAny<int>(), It.IsAny<string>()))
             .ReturnsAsync(false);
 
         var service = new ChallengeService(
-            repo, _userManagerMock.Object, 
+            repo,
             _submissionServiceMock.Object, _cacheMock.Object
         );
 
-        var (result, count) = await service.GetChallengesAsync();
+        var result = await service.GetChallengesAsync(new(), null);
 
-        Assert.That(count, Is.EqualTo(2));
-        Assert.That(result.Count(), Is.EqualTo(2));
+        Assert.That(result.TotalCount, Is.EqualTo(2));
+        Assert.That(result.Items.Count(), Is.EqualTo(2));
     }
     [Test]
     public async Task GetChallengesAsync_WithDifficultyFilter_ReturnsFiltered()
@@ -192,18 +175,19 @@ public class ChallengeServiceTests
 
         var repo = new ChallengeRepository(context);
 
-        var service = new ChallengeService(repo, _userManagerMock.Object,
+        var service = new ChallengeService(repo,
             _submissionServiceMock.Object, _cacheMock.Object);
 
-        var user = new ClaimsPrincipal();
-
-        var (result, count) = await service.GetChallengesAsync(
-            difficultyFilter: Difficulty.Easy,
-            user: user
+        var result = await service.GetChallengesAsync(
+            new ChallengeQuery
+            {
+                Difficulty = Difficulty.Easy
+            },
+            "userId"
         );
 
-        Assert.That(count, Is.EqualTo(1));
-        Assert.That(result.First().Difficulty, Is.EqualTo(Difficulty.Easy.ToString()));
+        Assert.That(result.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Items.First().Difficulty, Is.EqualTo(Difficulty.Easy.ToString()));
     }
     [Test]
     public async Task GetChallengesAsync_WithPagination_ReturnsCorrectPage()
@@ -222,13 +206,18 @@ public class ChallengeServiceTests
 
         var repo = new ChallengeRepository(context);
 
-        var service = new ChallengeService(repo, _userManagerMock.Object,
+        var service = new ChallengeService(repo,
             _submissionServiceMock.Object, _cacheMock.Object);
 
-        var (result, count) = await service.GetChallengesAsync(page: 2, pageSize: 5);
+        var result = await service.GetChallengesAsync(
+            new ChallengeQuery
+        {
+            Page = 2,
+            PageSize = 5
+        }, "userId");
 
-        Assert.That(count, Is.EqualTo(20));
-        Assert.That(result.Count(), Is.EqualTo(5));
+        Assert.That(result.TotalCount, Is.EqualTo(20));
+        Assert.That(result.Items.Count(), Is.EqualTo(5));
     }
     [Test]
     public async Task GetChallengesAsync_SetsSubmissionFlagsCorrectly()
@@ -238,21 +227,19 @@ public class ChallengeServiceTests
         var repo = new ChallengeRepository(context);
 
         _submissionServiceMock
-            .Setup(s => s.HasPendingSubmissionAsync(1, It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.HasPendingSubmissionAsync(1, It.IsAny<string>()))
             .ReturnsAsync(true);
 
         _submissionServiceMock
-            .Setup(s => s.HasApprovedSubmissionAsync(1, It.IsAny<ClaimsPrincipal>()))
+            .Setup(s => s.HasApprovedSubmissionAsync(1, It.IsAny<string>()))
             .ReturnsAsync(true);
 
-        var service = new ChallengeService(repo, _userManagerMock.Object,
+        var service = new ChallengeService(repo,
             _submissionServiceMock.Object, _cacheMock.Object);
 
-        var user = new ClaimsPrincipal();
+        var result = await service.GetChallengesAsync(new(), "test");
 
-        var (result, _) = await service.GetChallengesAsync(user: user);
-
-        var dto = result.First();
+        var dto = result.Items.First();
 
         Assert.That(dto.HasPendingSubmission, Is.True);
         Assert.That(dto.IsSolved, Is.True);

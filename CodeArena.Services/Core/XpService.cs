@@ -19,6 +19,7 @@ namespace CodeArena.Services.Core;
 public class XpService : IXpService
 {
     private const int Multiplier = 50;
+    private const double FirstSolveMultiplier = 1.2;
     private readonly IXpTransactionRepository _repository;
     private readonly UserManager<ApplicationUser> _userManager;
     public XpService(
@@ -48,17 +49,26 @@ public class XpService : IXpService
             _ => default
         };
 
+        var isFirstSolve = !await _repository
+            .AnyAsync(x => x.UserId == userId);
         var transaction = new XpTransaction
         {
             UserId = userId,
             ChallengeId = challengeId,
             XpAmount = amount,
-            Reason = XpReason.ChallengeSolved
+            Reason = isFirstSolve 
+                        ? XpReason.FirstSolve
+                        : XpReason.ChallengeSolved
         };
 
         await _repository.AddAsync(transaction);
 
         var user = (await _userManager.FindByIdAsync(userId))!;
+
+        if (isFirstSolve)
+        {
+            amount = (int)(amount * FirstSolveMultiplier);
+        }
 
         user.XP += amount;
         user.Level = LevelCalculator.CalculateLevel(user.XP);

@@ -5,6 +5,7 @@ using static CodeArena.Common.ApplicationConstants;
 using Microsoft.AspNetCore.Mvc;
 using CodeArena.Common.Exceptions;
 using AspNetCoreGeneratedDocument;
+using CodeArena.Services.QueryModels;
 
 namespace CodeArena.Web.Areas.Admin.Controllers;
 
@@ -20,20 +21,19 @@ public class SubmissionsController : BaseAdminController
         _logger = logger;
     }
 
-    public async Task<IActionResult> Index(SubmissionsIndexViewModel inputVm, int page = 1)
+    public async Task<IActionResult> Index(SubmissionQuery query)
     {
-        var (submissions, count) = await _submissionService.GetPendingSubmissionsAsync(
-            Math.Max(1, page),
-            PageSize,
-            inputVm.Language
-        );
+        query.Page = Math.Max(1, query.Page);
+        query.PageSize = PageSize;
+
+        var result = await _submissionService.GetPendingSubmissionsAsync(query);
 
         var vm = new SubmissionsIndexViewModel
         {
-            Submissions = submissions,
-            CurrentPage = Math.Max(1, page),
-            TotalPages = (int)Math.Ceiling(count / (double)PageSize),
-            Language = inputVm.Language
+            Submissions = result.Items,
+            CurrentPage = query.Page,
+            TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
+            Language = query.Language
         };
 
         ViewData["ActivePage"] = "Submissions";

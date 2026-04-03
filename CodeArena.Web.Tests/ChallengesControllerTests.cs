@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.Results;
 using CodeArena.Data.Common.Enums;
+using CodeArena.Services.QueryModels;
 
 namespace CodeArena.Web.Tests;
 
@@ -60,8 +61,6 @@ public class ChallengesControllerTests
     {
         var controller = CreateController();
 
-        var inputVm = new ChallengeIndexViewModel();
-
         var challenges = new List<ChallengeDisplayDto>
         {
             new ChallengeDisplayDto(1, "slug-1", "Title 1", "Desc 1", "Easy", new[] {"tag1"}, 0, false),
@@ -70,14 +69,14 @@ public class ChallengesControllerTests
 
         _challengeServiceMock
             .Setup(s => s.GetChallengesAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<ChallengeStatus?>(),
-                It.IsAny<Difficulty?>(),
-                It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync((challenges, 24));
+                It.IsAny<ChallengeQuery>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(new PagedResult<ChallengeDisplayDto>(challenges, 24));
 
-        var result = await controller.Index(inputVm, page: 2);
+        var result = await controller.Index(new ChallengeQuery
+        {
+            Page = 2
+        });
 
         var view = result as ViewResult;
         var model = view?.Model as ChallengeIndexViewModel;
@@ -85,7 +84,7 @@ public class ChallengesControllerTests
         Assert.That(view, Is.Not.Null);
         Assert.That(model, Is.Not.Null);
         Assert.That(model.CurrentPage, Is.EqualTo(2));
-        Assert.That(model.TotalPages, Is.EqualTo(2)); // 24 / 12
+        Assert.That(model.TotalPages, Is.EqualTo(2));
         Assert.That(model.Challenges.Count, Is.EqualTo(challenges.Count));
     }
 
@@ -94,18 +93,13 @@ public class ChallengesControllerTests
     {
         var controller = CreateController(false);
 
-        var inputVm = new ChallengeIndexViewModel();
-
         _challengeServiceMock
             .Setup(s => s.GetChallengesAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<ChallengeStatus?>(),
-                It.IsAny<Difficulty?>(),
-                null))
-            .ReturnsAsync((new List<ChallengeDisplayDto>(), 0));
+                It.IsAny<ChallengeQuery>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(new PagedResult<ChallengeDisplayDto>(new List<ChallengeDisplayDto>(), 0));
 
-        await controller.Index(inputVm);
+        await controller.Index(new());
 
         _challengeServiceMock.VerifyAll();
     }
@@ -115,25 +109,17 @@ public class ChallengesControllerTests
     {
         var controller = CreateController(true);
 
-        var inputVm = new ChallengeIndexViewModel();
-
         _challengeServiceMock
             .Setup(s => s.GetChallengesAsync(
-                It.IsAny<int>(),
-                It.IsAny<int>(),
-                It.IsAny<ChallengeStatus?>(),
-                It.IsAny<Difficulty?>(),
-                It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync((new List<ChallengeDisplayDto>(), 0));
+                It.IsAny<ChallengeQuery>(),
+                It.IsAny<string>()))
+            .ReturnsAsync(new PagedResult<ChallengeDisplayDto>(new List<ChallengeDisplayDto>(), 0));
 
-        await controller.Index(inputVm);
+        await controller.Index(new());
 
         _challengeServiceMock.Verify(s => s.GetChallengesAsync(
-            It.IsAny<int>(),
-            It.IsAny<int>(),
-            It.IsAny<ChallengeStatus?>(),
-            It.IsAny<Difficulty?>(),
-            It.Is<ClaimsPrincipal>(u => u.Identity!.IsAuthenticated)
+            It.IsAny<ChallengeQuery>(),
+            It.IsAny<string>()
         ), Times.Once);
     }
 
@@ -165,7 +151,7 @@ public class ChallengesControllerTests
         _challengeServiceMock
             .Setup(s => s.GetChallengeBySlugAsync(
                 It.IsAny<string>(),
-                It.IsAny<ClaimsPrincipal>()))
+                It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<ChallengeDisplayDto>.Fail("not found"));
 
         var result = await controller.Details("slug");
@@ -183,7 +169,7 @@ public class ChallengesControllerTests
         _challengeServiceMock
             .Setup(s => s.GetChallengeBySlugAsync(
                 It.IsAny<string>(),
-                It.IsAny<ClaimsPrincipal>()))
+                It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<ChallengeDisplayDto>.Ok(dto));
 
         var result = await controller.Details("slug");
@@ -200,11 +186,14 @@ public class ChallengesControllerTests
     {
         var controller = CreateController();
         _challengeServiceMock
-            .Setup(s => s.GetChallengesAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<ChallengeStatus?>(), It.IsAny<Difficulty?>(), It.IsAny<ClaimsPrincipal?>()))
-            .ReturnsAsync((Enumerable.Empty<ChallengeDisplayDto>(), 0));
+            .Setup(s => s.GetChallengesAsync(It.IsAny<ChallengeQuery>(), It.IsAny<string>()))
+            .ReturnsAsync(new PagedResult<ChallengeDisplayDto>(Enumerable.Empty<ChallengeDisplayDto>(), 0));
 
         var vm = new ChallengeIndexViewModel();
-        var result = await controller.Index(vm, page: 0) as ViewResult;
+        var result = await controller.Index(new ChallengeQuery
+        {
+            Page = 0
+        }) as ViewResult;
 
         Assert.That(result, Is.Not.Null);
         var model = result!.Model as ChallengeIndexViewModel;
@@ -224,7 +213,7 @@ public class ChallengesControllerTests
     {
         var controller = CreateController();
         _challengeServiceMock
-            .Setup(s => s.GetChallengeBySlugAsync(It.IsAny<string>(), It.IsAny<ClaimsPrincipal?>()))
+            .Setup(s => s.GetChallengeBySlugAsync(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<ChallengeDisplayDto>.Fail("Not found"));
 
         var result = await controller.Details("slug") as NotFoundResult;
@@ -257,7 +246,7 @@ public class ChallengesControllerTests
         { HasPendingSubmission = true, IsSolved = true };
 
         _challengeServiceMock
-            .Setup(s => s.GetChallengeBySlugAsync("test", It.IsAny<ClaimsPrincipal?>()))
+            .Setup(s => s.GetChallengeBySlugAsync("test", It.IsAny<string>()))
             .ReturnsAsync(ServiceResult<ChallengeDisplayDto>.Ok(dto));
 
         var result = await controller.Details("test") as ViewResult;

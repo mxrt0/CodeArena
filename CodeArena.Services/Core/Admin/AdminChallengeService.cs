@@ -9,7 +9,9 @@ using CodeArena.Services.Core.Admin.Contracts;
 using CodeArena.Services.DTOs.Admin.Challenge;
 using CodeArena.Services.DTOs.Challenge;
 using CodeArena.Services.Extensions;
+using CodeArena.Services.Helpers;
 using CodeArena.Services.QueryModels.Admin;
+using CodeArena.Services.Results;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Identity.Client;
@@ -65,7 +67,8 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.DeleteAsync(challenge);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
@@ -75,54 +78,25 @@ public class AdminChallengeService : IAdminChallengeService
         var challenge = await _repository.GetByIdAsync(id, includeDeleted: true)
             ?? throw new ChallengeNotFoundException(id);
 
-        return new ChallengeDisplayDto(
-            challenge.Id,
-            challenge.Slug,
-            challenge.Title,
-            challenge.Description,
-            challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(t => t.Trim())
-            .ToArray(),
-            challenge.Submissions.Count,
-            challenge.IsDeleted
-        );
+        return ChallengeMapper.ToDto(challenge);
     }
 
 
-    public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
-        int page = 1,
-        int pageSize = 10,
-        ChallengeState? stateFilter = null,
-        string? search = null)
+    public async Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
+        AdminChallengeQuery query)
     {
-        var query = new AdminChallengeQuery
-        {
-            State = stateFilter,
-            Search = search
-        };
         var challenges = _repository.GetAll(includeDeleted: true)
                                      .ApplyFiltering(query);
 
         var totalCount = await challenges.CountAsync();
 
         var dtos = await challenges
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(c => new ChallengeDisplayDto(
-                c.Id,
-                c.Slug,
-                c.Title,
-                c.Description,
-                c.Difficulty.ToString(),
-                c.Tags
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .ToArray(),
-                c.Submissions.Count,
-                c.IsDeleted
-        )).ToListAsync();
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .Select(c => ChallengeMapper.ToDto(c))
+            .ToListAsync();
 
-        return (dtos, totalCount);
+        return new PagedResult<ChallengeDisplayDto>(dtos, totalCount);
     }
 
     public async Task RestoreChallengeAsync(int id)
@@ -134,7 +108,8 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.RestoreAsync(challenge);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
     }
@@ -151,16 +126,9 @@ public class AdminChallengeService : IAdminChallengeService
 
         await _repository.UpdateAsync(challenge);
 
-        InvalidateCache(
+        CacheHelper.Remove(
+            _cache,
             string.Format(CacheKey_ChallengeBySlug, challenge.Slug)
         );
-    }
-    private void InvalidateCache(params string[] keys)
-    {
-        if (!keys.Any()) return;
-        foreach (var key in keys)
-        {
-            _cache.Remove(key);
-        }
     }
 }

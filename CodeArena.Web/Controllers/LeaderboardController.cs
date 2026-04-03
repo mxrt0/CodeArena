@@ -24,7 +24,7 @@ public class LeaderboardController : BaseController
         var vm = new LeaderboardIndexViewModel
         {
             Leaderboard = leaderboard.Data!,
-            CurrentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? string.Empty
+            CurrentUserId = UserId ?? string.Empty
         };
 
         return View(vm);

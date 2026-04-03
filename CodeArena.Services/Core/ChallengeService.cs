@@ -19,25 +19,23 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using CodeArena.Services.QueryModels;
 using CodeArena.Services.Extensions;
+using CodeArena.Services.Helpers;
 
 namespace CodeArena.Services.Core;
 
 public class ChallengeService : IChallengeService
 {
     private readonly IChallengeRepository _repository;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly ISubmissionService _submissionService;
     private readonly IMemoryCache _cache;
 
     public ChallengeService(
         IChallengeRepository repository,
-        UserManager<ApplicationUser> userManager,
         ISubmissionService submissionService,
         IMemoryCache cache
     )
     {
         _repository = repository;
-        _userManager = userManager;
         _submissionService = submissionService;
         _cache = cache;
     }
@@ -56,7 +54,7 @@ public class ChallengeService : IChallengeService
             .ToList();
     }
 
-    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null)
+    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, string? userId)
     {
         var challenge = await _repository.GetByIdAsync(id);
         if (challenge is null)
@@ -64,29 +62,21 @@ public class ChallengeService : IChallengeService
             return ServiceResult<ChallengeDisplayDto>.Fail(string.Format(ChallengeNotFoundMessage, id));
         }
 
-        var dto = new ChallengeDisplayDto(
-            challenge.Id,
-            challenge.Slug,
-            challenge.Title,
-            challenge.Description,
-            challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
-            challenge.Submissions.Count,
-            IsDeleted: false
-        );
+        var dto = ChallengeMapper.ToDto(challenge);
 
-        dto.HasPendingSubmission = user is not null
-                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+        dto.HasPendingSubmission = userId is not null
+                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, userId)
                                     : false;
 
-        dto.IsSolved = user is not null 
-                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user) 
+        dto.IsSolved = userId is not null 
+                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, userId) 
                         : false;
 
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
     }
 
-    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null)
+    public async Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug,
+        string? userId)
     {
         if (_cache.TryGetValue(
             string.Format(CacheKey_ChallengeBySlug, slug),
@@ -100,23 +90,14 @@ public class ChallengeService : IChallengeService
             return ServiceResult<ChallengeDisplayDto>.Fail(string.Format(ChallengeNotFoundMessage, slug));
         }
 
-        var dto = new ChallengeDisplayDto(
-            challenge.Id,
-            challenge.Slug,
-            challenge.Title,
-            challenge.Description,
-            challenge.Difficulty.ToString(),
-            challenge.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(t => t.Trim()).ToArray(),
-            challenge.Submissions.Count,
-            IsDeleted: false
-        );
+        var dto = ChallengeMapper.ToDto(challenge);
 
-        dto.HasPendingSubmission = user is not null
-                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+        dto.HasPendingSubmission = userId is not null
+                                    ? await _submissionService.HasPendingSubmissionAsync(dto.Id, userId)
                                     : false;
 
-        dto.IsSolved = user is not null
-                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user)
+        dto.IsSolved = userId is not null
+                        ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, userId)
                         : false;
 
         _cache.Set(
@@ -131,22 +112,16 @@ public class ChallengeService : IChallengeService
         return ServiceResult<ChallengeDisplayDto>.Ok(dto);
     }
 
-    public async Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
-        int page = 1,
-        int pageSize = 10,
-        ChallengeStatus? statusFilter = ChallengeStatus.All,
-        Difficulty? difficultyFilter = null,
-        IEnumerable<string>? tagsFilter = null,
-        string? search = null,
-        ClaimsPrincipal? user = null
+    public async Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
+        ChallengeQuery query,
+        string? userId
     )
     {
         var challenges = _repository.GetAll();
 
-        if (statusFilter != ChallengeStatus.All && user is not null)
+        if (query.Status is not ChallengeStatus.All && userId is not null)
         {
-            var userId = _userManager.GetUserId(user);
-            challenges = statusFilter switch
+            challenges = query.Status switch
             {
                 ChallengeStatus.Solved => challenges
                                           .Where(c => c.Submissions.Any(s => s.Status == SubmissionStatus.Approved
@@ -157,46 +132,30 @@ public class ChallengeService : IChallengeService
                _ => challenges
             };
         }
-        var query = new ChallengeQuery
-        {
-            Page = page,
-            PageSize = pageSize,
-            Difficulty = difficultyFilter,
-            Search = search,
-            Tags = tagsFilter?.ToList()
-        };
-
+       
         challenges = challenges.ApplyFiltering(query);
 
         var totalCount = await challenges.CountAsync();
 
-        var dtos =  await challenges
+        var dtos = await challenges
             .OrderBy(c => c.Title)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(c => new ChallengeDisplayDto(
-                c.Id,
-                c.Slug,
-                c.Title,
-                c.Description,
-                c.Difficulty.ToString(),
-                c.Tags.Split(',', StringSplitOptions.RemoveEmptyEntries).ToArray(),
-                c.Submissions.Count,
-                false
-        )).ToListAsync();
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
+            .Select(c => ChallengeMapper.ToDto(c))
+            .ToListAsync();
 
         foreach (var dto in dtos)
         {
-            dto.HasPendingSubmission = user is not null
-                                        ? await _submissionService.HasPendingSubmissionAsync(dto.Id, user)
+            dto.HasPendingSubmission = userId is not null
+                                        ? await _submissionService.HasPendingSubmissionAsync(dto.Id, userId)
                                         : false;
 
-            dto.IsSolved = user is not null
-                            ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, user)
+            dto.IsSolved = userId is not null
+                            ? await _submissionService.HasApprovedSubmissionAsync(dto.Id, userId)
                             : false;
         }
 
-        return (dtos, totalCount);
+        return new PagedResult<ChallengeDisplayDto>(dtos, totalCount);
     }
 
 }

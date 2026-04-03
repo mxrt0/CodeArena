@@ -8,21 +8,17 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using CodeArena.Services.Results;
+using CodeArena.Services.QueryModels;
 
 namespace CodeArena.Services.Core.Contracts;
 
 public interface IChallengeService
 {
-    Task<(IEnumerable<ChallengeDisplayDto>, int count)> GetChallengesAsync(
-        int page = 1,
-        int pageSize = 10,
-        ChallengeStatus? statusFilter = ChallengeStatus.All,
-        Difficulty? difficultyFilter = null,
-        IEnumerable<string>? tagsFilter = null,
-        string? search = null,
-        ClaimsPrincipal? user = null
+    Task<PagedResult<ChallengeDisplayDto>> GetChallengesAsync(
+        ChallengeQuery query,
+        string? userId
     );
     Task<IEnumerable<string>> GetAllTagsAsync();
-    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, ClaimsPrincipal? user = null);
-    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, ClaimsPrincipal? user = null);
+    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeByIdAsync(int id, string? userId);
+    Task<ServiceResult<ChallengeDisplayDto>> GetChallengeBySlugAsync(string slug, string? userId);
 }

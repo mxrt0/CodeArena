@@ -27,6 +27,7 @@ public static class AdminSeeder
             user = new ApplicationUser
             {
                 DisplayName = "Admin",
+                NormalizedDisplayName = "ADMIN",
                 Email = AdminEmail,
                 UserName = AdminEmail,
                 EmailConfirmed = true,

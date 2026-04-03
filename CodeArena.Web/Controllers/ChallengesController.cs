@@ -1,5 +1,6 @@
 ﻿using CodeArena.Common.Enums;
 using CodeArena.Services.Core.Contracts;
+using CodeArena.Services.QueryModels;
 using CodeArena.Web.Models.Challenge;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -26,29 +27,23 @@ public class ChallengesController : BaseController
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index(ChallengeIndexViewModel inputVm, int page = 1)
+    public async Task<IActionResult> Index(ChallengeQuery query)
     {
-        var (challenges, count) = await _service.GetChallengesAsync(
-            page: Math.Max(1, page),
-            pageSize: PageSize,
-            statusFilter: inputVm.StatusFilter,
-            difficultyFilter: inputVm.SelectedDifficulty,
-            tagsFilter: inputVm.Tags,
-            search: inputVm.Search,
-            user: User?.Identity?.IsAuthenticated ?? false
-                    ? User
-                    : null);
+        query.Page = Math.Max(1, query.Page);
+        query.PageSize = PageSize;
+
+        var result = await _service.GetChallengesAsync(query, UserId);
 
         var vm = new ChallengeIndexViewModel
         {
-           Challenges = challenges,
-           SelectedDifficulty = inputVm.SelectedDifficulty,
-           StatusFilter = inputVm.StatusFilter,
-           CurrentPage = Math.Max(1, page),
-           TotalPages = (int)Math.Ceiling(count / (double)PageSize),
-           Tags = inputVm.Tags,
+           Challenges = result.Items,
+           SelectedDifficulty = query.Difficulty,
+           StatusFilter = query.Status,
+           CurrentPage = query.Page,
+           TotalPages = (int)Math.Ceiling(result.TotalCount / (double)PageSize),
+           Tags = query.Tags,
            AvailableTags = await _service.GetAllTagsAsync(),
-           Search = inputVm.Search,
+           Search = query.Search,
         };
         return View(vm);
     }
@@ -61,11 +56,7 @@ public class ChallengesController : BaseController
             return BadRequest();
         }
 
-        var result = await _service.GetChallengeBySlugAsync(
-            slug,
-          user: User?.Identity?.IsAuthenticated ?? false
-                    ? User
-                    : null);
+        var result = await _service.GetChallengeBySlugAsync(slug, UserId);
 
         if (!result.Success)
         {

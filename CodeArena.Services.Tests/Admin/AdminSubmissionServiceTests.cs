@@ -4,6 +4,10 @@ using CodeArena.Data.Common.Enums;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories;
 using CodeArena.Services.Core.Admin;
+using CodeArena.Services.Core.Contracts;
+using CodeArena.Services.DTOs.Leaderboard;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.Results;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,9 +28,29 @@ public class AdminSubmissionServiceTests
     private Mock<IMemoryCache> _cacheMock;
     private ApplicationDbContext _context;
     private SubmissionRepository _repo;
+
+    private Mock<IXpService> _xpServiceMock;
+    private Mock<ILeaderboardService> _leaderboardServiceMock;
+    private Mock<INotificationService> _notificationServiceMock;
+
     [SetUp]
     public async Task Setup()
     {
+        _xpServiceMock = new Mock<IXpService>();
+        _xpServiceMock
+            .Setup(xp => xp.AwardXpAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Difficulty>()))
+            .ReturnsAsync(ServiceResult<bool>.Ok(true));
+
+        _leaderboardServiceMock = new Mock<ILeaderboardService>();
+        _leaderboardServiceMock
+            .Setup(ls => ls.GetLeaderboardAsync(10))
+            .ReturnsAsync(ServiceResult<List<LeaderboardEntryDto>>.Ok(new List<LeaderboardEntryDto>()));
+
+        _notificationServiceMock = new Mock<INotificationService>();
+        _notificationServiceMock
+            .Setup(ns => ns.SendMessageAsync(It.IsAny<string>(), It.IsAny<object>()))
+            .Returns(Task.CompletedTask);
+
         _context = await DbContextFactory.CreateWithDataAsync(CreateSampleData());
         _repo = new SubmissionRepository(_context);
 
@@ -45,7 +69,9 @@ public class AdminSubmissionServiceTests
     [Test]
     public async Task ApproveAsync_WhenPendingSubmission_ApprovesSuccessfully()
     {
-        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
         await service.ApproveAsync(1, "Good job");
 
@@ -59,7 +85,9 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionNotFoundException>(async () =>
         {
-            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
             await service.ApproveAsync(12345);
         });
@@ -70,7 +98,9 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionAlreadyApprovedException>(async () =>
         {
-            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
             await service.ApproveAsync(2);
         });
@@ -79,7 +109,9 @@ public class AdminSubmissionServiceTests
     [Test]
     public async Task RejectAsync_WhenPendingSubmission_RejectsSuccessfully()
     {
-        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
         await service.RejectAsync(1, "Bad solution");
 
@@ -93,7 +125,9 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionAlreadyApprovedException>(async () =>
         {
-            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
             await service.RejectAsync(2);
         });
@@ -102,13 +136,15 @@ public class AdminSubmissionServiceTests
     [Test]
     public async Task GetPendingSubmissionsAsync_WhenCalled_ReturnsOnlyPending()
     {
-        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
-        var (result, count) = await service.GetPendingSubmissionsAsync();
+        var result = await service.GetPendingSubmissionsAsync(new());
 
-        Assert.That(count, Is.EqualTo(1));
-        Assert.That(result.Count(), Is.EqualTo(1));
-        Assert.That(result.First().SubmissionId, Is.EqualTo(1));
+        Assert.That(result.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Items.Count(), Is.EqualTo(1));
+        Assert.That(result.Items.First().SubmissionId, Is.EqualTo(1));
     }
 
     [Test]
@@ -136,19 +172,28 @@ public class AdminSubmissionServiceTests
 
         var context = await DbContextFactory.CreateWithDataAsync(data);
         var repo = new SubmissionRepository(context);
- 
-        var service = new AdminSubmissionService(repo, _cacheMock.Object);
 
-        var (result, count) = await service.GetPendingSubmissionsAsync(page: 2, pageSize: 5);
+        var service = new AdminSubmissionService(repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
-        Assert.That(count, Is.EqualTo(20));
-        Assert.That(result.Count(), Is.EqualTo(5));
+        var result = await service.GetPendingSubmissionsAsync(
+            new SubmissionQuery 
+            { 
+                Page = 2,
+                PageSize = 5
+            });
+
+        Assert.That(result.TotalCount, Is.EqualTo(20));
+        Assert.That(result.Items.Count(), Is.EqualTo(5));
     }
 
     [Test]
     public async Task GetSubmissionForReviewAsync_WhenExists_ReturnsDto()
     {
-        var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+        var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
         var dto = await service.GetSubmissionForReviewAsync(1);
 
@@ -162,7 +207,9 @@ public class AdminSubmissionServiceTests
     {
         Assert.ThrowsAsync<SubmissionNotFoundException>(async () =>
         {
-            var service = new AdminSubmissionService(_repo, _cacheMock.Object);
+            var service = new AdminSubmissionService(_repo, _cacheMock.Object,
+            _xpServiceMock.Object, _leaderboardServiceMock.Object,
+            _notificationServiceMock.Object);
 
             await service.GetSubmissionForReviewAsync(12345);
         });

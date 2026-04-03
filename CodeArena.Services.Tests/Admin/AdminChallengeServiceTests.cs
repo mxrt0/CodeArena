@@ -1,11 +1,15 @@
 ﻿using CodeArena.Common.Exceptions;
 using CodeArena.Data.Common.Enums;
+using CodeArena.Data.Migrations;
 using CodeArena.Data.Models;
 using CodeArena.Data.Repositories;
 using CodeArena.Data.Repositories.Contracts;
+using CodeArena.Services.Core;
 using CodeArena.Services.Core.Admin;
 using CodeArena.Services.DTOs.Admin;
 using CodeArena.Services.DTOs.Admin.Challenge;
+using CodeArena.Services.QueryModels;
+using CodeArena.Services.QueryModels.Admin;
 using CodeArena.Services.Tests.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -228,11 +232,72 @@ public class AdminChallengeServiceTests
 
         var service = new AdminChallengeService(repo, _cacheMock.Object);
 
-        var challenges = await service.GetChallengesAsync();
+        var result = await service.GetChallengesAsync(new());
 
-        Assert.That(challenges.Count(), Is.EqualTo(_sampleData.Count));
+        Assert.That(result.Items.Count(), Is.EqualTo(_sampleData.Count));
     }
+    [Test]
+    public async Task GetChallengesAsync_NoFilters_ReturnsAllChallenges()
+    {
+        var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
+        var repo = new ChallengeRepository(context);
 
+        var service = new AdminChallengeService(repo, _cacheMock.Object);   
+
+        var result = await service.GetChallengesAsync(new());
+
+        Assert.That(result.TotalCount, Is.EqualTo(2));
+        Assert.That(result.Items.Count(), Is.EqualTo(2));
+    }
+    [Test]
+    public async Task GetChallengesAsync_WithDifficultyFilter_ReturnsFiltered()
+    {
+        var context = await DbContextFactory.CreateWithDataAsync(_sampleData);
+
+        var repo = new ChallengeRepository(context);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
+
+        var result = await service.GetChallengesAsync(
+            new AdminChallengeQuery
+            {
+                Difficulty = Difficulty.Medium
+            }
+        );
+
+        Assert.That(result.TotalCount, Is.EqualTo(1));
+        Assert.That(result.Items.First().Difficulty, Is.EqualTo(Difficulty.Medium.ToString()));
+    }
+    [Test]
+    public async Task GetChallengesAsync_WithPagination_ReturnsCorrectPage()
+    {
+        var context = await DbContextFactory.CreateWithDataAsync(Enumerable.Range(1, 20)
+            .Select(i => new Challenge
+            {
+                Id = i,
+                Title = i.ToString(),
+                Tags = "",
+                Difficulty = Difficulty.Easy,
+                Submissions = new List<Submission>(),
+                Description = $"desc{i}",
+                Slug = $"slug{i}"
+            }));
+
+        var repo = new ChallengeRepository(context);
+
+        var service = new AdminChallengeService(repo, _cacheMock.Object);
+
+        var result = await service.GetChallengesAsync(
+            new AdminChallengeQuery
+            {
+                Page = 2,
+                PageSize = 5
+            }
+        );
+
+        Assert.That(result.TotalCount, Is.EqualTo(20));
+        Assert.That(result.Items.Count(), Is.EqualTo(5));
+    }
     [Test]
     public async Task RestoreChallengeAsync_WhenDeleted_RestoresChallenge()
     {
