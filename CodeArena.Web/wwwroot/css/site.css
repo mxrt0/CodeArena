@@ -154,3 +154,38 @@ body.dark-mode .leaderboard-link span {
     color: #ffc107;
 }
 
+@media (max-width: 991px) {
+    .navbar-nav .nav-item {
+        margin-bottom: 0.5rem;
+    }
+    .leaderboard-link span {
+        background: rgba(255, 193, 7, 0.1);
+        display: inline-block;
+        width: 100%;
+    }
+    #themeToggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 0.25rem;
+    }
+
+    .navbar .btn,
+    .navbar .nav-link {
+        text-align: left;
+    }
+    .navbar-collapse {
+        transition: all 0.25s ease;
+    }
+    .login-partial-item {
+        display: flex;
+        width: 100%;
+    }
+    .login-partial-item ul {
+        align-items: center;
+        width: 100%;
+    }
+        .login-partial-item ul li {
+          margin-bottom: 0.5rem;
+        }
+}
