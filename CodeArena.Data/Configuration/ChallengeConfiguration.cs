@@ -20,7 +20,7 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             Title = "Sum Two Numbers",
             Difficulty = Difficulty.Easy,
             Tags = "math",
-            Description = "Write a function that takes two numbers and returns their sum. Example: Input: 3, 5 → Output: 8.",
+            Description = "Write a function that takes two numbers and returns their sum.\n Example: Input: 3, 5 → Output: 8.",
             Slug ="sum-two-numbers"
         },
         new Challenge
@@ -29,21 +29,21 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
             Title = "FizzBuzz",
             Difficulty = Difficulty.Medium,
             Tags = "loops",
-            Description = "Write a program that prints numbers from 1 to 100. For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'.",
+            Description = "Write a program that prints numbers from 1 to 100.\n For multiples of 3, print 'Fizz' instead of the number, for multiples of 5 print 'Buzz', and for multiples of both 3 and 5 print 'FizzBuzz'.",
             Slug = "fizzbuzz"
         },
         new Challenge
     {
-        Id = 3,
+        Id = 67,
         Title = "Reverse a String",
         Difficulty = Difficulty.Easy,
         Tags = "strings, algorithms",
-        Description = "Write a function that reverses a given string. Example: Input: 'hello' → Output: 'olleh'.",
+        Description = "Write a function that reverses a given string.\n Example: Input: 'hello' → Output: 'olleh'.",
         Slug = "reverse-a-string"
     },
     new Challenge
     {
-        Id = 4,
+        Id = 69,
         Title = "Factorial",
         Difficulty = Difficulty.Medium,
         Tags = "recursion, math",
@@ -56,7 +56,7 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         Title = "Palindrome Check",
         Difficulty = Difficulty.Easy,
         Tags = "strings, algorithms",
-        Description = "Determine if a given string is a palindrome. Example: 'racecar' → true, 'hello' → false.",
+        Description = "Determine if a given string is a palindrome.\n Example: 'racecar' → true, 'hello' → false.",
         Slug = "palindrome-check"
     },
     new Challenge
@@ -182,7 +182,7 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         Title = "Balanced Brackets",
         Difficulty = Difficulty.Medium,
         Tags = "stack, algorithms, strings",
-        Description = "Check if a string of brackets is balanced. Example: '{[()]}'' → true, '{[(])}' → false.",
+        Description = "Check if a string of brackets is balanced.\n Example: '{[()]}'' → true, '{[(])}' → false.",
         Slug = "balanced-brackets"
     },
     new Challenge
@@ -211,15 +211,6 @@ public class ChallengeConfiguration : IEntityTypeConfiguration<Challenge>
         Tags = "strings, algorithms, sliding-window",
         Description = "Find the length of the longest substring without repeating characters.",
         Slug = "longest-substring-without-repeating-characters"
-    },
-    new Challenge
-    {
-        Id = 23,
-        Title = "Two Sum",
-        Difficulty = Difficulty.Medium,
-        Tags = "array, algorithms, hashing",
-        Description = "Given an array of integers, return indices of the two numbers such that they add up to a specific target.",
-        Slug = "two-sum"
     },
     new Challenge
     {
