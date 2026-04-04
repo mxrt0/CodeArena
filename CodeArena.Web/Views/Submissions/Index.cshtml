@@ -171,11 +171,6 @@
                                 </td>
 
                             </tr>
-
-                            @if (s.Status == "Pending")
-                            {
-                                <partial name="_ConfirmCancelSubmissionPartial" model="s" />
-                            }
                         }
                     </tbody>
 
@@ -186,6 +181,10 @@
     </div>
 
 </div>
+@foreach (var s in Model.Submissions.Where(s => s.Status == "Pending"))
+{
+    <partial name="_ConfirmCancelSubmissionPartial" model="s" />
+}
 
 @if (Model.Submissions.Any())
 {

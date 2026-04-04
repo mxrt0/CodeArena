@@ -36,3 +36,38 @@
         </div>
     </div>
 </div>
+
+<style>
+    body.dark-mode .modal-content {
+        background-color: #1e1e2e;
+        color: #cdd6f4;
+        border: 1px solid #313244;
+    }
+
+    body.dark-mode .modal-header {
+        border-bottom-color: #313244;
+    }
+
+    body.dark-mode .modal-footer {
+        border-top-color: #313244;
+    }
+
+    body.dark-mode .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+
+    body.dark-mode .btn-secondary {
+        background-color: #313244;
+        border-color: #45475a;
+        color: #cdd6f4;
+    }
+
+        body.dark-mode .btn-secondary:hover {
+            background-color: #45475a;
+            border-color: #585b70;
+        }
+        body.dark-mode .modal-backdrop {
+    background-color: #000;
+    opacity: 0.7 !important;
+}
+</style>
