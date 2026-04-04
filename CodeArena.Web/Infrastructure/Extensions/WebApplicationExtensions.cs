@@ -1,8 +1,10 @@
-﻿using CodeArena.Data.Models;
+﻿using CodeArena.Data;
+using CodeArena.Data.Models;
 using CodeArena.Data.Repositories.Contracts;
 using CodeArena.Data.Seeding;
 using CodeArena.Web.Hubs;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CodeArena.Web.Infrastructure.Extensions;
 
@@ -39,7 +41,11 @@ public static class WebApplicationExtensions
         }
         else
         {
-            app.UseExceptionHandler("/Home/Error");
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                db.Database.Migrate();
+            }
             app.UseHsts();
         }
 
