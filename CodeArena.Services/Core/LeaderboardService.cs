@@ -43,7 +43,7 @@ public class LeaderboardService : ILeaderboardService
                 UserId = g.Key.UserId,
                 DisplayName = g.Key.DisplayName,
                 TotalXp = g.Sum(x => x.XpAmount),
-                ChallengesSolved = g.Count(x => x.Reason == XpReason.ChallengeSolved)
+                ChallengesSolved = g.Count()
             })
             .OrderByDescending(x => x.TotalXp)
             .ThenBy(x => x.DisplayName)
