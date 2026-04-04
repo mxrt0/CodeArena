@@ -1,3 +1,31 @@
-﻿body.dark-mode tr {
-    background-color: #
+﻿.table tbody tr.top-1 {
+    background: linear-gradient(90deg, rgba(255,215,0,0.15), transparent);
 }
+
+.table tbody tr.top-2 {
+    background: linear-gradient(90deg, rgba(192,192,192,0.15), transparent);
+}
+
+.table tbody tr.top-3 {
+    background: linear-gradient(90deg, rgba(205,127,50,0.15), transparent);
+}
+.current-user-row {
+    outline: 2px solid var(--bs-info);
+    background-color: rgba(13, 202, 240, 0.08);
+}
+.leaderboard-card tbody tr {
+    transition: background 0.15s ease;
+}
+
+    .leaderboard-card tbody tr:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+@media (max-width: 576px) {
+    .leaderboard-card table {
+        font-size: 0.9rem;
+    }
+}
+
+
+
+
