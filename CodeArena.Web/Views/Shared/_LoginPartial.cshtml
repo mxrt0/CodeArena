@@ -5,11 +5,9 @@
     var user = await UserManager.GetUserAsync(User);
 }
 
-<ul class="navbar-nav align-items-center">
-
     @if (SignInManager.IsSignedIn(User) && user is not null)
     {
-        <li class="nav-item me-3 d-flex align-items-center">
+        <li class="nav-item me-3 d-flex align-items-lg-center">
             <span class="fw-semibold">
                 <i class="bi bi-person-circle me-1"></i>
                 @user.DisplayName
@@ -47,4 +45,3 @@
         </li>
     }
 
-</ul>

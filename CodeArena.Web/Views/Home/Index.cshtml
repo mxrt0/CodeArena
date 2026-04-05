@@ -7,40 +7,55 @@
 
     <div class="text-center mb-5 mt-4">
         <h1 class="display-4 fw-bold">
-            <i class="bi me-2"></i>
+            <i class="bi bi-terminal me-2 text-primary"></i>
             Level Up Your Coding Skills
         </h1>
 
-        <p class="lead text-muted">
-            Complete challenges. Track your progress. Become consistent.
+        <p class="lead text-muted fw-bold">
+            Solve challenges, track your progress, and climb the leaderboard.
         </p>
 
-        <div class="mt-4">
+        <div class="mt-5 d-flex gap-2 justify-content-center">
             <a asp-controller="Challenges"
                    asp-action="Index"
-                   class="btn btn-primary btn-lg me-2">
-                <i class="bi bi-arrow-down-right-circle me-1"></i>
+                   class="btn btn-primary btn-lg">
+                <i class="bi bi-arrow-down-right-circle"></i>
                 Browse Challenges
             </a>
+            @if (User?.Identity?.IsAuthenticated ?? false)
+            {
+                <a asp-controller="Submissions"
+                       asp-action="Index"
+                       class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-journal-code"></i>
+                    My Submissions
+                </a>
 
-            @if (!(User?.Identity?.IsAuthenticated ?? false))
+                <a asp-controller="Profile"
+                       asp-action="Stats"
+                       class="btn btn-outline-success btn-lg">
+                    <i class="bi bi-bar-chart-line"></i>
+                    My Stats
+                </a>
+            }
+            else
             {
                 <a asp-area="Identity"
                        asp-page="/Account/Register"
                        class="btn btn-success btn-lg">
-                    <i class="bi bi-person-plus me-1"></i>
+                    <i class="bi bi-person-plus"></i>
                     Get Started
                 </a>
             }
         </div>
     </div>
 
-    <div class="row text-center g-4">
+    <div class="row text-center g-4 mt-auto">
 
         <div class="col-md-4">
             <div class="card h-100 shadow-sm feature-card">
                 <div class="card-body">
-                    <i class="bi bi-trophy display-6 mb-3 text-warning"></i>
+                    <i class="bi bi-code-slash display-6 mb-3 text-primary"></i>
                     <h5 class="fw-semibold">Solve Challenges</h5>
                     <p class="text-muted">
                         Practice with curated problems across different difficulties.
@@ -52,7 +67,7 @@
         <div class="col-md-4">
             <div class="card h-100 shadow-sm feature-card">
                 <div class="card-body">
-                    <i class="bi bi-graph-up display-6 mb-3 text-success"></i>
+                    <i class="bi bi-bar-chart-line display-6 mb-3 text-success"></i>
                     <h5 class="fw-semibold">Track Progress</h5>
                     <p class="text-muted">
                         Monitor your submissions and improve over time.
@@ -64,7 +79,7 @@
         <div class="col-md-4">
             <div class="card h-100 shadow-sm feature-card">
                 <div class="card-body">
-                    <i class="bi bi-lightning-charge display-6 mb-3 text-primary"></i>
+                    <i class="bi bi-lightning-charge display-6 mb-3 text-warning"></i>
                     <h5 class="fw-semibold">Stay Consistent</h5>
                     <p class="text-muted">
                         Build a habit and sharpen your problem-solving skills daily.

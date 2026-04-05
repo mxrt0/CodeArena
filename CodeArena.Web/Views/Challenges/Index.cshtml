@@ -124,9 +124,8 @@
 
                             <p class="card-text text-muted flex-grow-1 text-truncate">
                                 @(challenge.Description.Length <= 200
-                                    ? challenge.Description
-                                    : challenge.Description.Substring(0,
-                                          challenge.Description.IndexOf(' ', 200)) + "...")
+                            ? challenge.Description
+                            : challenge.Description.Substring(0, Math.Min(200, challenge.Description.Length)) + "...")
                             </p>
 
                             <div class="mb-2 d-flex gap-1 flex-wrap">

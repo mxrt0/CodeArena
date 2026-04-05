@@ -27,7 +27,7 @@
 
                 <div class="collapse navbar-collapse" id="mainNav">
 
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?
                                   .ToString()?.ToLower() == "home" ? "active fw-bold" : "")" 
@@ -64,8 +64,8 @@
                             </a>
                         </li>
                     </ul>
-
-                    <ul class="navbar-nav ms-auto align-items-center">
+                    <hr class="d-lg-none my-2" />
+                    <ul class="navbar-nav ms-auto align-items-lg-center">
 
                         @if (User?.Identity?.IsAuthenticated ?? false)
                         {
@@ -79,26 +79,24 @@
                         <li class="nav-item me-3">
                             <button id="themeToggle" class="btn btn-sm btn-outline-secondary">
                                 <i class="bi bi-moon"></i>
+                                <span class="d-lg-none ms-1 ms-lg-0">Theme</span>
                             </button>
                         </li>
 
-                        <li class="nav-item">
-                            <partial name="_LoginPartial" />
-                        </li>
-
+                         <partial name="_LoginPartial" />
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+    <div class="container-lg">
         <main role="main" class="pb-3 flex-fill">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top mt-auto py-3 text-muted">
-        <div class="d-flex justify-content-center align-items-center gap-2">
+        <div class="d-flex flex-column flex-sm-row justify-content-center align-items-center gap-1 gap-sm-2 text-center">
             <span>© 2026 CodeArena</span>
             <span>•</span>          
             <span>Built with ASP.NET MVC</span>
