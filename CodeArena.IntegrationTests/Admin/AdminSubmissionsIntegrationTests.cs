@@ -35,12 +35,6 @@ public class AdminSubmissionsIntegrationTests
         });
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        db.Database.EnsureCreated();
-
-        db.Challenges.Add(new Challenge { Id = 1, Title = "Testdfgd",
-            Difficulty = Difficulty.Easy,
-            Description = "Desc12324", Slug = "testdfgd",
-            Tags = "tag123"});
 
         db.Users.Add(new ApplicationUser
         {

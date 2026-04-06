@@ -1,25 +1,28 @@
-﻿using CodeArena.Web;
+﻿using CodeArena.Data;
+using CodeArena.Web;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-
+using CodeArena.IntegrationTests.Infrastructure.Factories;
 namespace CodeArena.IntegrationTests;
 
 [TestFixture]
 public class ChallengesIntegrationTests
 {
     private HttpClient _client = null!;
-    private WebApplicationFactory<Program> _factory = null!;
+    private CustomWebApplicationFactory<Program> _factory = null!;
 
     [SetUp]
     public void Setup()
     {
-        _factory = new WebApplicationFactory<Program>();
+        _factory = new CustomWebApplicationFactory<Program>();
         _client = _factory.CreateClient();
     }
     [TearDown]
@@ -35,7 +38,7 @@ public class ChallengesIntegrationTests
         var content = await response.Content.ReadAsStringAsync();
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
-        content.Should().Contain("Sum Two Numbers");
+        content.Should().Contain("Balanced Brackets");
     }
 
     [Test]
