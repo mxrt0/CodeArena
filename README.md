@@ -184,14 +184,22 @@ DTOs are used for:
 
 ---
 
-### 4. Challenge Filtering System
+### 4. Filtering System
 
 Filtering is implemented via query parameters:
 
+**Challenge:**
 - Difficulty
-- Status (Solved / Pending)
+- Status (Solved / Unsolved)
 - Tags
 - Search
+- Active (for admin)
+
+**Submission:**
+- Status (Pending / Approved / Rejected)
+- Language
+
+Controllers and service take query wrapper parameters which encapsulate filters into a single class.
 
 Reasoning:
 
@@ -302,6 +310,8 @@ Make sure you have the following installed before running the project:
 
 ## 🚀 Getting Started
 
+Follow these steps to get the project running locally.
+
 ### 1. Clone the repository
 
 ```bash
@@ -332,13 +342,13 @@ dotnet restore
 - In `appsettings.Development.json`:
 
 ```json
-{  
-  "AdminUser": {
+"AdminUser": {
     "Email": "adminemail@abc.com",
     "Password": "secret-admin-pass"
   }
-}
 ```
+
+- You can use those credentials to log in to the Admin account
 
 ### 5. Apply database migrations
 
