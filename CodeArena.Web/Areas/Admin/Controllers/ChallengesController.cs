@@ -135,7 +135,7 @@ public class ChallengesController : BaseAdminController
             var challenge = await _challengeService.GetChallengeByIdAsync(id);
 
             await _challengeService.DeleteChallengeAsync(challenge.Id);
-            TempData[SuccessTempDataKey] = ChallengeUpdatedMessage;
+            TempData[SuccessTempDataKey] = ChallengeDeletedMessage;
         }
         catch (ChallengeNotFoundException ex)
         {
